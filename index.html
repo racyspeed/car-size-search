@@ -53,13 +53,65 @@ select.addEventListener("change", function() {
     return;
   }
 
-  result.innerHTML = `
-    <h3>あなたの車</h3>
-    ${option.textContent}
-    <br><br>
-    ${option.dataset.size}サイズ
-  `;
+  const size = option.dataset.size;
+
+result.innerHTML = `
+  <h3>あなたの車</h3>
+  ${option.textContent}
+  <br><br>
+  ${size}サイズ
+
+  <br><br>
+
+  <select id="menuSelect">
+    <option value="">メニューを選択</option>
+  </select>
+
+  <div id="priceResult"></div>
+`;
+
+loadMenus(size);
 });
+  async function loadMenus(size) {
+
+  const menuSelect = document.getElementById("menuSelect");
+
+  const { data: menus } = await supabase
+    .from("menus")
+    .select("*");
+
+  menus.forEach(menu => {
+    const option = document.createElement("option");
+    option.value = menu.menu_name;
+    option.textContent = menu.menu_name;
+    menuSelect.appendChild(option);
+  });
+
+  menuSelect.addEventListener("change", async function() {
+
+    const menuName = this.value;
+
+    if (!menuName) return;
+
+    const { data: prices } = await supabase
+      .from("prices")
+      .select("*")
+      .eq("menu_name", menuName)
+      .eq("size", size);
+
+    if (!prices.length) {
+      document.getElementById("priceResult").innerHTML =
+        "<br>料金未設定";
+      return;
+    }
+
+    document.getElementById("priceResult").innerHTML = `
+      <br><br>
+      <strong>${prices[0].price.toLocaleString()}円（税込）</strong>
+    `;
+  });
+
+}
 </script>
 
 </body>
