@@ -61,7 +61,21 @@ select{
   margin-bottom:25px;
   font-size:14px;
 }
-</style>
+.car-name{
+  font-size:24px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.car-size{
+  display:inline-block;
+  padding:6px 14px;
+  background:#f3f4f6;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:20px;
+}</style>
 </head>
 <body>
 
@@ -158,12 +172,17 @@ select.addEventListener("change", function() {
   const size = option.dataset.size;
 
 result.innerHTML = `
-  <h3>あなたの車</h3>
-  ${option.dataset.maker} ${option.textContent}
-  <br><br>
-  ${size}サイズ
+  <h3>お選びのお車</h3>
 
-  <br><br>
+  <div class="car-name">
+    ${option.dataset.maker} ${option.textContent}
+  </div>
+
+  <div class="car-size">
+    ${size}サイズ
+  </div>
+
+  <br>
 
   <select id="menuSelect">
     <option value="">メニューを選択</option>
