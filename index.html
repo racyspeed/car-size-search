@@ -204,17 +204,19 @@ loadMenus(size);
 document.getElementById("priceResult").innerHTML = `
   <br><br>
   <div class="price">
-  ${prices[0].price.toLocaleString()}円
-</div>
+    ${prices[0].price.toLocaleString()}円
+  </div>
 
-<div class="info">
-  （税込）
-</div>
+  <div class="info">
+    （税込）
+  </div>
 
-<div class="info">
-  施工時間：${menuData[0].work_time}
-</div>
+  <div class="info">
+    施工時間：${menuData[0].work_time}
+  </div>
+`;
 
+  });
 
 }
 </script>
