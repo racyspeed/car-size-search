@@ -28,6 +28,7 @@ const supabaseKey = "sb_publishable_jm8kPE51RZJitnkw11orxA_au9j3f6Z";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+const makerSelect = document.getElementById("makerSelect");
 const select = document.getElementById("carSelect");
 const result = document.getElementById("result");
 
@@ -37,18 +38,49 @@ const { data, error } = await supabase
   .order("maker");
 
 if (error) {
-  select.innerHTML = "<option>読込エラー</option>";
+  select.innerHTML = '<option>読込エラー</option>';
   console.error(error);
-} else {
-  select.innerHTML = '<option value="">車種を選択</option>';
 
-  data.forEach(car => {
+} else {
+
+  const makers = [...new Set(data.map(car => car.maker))];
+
+  makerSelect.innerHTML =
+    '<option value="">メーカーを選択</option>';
+
+  makers.forEach(maker => {
     const option = document.createElement("option");
-    option.value = car.model;
-    option.textContent = `${car.maker} ${car.model}`;
-    option.dataset.size = car.size;
-    select.appendChild(option);
+    option.value = maker;
+    option.textContent = maker;
+    makerSelect.appendChild(option);
   });
+
+  makerSelect.addEventListener("change", function() {
+
+    const selectedMaker = this.value;
+
+    select.innerHTML =
+      '<option value="">車種を選択</option>';
+
+    result.innerHTML = "";
+
+    data
+      .filter(car => car.maker === selectedMaker)
+      .forEach(car => {
+
+        const option = document.createElement("option");
+
+        option.value = car.model;
+        option.textContent = car.model;
+        option.dataset.size = car.size;
+        option.dataset.maker = car.maker;
+
+        select.appendChild(option);
+
+      });
+
+  });
+
 }
 
 select.addEventListener("change", function() {
@@ -63,7 +95,7 @@ select.addEventListener("change", function() {
 
 result.innerHTML = `
   <h3>あなたの車</h3>
-  ${option.textContent}
+  ${option.dataset.maker} ${option.textContent}
   <br><br>
   ${size}サイズ
 
