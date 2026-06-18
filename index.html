@@ -105,10 +105,19 @@ loadMenus(size);
       return;
     }
 
-    document.getElementById("priceResult").innerHTML = `
-      <br><br>
-      <strong>${prices[0].price.toLocaleString()}円（税込）</strong>
-    `;
+    const { data: menuData } = await supabase
+  .from("menus")
+  .select("*")
+  .eq("menu_name", menuName);
+
+document.getElementById("priceResult").innerHTML = `
+  <br><br>
+  <strong>${prices[0].price.toLocaleString()}円（税込）</strong>
+
+  <br><br>
+
+  施工時間：${menuData[0].work_time}
+`;
   });
 
 }
