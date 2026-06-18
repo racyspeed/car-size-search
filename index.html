@@ -113,6 +113,34 @@ select{
   font-weight:600;
   margin-top:8px;
 }
+    .result-section{
+  margin-top:24px;
+}
+
+.result-label{
+  font-size:13px;
+  color:#777;
+  letter-spacing:0.08em;
+  margin-bottom:6px;
+}
+
+.result-value{
+  font-size:20px;
+  font-weight:600;
+  color:#222;
+}
+
+.result-price{
+  font-size:42px;
+  font-weight:700;
+  margin-top:4px;
+}
+
+.result-divider{
+  height:1px;
+  background:#ececec;
+  margin:22px 0;
+}
   </style>
 </head>
 <body>
@@ -280,28 +308,40 @@ menus.sort((a, b) => {
   .eq("menu_name", menuName);
 
 document.getElementById("priceResult").innerHTML = `
-  <div class="price-card">
+  <div class="result-divider"></div>
 
-    <div class="price-label">
+  <div class="result-section">
+    <div class="result-label">
+      施工メニュー
+    </div>
+
+    <div class="result-value">
+      ${menuName}
+    </div>
+  </div>
+
+  <div class="result-section">
+    <div class="result-label">
       施工料金
     </div>
 
-    <div class="price">
+    <div class="result-price">
       ${prices[0].price.toLocaleString()}円
     </div>
 
-    <div class="tax">
+    <div class="info">
       （税込）
     </div>
+  </div>
 
-    <div class="worktime-title">
+  <div class="result-section">
+    <div class="result-label">
       施工時間
     </div>
 
-    <div class="worktime">
+    <div class="result-value">
       ${menuData[0].work_time}
     </div>
-
   </div>
 `;
   });
