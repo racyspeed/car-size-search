@@ -200,7 +200,17 @@ loadMenus(size);
   const { data: menus } = await supabase
     .from("menus")
     .select("*");
+menus.sort((a, b) => {
 
+  const order = {
+    "純水手洗い洗車": 1,
+    "徹底洗車": 2,
+    "徹底洗車ライト": 3
+  };
+
+  return order[a.menu_name] - order[b.menu_name];
+
+});
   menus.forEach(menu => {
     const option = document.createElement("option");
     option.value = menu.menu_name;
