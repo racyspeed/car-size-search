@@ -9,34 +9,56 @@
 <h2>車両サイズ検索</h2>
 
 <select id="carSelect">
-<option value="">車種を選択</option>
-<option value="プリウス">プリウス</option>
-<option value="ヤリス">ヤリス</option>
-<option value="アルファード">アルファード</option>
+  <option>読込中...</option>
 </select>
 
 <div id="result"></div>
 
-<script>
-const sizes = {
-  "プリウス": "M",
-  "ヤリス": "S",
-  "アルファード": "XL"
-};
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-document.getElementById("carSelect").addEventListener("change", function() {
-  const car = this.value;
+const supabaseUrl = "https://klfijtvnbgdkqcslntsp.supabase.co";
+const supabaseKey = "sb_publishable_jm8kPE51RZJitnkw11orxA_au9j3f6Z";
 
-  if (!car) {
-    document.getElementById("result").innerHTML = "";
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+const select = document.getElementById("carSelect");
+const result = document.getElementById("result");
+
+const { data, error } = await supabase
+  .from("cars")
+  .select("*")
+  .order("maker");
+
+if (error) {
+  select.innerHTML = "<option>読込エラー</option>";
+  console.error(error);
+} else {
+  select.innerHTML = '<option value="">車種を選択</option>';
+
+  data.forEach(car => {
+    const option = document.createElement("option");
+    option.value = car.model;
+    option.textContent = `${car.maker} ${car.model}`;
+    option.dataset.size = car.size;
+    select.appendChild(option);
+  });
+}
+
+select.addEventListener("change", function() {
+  const option = this.selectedOptions[0];
+
+  if (!option.value) {
+    result.innerHTML = "";
     return;
   }
 
-  document.getElementById("result").innerHTML =
-    "<h3>あなたの車</h3>" +
-    car +
-    "<br><br>" +
-    sizes[car] + "サイズ";
+  result.innerHTML = `
+    <h3>あなたの車</h3>
+    ${option.textContent}
+    <br><br>
+    ${option.dataset.size}サイズ
+  `;
 });
 </script>
 
