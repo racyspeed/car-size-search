@@ -36,10 +36,11 @@ select{
 
 #result{
   margin-top:30px;
-  padding:25px;
-  border-radius:15px;
-  background:#fafafa;
-  border:1px solid #ececec;
+  padding:30px;
+  border-radius:20px;
+  background:white;
+  border:1px solid #e5e5e5;
+  box-shadow:0 8px 20px rgba(0,0,0,0.06);
 }
 
 .price{
@@ -52,14 +53,23 @@ select{
   margin-top:10px;
   color:#666;
 }
-
+.subtitle{
+  text-align:center;
+  color:#666;
+  margin-top:-15px;
+  margin-bottom:25px;
+  font-size:14px;
+}
 </style>
 </head>
 <body>
 
 <div class="container">
 
-<h2>車両サイズ・料金検索</h2>
+<h2>料金シミュレーター</h2>
+<p class="subtitle">
+お車に合わせた施工料金をご確認いただけます
+</p>
 
 <select id="makerSelect">
   <option value="">メーカーを選択</option>
