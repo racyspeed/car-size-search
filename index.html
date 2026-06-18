@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>車両サイズ検索</title>
+</head>
+<body>
+
+<h2>車両サイズ検索</h2>
+
+<select id="carSelect">
+<option value="">車種を選択</option>
+<option value="プリウス">プリウス</option>
+<option value="ヤリス">ヤリス</option>
+<option value="アルファード">アルファード</option>
+</select>
+
+<div id="result"></div>
+
+<script>
+const sizes = {
+  "プリウス": "M",
+  "ヤリス": "S",
+  "アルファード": "XL"
+};
+
+document.getElementById("carSelect").addEventListener("change", function() {
+  const car = this.value;
+
+  if (!car) {
+    document.getElementById("result").innerHTML = "";
+    return;
+  }
+
+  document.getElementById("result").innerHTML =
+    "<h3>あなたの車</h3>" +
+    car +
+    "<br><br>" +
+    sizes[car] + "サイズ";
+});
+</script>
+
+</body>
+</html>
