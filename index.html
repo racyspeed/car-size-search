@@ -36,8 +36,10 @@ select{
 
 #result{
   margin-top:30px;
-  padding-top:20px;
-  border-top:1px solid #eee;
+  padding:25px;
+  border-radius:15px;
+  background:#fafafa;
+  border:1px solid #ececec;
 }
 
 .price{
@@ -201,8 +203,17 @@ loadMenus(size);
 
 document.getElementById("priceResult").innerHTML = `
   <br><br>
-  <strong>${prices[0].price.toLocaleString()}円（税込）</strong>
+  <div class="price">
+  ${prices[0].price.toLocaleString()}円
+</div>
 
+<div class="info">
+  （税込）
+</div>
+
+<div class="info">
+  施工時間：${menuData[0].work_time}
+</div>
   <br><br>
 
   施工時間：${menuData[0].work_time}
