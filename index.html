@@ -278,12 +278,7 @@ result.innerHTML = `
 loadMenus(size);
 });
   async function loadMenus(size) {
-<label for="categorySelect">施工カテゴリ</label>
-<select id="categorySelect">
-  <option value="">選択してください</option>
-  <option value="wash">洗車</option>
-  <option value="coating">コーティング</option>
-</select>
+
   const menuSelect = document.getElementById("menuSelect");
 
   const { data: menus } = await supabase
