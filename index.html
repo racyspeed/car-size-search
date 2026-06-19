@@ -328,6 +328,11 @@ categorySelect.addEventListener("change", function () {
 
   menuSelect.addEventListener("change", async function() {
 
+    const size =
+  document.querySelector(".car-size")
+    .textContent
+    .replace("サイズ", "");
+    
 const menuName = this.value;
 
 if (!menuName) return;
