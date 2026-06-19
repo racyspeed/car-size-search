@@ -284,10 +284,7 @@ result.innerHTML = `
   <div id="priceResult"></div>
 `;
 
-loadMenus(size)
-  async function loadOptions(size) {
-
-};
+loadMenus(size);
 });
   async function loadMenus(size) {
 
@@ -330,119 +327,8 @@ categorySelect.addEventListener("change", function () {
 });
 
   menuSelect.addEventListener("change", async function() {
-
-    const menuName = this.value;
-
-    if (!menuName) return;
-
-    const { data: prices } = await supabase
-      .from("prices")
-      .select("*")
-      .eq("menu_name", menuName)
-      .eq("size", size);
-
-    if (!prices.length) {
-      document.getElementById("priceResult").innerHTML =
-        "<br>料金未設定";
-      return;
-    }
-
-    const { data: menuData } = await supabase
-  .from("menus")
-  .select("*")
-  .eq("menu_name", menuName);
-
-document.getElementById("priceResult").innerHTML = `
-  <div class="result-divider"></div>
-
-  <div class="result-section">
-    <div class="result-label">
-      施工メニュー
-    </div>
-
-    <div class="result-value">
-      ${menuName}
-    </div>
-  </div>
-
-  <div class="result-section">
-    <div class="result-label">
-      施工料金
-    </div>
-
-    <div class="result-price">
-      ${prices[0].price.toLocaleString()}円
-    </div>
-
-    <div class="info">
-      （税込）
-    </div>
-  </div>
-
-  document.getElementById("priceResult").innerHTML = `
-
-  <div class="result-divider"></div>
-
-  <div class="result-section">
-    <div class="result-label">
-      施工メニュー
-    </div>
-
-```
-<div class="result-value">
-  ${menuName}
-</div>
-```
-
-  </div>
-
-  <div class="result-section">
-    <div class="result-label">
-      施工料金
-    </div>
-
-```
-<div class="result-price">
-  ${prices[0].price.toLocaleString()}円
-</div>
-
-<div class="info">
-  （税込）
-</div>
-```
-
-  </div>
-
-  <div class="result-section">
-    <div class="result-label">
-      施工時間
-    </div>
-
-```
-<div class="result-value">
-  ${menuData[0].work_time}
-</div>
-```
-
-  </div>
-
-  <div class="result-divider"></div>
-
-  <div class="result-section">
-    <div class="result-label">
-      オプション
-    </div>
-
-```
-<div id="optionArea">
-  読み込み中...
-</div>
-```
-
-  </div>
-`;
-loadOptions(size);
-  });
+...
+});
 
 }
 </script>
