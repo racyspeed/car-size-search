@@ -356,25 +356,17 @@ const { data: menuData } = await supabase
 .from("menus")
 .select("*")
 .eq("menu_name", menuName);
-const { data: options, error: optionError } = await supabase
+const { data: options } = await supabase
   .from("options")
-  .select("*");
-
-console.log("optionError=", optionError);
-console.log("options=", options);
+  .select("*")
+  .eq("size", size);
 
 const optionArea =
 document.getElementById("optionArea");
 
 optionArea.innerHTML =
   "<h3>追加オプション</h3>";
-    
-console.log("size=", size);
-    console.log(
-  "size length=",
-  size.length
-);
-console.log("options=", options);
+
 options.forEach(option => {
 
 optionArea.innerHTML += `     <label style="display:block;margin:10px 0;">       <input
