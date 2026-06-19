@@ -369,9 +369,12 @@ optionArea.innerHTML =
 
 options.forEach(option => {
 
-optionArea.innerHTML += `     <label style="display:block;margin:10px 0;">       <input
-        type="checkbox"
-        class="optionCheck"       >
+optionArea.innerHTML += `     <label style="display:block;margin:10px 0;">      
+<input
+  type="checkbox"
+  class="optionCheck"
+  data-price="${option.price}"
+>
       ${option.option_name}
       （${option.price.toLocaleString()}円）     </label>
   `;
@@ -382,6 +385,30 @@ optionArea.innerHTML += `
     オプション合計：0円
   </div>
 `;
+    document
+  .querySelectorAll(".optionCheck")
+  .forEach(check => {
+
+    check.addEventListener("change", () => {
+
+      let total = 0;
+
+      document
+        .querySelectorAll(".optionCheck:checked")
+        .forEach(item => {
+          total += Number(
+            item.dataset.price
+          );
+        });
+
+      document.getElementById(
+        "optionTotal"
+      ).textContent =
+        `オプション合計：${total.toLocaleString()}円`;
+
+    });
+
+  });
 document.getElementById("priceResult").innerHTML = `
 
 <div class="result-divider"></div>
