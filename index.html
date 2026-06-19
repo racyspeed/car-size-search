@@ -281,8 +281,8 @@ result.innerHTML = `
     <option value="">メニューを選択</option>
   </select>
 
-  <div id="priceResult"></div>
   <div id="optionArea"></div>
+<div id="priceResult"></div>
 
 `;
 
@@ -356,6 +356,26 @@ const { data: menuData } = await supabase
 .from("menus")
 .select("*")
 .eq("menu_name", menuName);
+const { data: options } = await supabase
+.from("options")
+.select("*")
+.eq("size", size);
+
+const optionArea =
+document.getElementById("optionArea");
+
+optionArea.innerHTML =
+"<h3>追加オプション</h3>";
+options.forEach(option => {
+
+optionArea.innerHTML += `     <label style="display:block;margin:10px 0;">       <input
+        type="checkbox"
+        class="optionCheck"       >
+      ${option.option_name}
+      （${option.price.toLocaleString()}円）     </label>
+  `;
+
+});
 
 document.getElementById("priceResult").innerHTML = `
 
