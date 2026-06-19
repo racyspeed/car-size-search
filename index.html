@@ -405,7 +405,15 @@ optionArea.innerHTML += `
         "optionTotal"
       ).textContent =
         `オプション合計：${total.toLocaleString()}円`;
+document.getElementById(
+  "optionTotalResult"
+).textContent =
+  `オプション合計：${total.toLocaleString()}円`;
 
+document.getElementById(
+  "totalPrice"
+).textContent =
+  `総額：${(prices[0].price + total).toLocaleString()}円`;
     });
 
   });
