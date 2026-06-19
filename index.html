@@ -428,14 +428,21 @@ document.getElementById("priceResult").innerHTML = `
     施工料金
   </div>
 
-  <div class="result-price">
-    ${prices[0].price.toLocaleString()}円
-    <div id="totalPrice"></div>
-  </div>
+ <div class="result-price">
+  ${prices[0].price.toLocaleString()}円
+</div>
 
-  <div class="info">
-    （税込）
-  </div>
+<div id="optionTotalResult">
+  オプション合計：0円
+</div>
+
+<div id="totalPrice">
+  総額：${prices[0].price.toLocaleString()}円
+</div>
+
+<div class="info">
+  （税込）
+</div>
 </div>
 
 <div class="result-section">
