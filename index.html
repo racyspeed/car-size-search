@@ -354,9 +354,10 @@ const { data: menuData } = await supabase
 .select("*")
 .eq("menu_name", menuName);
 
-document.getElementById("priceResult").innerHTML = ` <div class="result-divider"></div>
+document.getElementById("priceResult").innerHTML = `
 
-```
+<div class="result-divider"></div>
+
 <div class="result-section">
   <div class="result-label">
     施工メニュー
@@ -390,9 +391,8 @@ document.getElementById("priceResult").innerHTML = ` <div class="result-divider"
     ${menuData[0].work_time}
   </div>
 </div>
-```
-
 `;
+
 });
 
 
