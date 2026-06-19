@@ -356,10 +356,12 @@ const { data: menuData } = await supabase
 .from("menus")
 .select("*")
 .eq("menu_name", menuName);
-const { data: options } = await supabase
-.from("options")
-.select("*")
-.eq("size", size);
+const { data: options, error: optionError } = await supabase
+  .from("options")
+  .select("*");
+
+console.log("optionError=", optionError);
+console.log("options=", options);
 
 const optionArea =
 document.getElementById("optionArea");
