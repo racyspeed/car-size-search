@@ -278,7 +278,12 @@ result.innerHTML = `
 loadMenus(size);
 });
   async function loadMenus(size) {
-
+<label for="categorySelect">施工カテゴリ</label>
+<select id="categorySelect">
+  <option value="">選択してください</option>
+  <option value="wash">洗車</option>
+  <option value="coating">コーティング</option>
+</select>
   const menuSelect = document.getElementById("menuSelect");
 
   const { data: menus } = await supabase
@@ -295,12 +300,27 @@ menus.sort((a, b) => {
   return order[a.menu_name] - order[b.menu_name];
 
 });
-  menus.forEach(menu => {
+  const categorySelect = document.getElementById("categorySelect");
+
+categorySelect.addEventListener("change", function () {
+
+  menuSelect.innerHTML =
+    '<option value="">選択してください</option>';
+
+  const selectedCategory = this.value;
+
+  const filteredMenus = menus.filter(
+    menu => menu.category === selectedCategory
+  );
+
+  filteredMenus.forEach(menu => {
     const option = document.createElement("option");
     option.value = menu.menu_name;
     option.textContent = menu.menu_name;
     menuSelect.appendChild(option);
   });
+
+});
 
   menuSelect.addEventListener("change", async function() {
 
