@@ -357,23 +357,6 @@ const { data: menuData } = await supabase
 .select("*")
 .eq("menu_name", menuName);
 
-  });
-
-updateTotal();(option => {
-
-  optionArea.innerHTML += `
-    <label style="display:block;margin:10px 0;">
-      <input
-        type="checkbox"
-        class="optionCheck"
-        data-price="${option.price}"
-      >
-      ${option.option_name}
-      （${option.price.toLocaleString()}円）
-    </label>
-  `;
-
-});
 document.getElementById("priceResult").innerHTML = `
 
 <div class="result-divider"></div>
