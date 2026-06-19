@@ -365,7 +365,10 @@ const optionArea =
 document.getElementById("optionArea");
 
 optionArea.innerHTML =
-"<h3>追加オプション</h3>";
+  "<h3>追加オプション</h3>";
+    
+console.log("size=", size);
+console.log("options=", options);
 options.forEach(option => {
 
 optionArea.innerHTML += `     <label style="display:block;margin:10px 0;">       <input
