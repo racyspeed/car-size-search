@@ -282,6 +282,9 @@ result.innerHTML = `
   </select>
 
   <div id="priceResult"></div>
+  <div id="optionArea"></div>
+
+<div id="priceResult"></div>
 `;
 
 loadMenus(size);
@@ -354,7 +357,86 @@ const { data: menuData } = await supabase
 .from("menus")
 .select("*")
 .eq("menu_name", menuName);
+const { data: options } = await supabase
+  .from("options")
+  .select("*")
+  .eq("size", size);
+    const optionArea =
+  document.getElementById("optionArea");
 
+optionArea.innerHTML =
+  "<h3>追加オプション</h3>";
+
+options.forEachconst basePrice = prices[0].price;
+
+function updateTotal() {
+
+  let optionTotal = 0;
+
+  document
+    .querySelectorAll(".optionCheck:checked")
+    .forEach(check => {
+
+      optionTotal += Number(
+        check.dataset.price
+      );
+
+    });
+
+  document.getElementById(
+    "totalPrice"
+  ).innerHTML = `
+    <div class="result-section">
+
+      <div class="result-label">
+        オプション合計
+      </div>
+
+      <div class="result-value">
+        ${optionTotal.toLocaleString()}円
+      </div>
+
+      <div class="result-label"
+           style="margin-top:15px;">
+        総額
+      </div>
+
+      <div class="result-price">
+        ${(basePrice + optionTotal)
+          .toLocaleString()}円
+      </div>
+
+    </div>
+  `;
+
+}
+
+document
+  .querySelectorAll(".optionCheck")
+  .forEach(check => {
+
+    check.addEventListener(
+      "change",
+      updateTotal
+    );
+
+  });
+
+updateTotal();(option => {
+
+  optionArea.innerHTML += `
+    <label style="display:block;margin:10px 0;">
+      <input
+        type="checkbox"
+        class="optionCheck"
+        data-price="${option.price}"
+      >
+      ${option.option_name}
+      （${option.price.toLocaleString()}円）
+    </label>
+  `;
+
+});
 document.getElementById("priceResult").innerHTML = `
 
 <div class="result-divider"></div>
@@ -376,6 +458,7 @@ document.getElementById("priceResult").innerHTML = `
 
   <div class="result-price">
     ${prices[0].price.toLocaleString()}円
+    <div id="totalPrice"></div>
   </div>
 
   <div class="info">
