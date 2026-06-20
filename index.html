@@ -15,7 +15,7 @@ body{
   padding:32px 16px;
   color:#111;
 }
-  
+
 .container{
   max-width:760px;
   margin:auto;
@@ -116,8 +116,37 @@ h2{
   background:#f6f4ef;
 }
 
-.search-result-item:last-child{
-  border-bottom:none;
+.quick-cars{
+  margin:18px 0 20px;
+}
+
+.quick-cars-title{
+  font-size:12px;
+  color:#666;
+  letter-spacing:0.12em;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.quick-car-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.quick-car-button{
+  padding:8px 12px;
+  background:#fff;
+  border:1px solid #cfc8be;
+  font-family:'Shippori Mincho', serif;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.quick-car-button:hover{
+  background:#111;
+  color:#fff;
+  border-color:#111;
 }
 
 .select-note{
@@ -136,11 +165,6 @@ select{
   font-family:'Shippori Mincho', serif;
   font-size:16px;
   background:#fff;
-}
-
-select:focus{
-  outline:none;
-  border-color:#111;
 }
 
 #result{
@@ -246,7 +270,6 @@ select:focus{
   color:#fff;
   font-size:56px;
   margin-top:10px;
-  letter-spacing:0.02em;
 }
 
 .total-card .info{
@@ -392,6 +415,11 @@ select:focus{
     font-size:14px;
   }
 
+  .quick-car-button{
+    font-size:12px;
+    padding:7px 10px;
+  }
+
   .search-result-item{
     font-size:13px;
     padding:11px 13px;
@@ -516,6 +544,23 @@ select:focus{
     <div id="searchResults" class="search-results"></div>
   </div>
 
+  <div class="quick-cars">
+    <div class="quick-cars-title">
+      人気車種から選択
+    </div>
+
+    <div class="quick-car-buttons">
+      <button class="quick-car-button" data-maker="トヨタ" data-model="プリウス">プリウス</button>
+      <button class="quick-car-button" data-maker="トヨタ" data-model="アルファード">アルファード</button>
+      <button class="quick-car-button" data-maker="トヨタ" data-model="ヴェルファイア">ヴェルファイア</button>
+      <button class="quick-car-button" data-maker="ホンダ" data-model="N-BOX">N-BOX</button>
+      <button class="quick-car-button" data-maker="トヨタ" data-model="ハリアー">ハリアー</button>
+      <button class="quick-car-button" data-maker="トヨタ" data-model="ランドクルーザー300">ランクル</button>
+      <button class="quick-car-button" data-maker="レクサス" data-model="NX">レクサスNX</button>
+      <button class="quick-car-button" data-maker="BMW" data-model="X3">BMW X3</button>
+    </div>
+  </div>
+
   <div class="select-note">
     またはメーカーから選択
   </div>
@@ -566,24 +611,18 @@ if (error) {
 
   function toKatakana(str) {
     return str.replace(/[ぁ-ん]/g, function(char) {
-      return String.fromCharCode(
-        char.charCodeAt(0) + 0x60
-      );
+      return String.fromCharCode(char.charCodeAt(0) + 0x60);
     });
   }
 
   function toHalfWidth(str) {
     return str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(char) {
-      return String.fromCharCode(
-        char.charCodeAt(0) - 0xFEE0
-      );
+      return String.fromCharCode(char.charCodeAt(0) - 0xFEE0);
     });
   }
 
   function normalizeText(str) {
-    return toHalfWidth(
-      toKatakana(String(str))
-    )
+    return toHalfWidth(toKatakana(String(str)))
       .toLowerCase()
       .replace(/[・\s　\-\_\.\/／]/g, "")
       .replace(/[（）\(\)]/g, "");
@@ -726,6 +765,21 @@ if (error) {
 
     loadMenus(car.size);
   }
+
+  document
+    .querySelectorAll(".quick-car-button")
+    .forEach(button => {
+      button.addEventListener("click", function() {
+        const car = cars.find(item =>
+          item.maker === this.dataset.maker &&
+          item.model === this.dataset.model
+        );
+
+        if (car) {
+          showCar(car);
+        }
+      });
+    });
 
   makerSelect.addEventListener("change", function() {
     const selectedMaker = this.value;
