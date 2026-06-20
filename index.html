@@ -425,7 +425,46 @@ document.getElementById("priceResult").innerHTML = `
   </div>
 </div>
 `;
+const basePrice = prices[0].price;
 
+function updateTotal() {
+
+  let optionTotal = 0;
+
+  document
+    .querySelectorAll(".optionCheck:checked")
+    .forEach(check => {
+
+      optionTotal += Number(
+        check.dataset.price
+      );
+
+    });
+
+  document.getElementById(
+    "optionTotalResult"
+  ).textContent =
+    `オプション合計：${optionTotal.toLocaleString()}円`;
+
+  document.getElementById(
+    "totalPrice"
+  ).textContent =
+    `総額：${(basePrice + optionTotal).toLocaleString()}円`;
+
+}
+
+document
+  .querySelectorAll(".optionCheck")
+  .forEach(check => {
+
+    check.addEventListener(
+      "change",
+      updateTotal
+    );
+
+  });
+
+updateTotal();
 });
 
 
