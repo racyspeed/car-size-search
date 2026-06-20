@@ -1033,3 +1033,132 @@ select{
     font-size:22px;
   }
 }
+/* コーティングカード段差修正版 */
+.plan-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  align-items:stretch;
+}
+
+.plan-card{
+  display:grid;
+  grid-template-rows:
+    auto
+    86px
+    auto
+    auto
+    auto
+    auto;
+  padding:24px 22px;
+  text-align:left;
+}
+
+.plan-badge{
+  margin:0 auto 18px;
+}
+
+.plan-desc{
+  min-height:86px;
+  margin-bottom:16px;
+  padding-bottom:14px;
+  border-bottom:2px dotted currentColor;
+  text-align:left;
+  line-height:1.8;
+}
+
+.plan-time{
+  margin:0 0 10px;
+  padding:14px 16px;
+  background:rgba(232,95,138,0.08);
+  min-height:44px;
+}
+
+.plan-price{
+  margin:0 0 12px;
+  padding:14px 16px;
+  background:rgba(232,95,138,0.08);
+  min-height:48px;
+  font-size:26px;
+}
+
+.select-plan-button{
+  margin-top:auto;
+}
+
+.brand-panel{
+  text-align:center;
+  padding:34px 22px;
+}
+
+.brand-title-line{
+  display:block;
+}
+
+.brand-sub,
+.brand-main,
+.brand-coat{
+  display:block;
+}
+
+.brand-main{
+  font-size:52px;
+  margin:8px 0;
+}
+
+.brand-desc{
+  max-width:230px;
+  margin:22px auto 0;
+  font-size:13px;
+  line-height:1.9;
+  text-align:center;
+  word-break:keep-all;
+  overflow-wrap:normal;
+}
+
+.brand-ism .plan-time,
+.brand-ism .plan-price{
+  background:rgba(232,95,138,0.08);
+}
+
+.brand-izm .plan-time,
+.brand-izm .plan-price{
+  background:rgba(201,162,39,0.10);
+}
+
+.brand-over .plan-time,
+.brand-over .plan-price{
+  background:rgba(111,69,168,0.09);
+}
+
+@media(max-width:600px){
+  .plan-card{
+    display:block;
+  }
+
+  .plan-desc{
+    min-height:auto;
+  }
+
+  .brand-panel{
+    text-align:left;
+  }
+
+  .brand-title-line{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:5px;
+  }
+
+  .brand-main{
+    font-size:23px;
+    margin:0;
+  }
+
+  .brand-desc{
+    max-width:none;
+    margin:10px 0 0;
+    text-align:left;
+    font-size:12px;
+  }
+}
