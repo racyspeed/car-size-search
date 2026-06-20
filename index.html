@@ -55,6 +55,62 @@ h2{
   font-size:14px;
 }
 
+.search-box{
+  margin-bottom:24px;
+}
+
+.search-box label{
+  display:block;
+  font-size:13px;
+  color:#666;
+  letter-spacing:0.12em;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+#carSearch{
+  width:100%;
+  padding:16px;
+  border:1px solid #cfcfcf;
+  font-family:'Shippori Mincho', serif;
+  font-size:16px;
+  box-sizing:border-box;
+}
+
+#carSearch:focus{
+  outline:none;
+  border-color:#111;
+}
+
+.search-results{
+  margin-top:8px;
+  border:1px solid #ddd;
+  background:#fff;
+  display:none;
+}
+
+.search-result-item{
+  padding:13px 15px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+  font-size:15px;
+}
+
+.search-result-item:hover{
+  background:#f5f5f5;
+}
+
+.search-result-item:last-child{
+  border-bottom:none;
+}
+
+.select-note{
+  text-align:center;
+  margin:20px 0;
+  color:#777;
+  font-size:13px;
+}
+
 select{
   width:100%;
   padding:16px;
@@ -250,6 +306,7 @@ select:focus{
   font-weight:700;
   text-decoration:none;
   cursor:pointer;
+  box-sizing:border-box;
 }
 
 .copy-button{
@@ -305,6 +362,20 @@ select:focus{
 お車に合わせた施工料金をご確認いただけます
 </p>
 
+<div class="search-box">
+  <label>車種名で検索</label>
+  <input
+    id="carSearch"
+    type="text"
+    placeholder="例：プリウス、アルファード、BMW X3"
+  >
+  <div id="searchResults" class="search-results"></div>
+</div>
+
+<div class="select-note">
+  またはメーカーから選択
+</div>
+
 <select id="makerSelect">
   <option value="">メーカーを選択</option>
 </select>
@@ -322,7 +393,6 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabaseUrl = "https://klfijtvnbgdkqcslntsp.supabase.co";
 const supabaseKey = "sb_publishable_jm8kPE51RZJitnkw11orxA_au9j3f6Z";
-
 const lineUrl = "https://lin.ee/2ESfOqD";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -330,6 +400,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const makerSelect = document.getElementById("makerSelect");
 const select = document.getElementById("carSelect");
 const result = document.getElementById("result");
+const carSearch = document.getElementById("carSearch");
+const searchResults = document.getElementById("searchResults");
 
 const { data, error } = await supabase
   .from("cars")
@@ -340,7 +412,9 @@ if (error) {
   select.innerHTML = '<option>読込エラー</option>';
   console.error(error);
 } else {
-  const makers = [...new Set(data.map(car => car.maker))];
+  const cars = data;
+
+  const makers = [...new Set(cars.map(car => car.maker))];
 
   makerSelect.innerHTML =
     '<option value="">メーカーを選択</option>';
@@ -352,16 +426,12 @@ if (error) {
     makerSelect.appendChild(option);
   });
 
-  makerSelect.addEventListener("change", function() {
-    const selectedMaker = this.value;
-
+  function populateCarsByMaker(maker) {
     select.innerHTML =
       '<option value="">車種を選択</option>';
 
-    result.innerHTML = "";
-
-    data
-      .filter(car => car.maker === selectedMaker)
+    cars
+      .filter(car => car.maker === maker)
       .forEach(car => {
         const option = document.createElement("option");
 
@@ -372,51 +442,137 @@ if (error) {
 
         select.appendChild(option);
       });
-  });
-}
-
-select.addEventListener("change", function() {
-  const option = this.selectedOptions[0];
-
-  if (!option.value) {
-    result.innerHTML = "";
-    return;
   }
 
-  const size = option.dataset.size;
+  function showCar(car) {
+    carSearch.value = `${car.maker} ${car.model}`;
+    searchResults.innerHTML = "";
+    searchResults.style.display = "none";
 
-  result.innerHTML = `
-    <h3>お選びのお車</h3>
+    makerSelect.value = car.maker;
+    populateCarsByMaker(car.maker);
 
-    <div class="car-name">
-      ${option.dataset.maker} ${option.textContent}
-    </div>
+    select.value = car.model;
 
-    <div class="car-size">
-      ${size}サイズ
-    </div>
+    result.innerHTML = `
+      <h3>お選びのお車</h3>
 
-    <br>
+      <div class="car-name">
+        ${car.maker} ${car.model}
+      </div>
 
-    <label>施工カテゴリ</label>
-    <select id="categorySelect">
-      <option value="">選択してください</option>
-      <option value="wash">洗車</option>
-      <option value="coating">コーティング</option>
-    </select>
+      <div class="car-size">
+        ${car.size}サイズ
+      </div>
 
-    <br><br>
+      <br>
 
-    <select id="menuSelect">
-      <option value="">メニューを選択</option>
-    </select>
+      <label>施工カテゴリ</label>
+      <select id="categorySelect">
+        <option value="">選択してください</option>
+        <option value="wash">洗車</option>
+        <option value="coating">コーティング</option>
+      </select>
 
-    <div id="optionArea"></div>
-    <div id="priceResult"></div>
-  `;
+      <br><br>
 
-  loadMenus(size);
-});
+      <select id="menuSelect">
+        <option value="">メニューを選択</option>
+      </select>
+
+      <div id="optionArea"></div>
+      <div id="priceResult"></div>
+    `;
+
+    loadMenus(car.size);
+  }
+
+  makerSelect.addEventListener("change", function() {
+    const selectedMaker = this.value;
+
+    populateCarsByMaker(selectedMaker);
+    result.innerHTML = "";
+    carSearch.value = "";
+    searchResults.innerHTML = "";
+    searchResults.style.display = "none";
+  });
+
+  select.addEventListener("change", function() {
+    const option = this.selectedOptions[0];
+
+    if (!option.value) {
+      result.innerHTML = "";
+      return;
+    }
+
+    const car = cars.find(item =>
+      item.maker === option.dataset.maker &&
+      item.model === option.value
+    );
+
+    if (car) {
+      showCar(car);
+    }
+  });
+
+  carSearch.addEventListener("input", function() {
+    const keyword =
+      this.value
+        .trim()
+        .toLowerCase();
+
+    searchResults.innerHTML = "";
+
+    if (!keyword) {
+      searchResults.style.display = "none";
+      return;
+    }
+
+    const keywords =
+      keyword
+        .split(/\s+/)
+        .filter(Boolean);
+
+    const matchedCars =
+      cars
+        .filter(car => {
+          const text =
+            `${car.maker} ${car.model}`
+              .toLowerCase();
+
+          return keywords.every(word =>
+            text.includes(word)
+          );
+        })
+        .slice(0, 20);
+
+    if (!matchedCars.length) {
+      searchResults.innerHTML =
+        '<div class="search-result-item">該当する車種がありません</div>';
+      searchResults.style.display = "block";
+      return;
+    }
+
+    matchedCars.forEach(car => {
+      const item =
+        document.createElement("div");
+
+      item.className =
+        "search-result-item";
+
+      item.textContent =
+        `${car.maker} ${car.model}／${car.size}サイズ`;
+
+      item.addEventListener("click", function() {
+        showCar(car);
+      });
+
+      searchResults.appendChild(item);
+    });
+
+    searchResults.style.display = "block";
+  });
+}
 
 async function loadMenus(size) {
   const menuSelect = document.getElementById("menuSelect");
