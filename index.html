@@ -2,167 +2,212 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>車両サイズ検索</title>
-  <style>
+<title>料金シミュレーター｜RACY'SPEED</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
 body{
-  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-  background:#f5f7fa;
-  padding:20px;
+  font-family:'Shippori Mincho', serif;
+  background:#f4f4f2;
+  padding:30px 16px;
+  color:#111;
 }
 
 .container{
-  max-width:700px;
+  max-width:760px;
   margin:auto;
-  background:white;
-  padding:40px;
-  border-radius:24px;
-  box-shadow:0 12px 35px rgba(0,0,0,0.06);
+  background:#fff;
+  padding:46px;
+  border-radius:0;
+  border:1px solid #d8d8d8;
+  box-shadow:0 18px 45px rgba(0,0,0,0.08);
+}
+
+.shop-name{
+  text-align:center;
+  font-size:18px;
+  letter-spacing:0.08em;
+  font-weight:700;
+  margin-bottom:26px;
+}
+
+.section-en{
+  text-align:center;
+  font-size:52px;
+  font-weight:700;
+  letter-spacing:0.02em;
+  line-height:1;
+  margin-bottom:14px;
 }
 
 h2{
   text-align:center;
-  margin-bottom:10px;
-  font-size:32px;
+  font-size:22px;
   font-weight:700;
-  color:#222;
+  margin-bottom:8px;
+}
+
+.subtitle{
+  text-align:center;
+  color:#555;
+  margin-bottom:34px;
+  font-size:14px;
 }
 
 select{
   width:100%;
   padding:16px;
-  margin-bottom:15px;
-  border:1px solid #dcdcdc;
-  border-radius:12px;
+  margin-bottom:16px;
+  border:1px solid #cfcfcf;
+  border-radius:0;
+  font-family:'Shippori Mincho', serif;
   font-size:16px;
-  background:white;
+  background:#fff;
+}
+
+select:focus{
+  outline:none;
+  border-color:#111;
 }
 
 #result{
-  margin-top:30px;
-  padding:30px;
-  border-radius:20px;
-  background:white;
-  border:1px solid #e5e5e5;
-  box-shadow:0 8px 20px rgba(0,0,0,0.06);
+  margin-top:34px;
+  padding:34px;
+  background:#fff;
+  border:1px solid #ddd;
 }
 
-.price{
-  font-size:42px;
-  font-weight:700;
-  margin-top:15px;
-  letter-spacing:1px;
-}
-
-.info{
-  margin-top:10px;
-  color:#666;
-}
-.subtitle{
-  text-align:center;
-  color:#666;
-  margin-top:-15px;
-  margin-bottom:25px;
-  font-size:14px;
-}
 .car-name{
-  font-size:24px;
+  font-size:25px;
   font-weight:700;
-  margin-bottom:10px;
+  margin-bottom:12px;
 }
 
 .car-size{
   display:inline-block;
-  padding:6px 14px;
-  background:#f3f4f6;
-  border-radius:999px;
+  padding:7px 16px;
+  background:#111;
+  color:#fff;
   font-size:14px;
   font-weight:600;
-  margin-bottom:20px;
-}
-  .price-card{
-  margin-top:20px;
-  padding:25px;
-  border-radius:15px;
-  background:#fafafa;
-  border:1px solid #e5e5e5;
-  text-align:center;
+  margin-bottom:24px;
 }
 
-.price-label{
-  font-size:14px;
-  color:#888;
-  letter-spacing:1px;
+.result-section{
+  margin-top:30px;
 }
 
-.price{
-  font-size:42px;
-  font-weight:700;
-  margin:15px 0;
-  letter-spacing:1px;
-}
-
-.tax{
-  color:#666;
-  margin-bottom:20px;
-}
-
-.worktime-title{
-  font-size:14px;
-  color:#888;
-}
-
-.worktime{
-  font-size:18px;
-  font-weight:600;
-  margin-top:8px;
-}
-    .result-section{
-  margin-top:32px;
-}
 .result-label{
   font-size:13px;
-  color:#777;
-  letter-spacing:0.08em;
-  margin-bottom:6px;
+  color:#666;
+  letter-spacing:0.12em;
+  margin-bottom:8px;
+  font-weight:700;
 }
 
 .result-value{
-  font-size:20px;
+  font-size:19px;
   font-weight:600;
-  color:#222;
+  line-height:1.8;
 }
 
 .result-price{
-  font-size:48px;
+  font-size:44px;
   font-weight:700;
-  margin-top:8px;
-  color:#111;
+  letter-spacing:0.02em;
 }
 
 .result-divider{
   height:1px;
-  background:#ececec;
-  margin:22px 0;
+  background:#ddd;
+  margin:26px 0;
 }
-  .shop-name{
-  text-align:center;
+
+.info{
+  margin-top:8px;
+  color:#666;
   font-size:14px;
-  letter-spacing:0.25em;
-  color:#888;
-  margin-bottom:10px;
-  font-weight:600;
-  text-transform:uppercase;
 }
-  </style>
+
+#optionArea{
+  margin-top:30px;
+  padding:24px;
+  border:1px solid #ddd;
+  background:#fafafa;
+}
+
+#optionArea h3{
+  margin-top:0;
+  margin-bottom:18px;
+  font-size:20px;
+  font-weight:700;
+}
+
+#optionArea label{
+  display:block;
+  margin:12px 0;
+  font-size:15px;
+  line-height:1.6;
+}
+
+.optionCheck{
+  margin-right:8px;
+}
+
+.total-card{
+  margin-top:28px;
+  padding:30px 24px;
+  background:#050505;
+  color:#fff;
+  text-align:center;
+}
+
+.total-card .result-label{
+  color:#fff;
+  font-size:15px;
+  letter-spacing:0.16em;
+}
+
+.total-card .result-price{
+  color:#fff;
+  font-size:64px;
+  margin-top:12px;
+}
+
+.total-card .info{
+  color:#ddd;
+}
+
+@media(max-width:600px){
+  .container{
+    padding:28px 20px;
+  }
+
+  .section-en{
+    font-size:38px;
+  }
+
+  .result-price{
+    font-size:36px;
+  }
+
+  .total-card .result-price{
+    font-size:46px;
+  }
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
 
-<div class="shop-name">
-  RACY'SPEED
-</div>
+<div class="shop-name">RACY'SPEED</div>
+
+<div class="section-en">PRICE</div>
 
 <h2>料金シミュレーター</h2>
 
@@ -202,9 +247,7 @@ const { data, error } = await supabase
 if (error) {
   select.innerHTML = '<option>読込エラー</option>';
   console.error(error);
-
 } else {
-
   const makers = [...new Set(data.map(car => car.maker))];
 
   makerSelect.innerHTML =
@@ -218,7 +261,6 @@ if (error) {
   });
 
   makerSelect.addEventListener("change", function() {
-
     const selectedMaker = this.value;
 
     select.innerHTML =
@@ -229,7 +271,6 @@ if (error) {
     data
       .filter(car => car.maker === selectedMaker)
       .forEach(car => {
-
         const option = document.createElement("option");
 
         option.value = car.model;
@@ -238,11 +279,8 @@ if (error) {
         option.dataset.maker = car.maker;
 
         select.appendChild(option);
-
       });
-
   });
-
 }
 
 select.addEventListener("change", function() {
@@ -255,283 +293,252 @@ select.addEventListener("change", function() {
 
   const size = option.dataset.size;
 
-result.innerHTML = `
-  <h3>お選びのお車</h3>
+  result.innerHTML = `
+    <h3>お選びのお車</h3>
 
-  <div class="car-name">
-    ${option.dataset.maker} ${option.textContent}
-  </div>
+    <div class="car-name">
+      ${option.dataset.maker} ${option.textContent}
+    </div>
 
-  <div class="car-size">
-    ${size}サイズ
-  </div>
+    <div class="car-size">
+      ${size}サイズ
+    </div>
 
-  <br>
+    <br>
 
-  <label>施工カテゴリ</label>
-  <select id="categorySelect">
-    <option value="">選択してください</option>
-    <option value="wash">洗車</option>
-    <option value="coating">コーティング</option>
-  </select>
+    <label>施工カテゴリ</label>
+    <select id="categorySelect">
+      <option value="">選択してください</option>
+      <option value="wash">洗車</option>
+      <option value="coating">コーティング</option>
+    </select>
 
-  <br><br>
+    <br><br>
 
-  <select id="menuSelect">
-    <option value="">メニューを選択</option>
-  </select>
+    <select id="menuSelect">
+      <option value="">メニューを選択</option>
+    </select>
 
-  <div id="optionArea"></div>
-<div id="priceResult"></div>
+    <div id="optionArea"></div>
+    <div id="priceResult"></div>
+  `;
 
-`;
-
-loadMenus(size);
+  loadMenus(size);
 });
-  async function loadMenus(size) {
 
+async function loadMenus(size) {
   const menuSelect = document.getElementById("menuSelect");
 
   const { data: menus } = await supabase
     .from("menus")
     .select("*");
-menus.sort((a, b) => {
 
-  const order = {
-    "純水手洗い洗車": 1,
-    "徹底洗車": 2,
-    "徹底洗車ライト": 3
-  };
+  menus.sort((a, b) => {
+    const order = {
+      "純水手洗い洗車": 1,
+      "徹底洗車": 2,
+      "徹底洗車ライト": 3,
+      "MIYABI+OVER COAT（研磨なし）": 4,
+      "MIYABI+OVER COAT（軽研磨）": 5,
+      "MIYABI+OVER COAT（2層研磨）": 6,
+      "MIYABI+ISM（研磨なし）": 7,
+      "MIYABI+ISM（軽研磨）": 8,
+      "MIYABI+ISM（2層研磨）": 9,
+      "MIYABI+IZM（研磨なし）": 10,
+      "MIYABI+IZM（軽研磨）": 11,
+      "MIYABI+IZM（2層研磨）": 12
+    };
 
-  return order[a.menu_name] - order[b.menu_name];
+    return (order[a.menu_name] || 999) - (order[b.menu_name] || 999);
+  });
 
-});
   const categorySelect = document.getElementById("categorySelect");
 
-categorySelect.addEventListener("change", function () {
+  categorySelect.addEventListener("change", function() {
+    menuSelect.innerHTML =
+      '<option value="">メニューを選択</option>';
 
-  menuSelect.innerHTML =
-    '<option value="">選択してください</option>';
+    document.getElementById("optionArea").innerHTML = "";
+    document.getElementById("priceResult").innerHTML = "";
 
-  const selectedCategory = this.value;
+    const selectedCategory = this.value;
 
-  const filteredMenus = menus.filter(
-    menu => menu.category === selectedCategory
-  );
-
-  filteredMenus.forEach(menu => {
-    const option = document.createElement("option");
-    option.value = menu.menu_name;
-    option.textContent = menu.menu_name;
-    menuSelect.appendChild(option);
-  });
-
-});
-
-  menuSelect.addEventListener("change", async function() {
-
-    const size =
-  document.querySelector(".car-size")
-    .textContent
-    .replace("サイズ", "")
-    .trim();
-    
-const menuName = this.value;
-
-if (!menuName) return;
-
-const { data: prices } = await supabase
-.from("prices")
-.select("*")
-.eq("menu_name", menuName)
-.eq("size", size);
-
-if (!prices || !prices.length) {
-document.getElementById("priceResult").innerHTML =
-"<br>料金未設定";
-return;
-}
-
-const { data: menuData } = await supabase
-.from("menus")
-.select("*")
-.eq("menu_name", menuName);
-const { data: options } = await supabase
-  .from("options")
-  .select("*")
-  .eq("size", size);
-
-const optionArea =
-document.getElementById("optionArea");
-
-optionArea.innerHTML =
-  "<h3>追加オプション</h3>";
-
-options.forEach(option => {
-
-optionArea.innerHTML += `     <label style="display:block;margin:10px 0;">       
-<input
-  type="checkbox"
-  class="optionCheck"
-  data-price="${option.price}"
-  data-name="${option.option_name}"
->
-      ${option.option_name}
-      （${option.price.toLocaleString()}円）     </label>
-  `;
-
-});
-
-document.getElementById("priceResult").innerHTML = `
-<div class="result-section">
-
-  <div class="result-label">
-    選択オプション
-  </div>
-
-  <div
-    id="selectedOptionsResult"
-    class="result-value"
-  >
-    なし
-  </div>
-
-</div>
-<div class="result-divider"></div>
-
-<div class="result-section">
-  <div class="result-label">
-    施工メニュー
-  </div>
-
-  <div class="result-value">
-    ${menuName}
-  </div>
-</div>
-
-<div class="result-section">
-
-  <div class="result-label">
-    施工料金
-  </div>
-
-  <div class="result-value">
-    ${prices[0].price.toLocaleString()}円
-  </div>
-
-</div>
-
-<div class="result-section">
-
-  <div class="result-label">
-    オプション合計
-  </div>
-
-  <div
-    id="optionTotalResult"
-    class="result-value"
-  >
-    0円
-  </div>
-
-</div>
-
-<div class="result-divider"></div>
-
-<div class="result-section">
-
-  <div
-    class="result-label"
-    style="
-      text-align:center;
-      font-size:16px;
-      font-weight:700;
-    "
-  >
-    お支払い総額
-  </div>
-
-  <div
-    id="totalPrice"
-    class="result-price"
-    style="
-      text-align:center;
-      font-size:64px;
-      margin-top:15px;
-    "
-  >
-    ${prices[0].price.toLocaleString()}円
-  </div>
-
-  <div
-    class="info"
-    style="text-align:center;"
-  >
-    （税込）
-  </div>
-
-</div>
-
-<div class="result-section">
-  <div class="result-label">
-    施工時間
-  </div>
-
-  <div class="result-value">
-    ${menuData[0].work_time}
-  </div>
-</div>
-`;
-const basePrice = prices[0].price;
-
-function updateTotal() {
-
-  let optionTotal = 0;
-let selectedOptions = [];
-  document
-    .querySelectorAll(".optionCheck:checked")
-    .forEach(check => {
-
-      optionTotal += Number(
-        check.dataset.price
-      );
-selectedOptions.push(check.dataset.name);
-    });
-  
-  document.getElementById(
-  "optionTotalResult"
-).textContent =
-  `${optionTotal.toLocaleString()}円`;
-
-document.getElementById(
-  "totalPrice"
-).textContent =
-  `${(basePrice + optionTotal).toLocaleString()}円`;
-
-  document.getElementById(
-  "selectedOptionsResult"
-).innerHTML =
-  selectedOptions.length
-    ? selectedOptions.join("<br>")
-    : "なし";
-
-}
-
-document
-  .querySelectorAll(".optionCheck")
-  .forEach(check => {
-
-    check.addEventListener(
-      "change",
-      updateTotal
+    const filteredMenus = menus.filter(
+      menu => menu.category === selectedCategory
     );
 
+    filteredMenus.forEach(menu => {
+      const option = document.createElement("option");
+      option.value = menu.menu_name;
+      option.textContent = menu.menu_name;
+      menuSelect.appendChild(option);
+    });
   });
 
-updateTotal();
-});
+  menuSelect.addEventListener("change", async function() {
+    const selectedSize =
+      document.querySelector(".car-size")
+        .textContent
+        .replace("サイズ", "")
+        .trim();
 
+    const menuName = this.value;
 
+    if (!menuName) return;
+
+    const { data: prices } = await supabase
+      .from("prices")
+      .select("*")
+      .eq("menu_name", menuName)
+      .eq("size", selectedSize);
+
+    if (!prices || !prices.length) {
+      document.getElementById("priceResult").innerHTML =
+        "<br>料金未設定";
+      return;
+    }
+
+    const { data: menuData } = await supabase
+      .from("menus")
+      .select("*")
+      .eq("menu_name", menuName);
+
+    const { data: options } = await supabase
+      .from("options")
+      .select("*")
+      .eq("size", selectedSize);
+
+    const optionArea =
+      document.getElementById("optionArea");
+
+    optionArea.innerHTML =
+      "<h3>追加オプション</h3>";
+
+    options.forEach(option => {
+      optionArea.innerHTML += `
+        <label>
+          <input
+            type="checkbox"
+            class="optionCheck"
+            data-price="${option.price}"
+            data-name="${option.option_name}"
+          >
+          ${option.option_name}
+          （${option.price.toLocaleString()}円）
+        </label>
+      `;
+    });
+
+    document.getElementById("priceResult").innerHTML = `
+      <div class="result-divider"></div>
+
+      <div class="result-section">
+        <div class="result-label">
+          施工メニュー
+        </div>
+
+        <div class="result-value">
+          ${menuName}
+        </div>
+      </div>
+
+      <div class="result-section">
+        <div class="result-label">
+          施工料金
+        </div>
+
+        <div class="result-value">
+          ${prices[0].price.toLocaleString()}円
+        </div>
+      </div>
+
+      <div class="result-section">
+        <div class="result-label">
+          選択オプション
+        </div>
+
+        <div
+          id="selectedOptionsResult"
+          class="result-value"
+        >
+          なし
+        </div>
+      </div>
+
+      <div class="result-section">
+        <div class="result-label">
+          オプション合計
+        </div>
+
+        <div
+          id="optionTotalResult"
+          class="result-value"
+        >
+          0円
+        </div>
+      </div>
+
+      <div class="total-card">
+        <div class="result-label">
+          お支払い総額
+        </div>
+
+        <div
+          id="totalPrice"
+          class="result-price"
+        >
+          ${prices[0].price.toLocaleString()}円
+        </div>
+
+        <div class="info">
+          （税込）
+        </div>
+      </div>
+
+      <div class="result-section">
+        <div class="result-label">
+          施工時間
+        </div>
+
+        <div class="result-value">
+          ${menuData[0].work_time}
+        </div>
+      </div>
+    `;
+
+    const basePrice = prices[0].price;
+
+    function updateTotal() {
+      let optionTotal = 0;
+      let selectedOptions = [];
+
+      document
+        .querySelectorAll(".optionCheck:checked")
+        .forEach(check => {
+          optionTotal += Number(check.dataset.price);
+          selectedOptions.push(check.dataset.name);
+        });
+
+      document.getElementById("optionTotalResult").textContent =
+        `${optionTotal.toLocaleString()}円`;
+
+      document.getElementById("totalPrice").textContent =
+        `${(basePrice + optionTotal).toLocaleString()}円`;
+
+      document.getElementById("selectedOptionsResult").innerHTML =
+        selectedOptions.length
+          ? selectedOptions.join("<br>")
+          : "なし";
+    }
+
+    document
+      .querySelectorAll(".optionCheck")
+      .forEach(check => {
+        check.addEventListener("change", updateTotal);
+      });
+
+    updateTotal();
+  });
 }
 </script>
 
