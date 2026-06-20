@@ -1171,3 +1171,85 @@ select{
     font-size:12px;
   }
 }
+/* 最終上書き：コーティングカード整列 */
+.plan-card{
+  display:grid !important;
+  grid-template-rows: 34px 88px 2px 66px 76px 48px !important;
+  gap:12px !important;
+  padding:24px 22px !important;
+}
+
+.plan-badge{
+  margin:0 auto !important;
+  align-self:start !important;
+}
+
+.plan-desc{
+  height:auto !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  border-bottom:none !important;
+  overflow:visible !important;
+  line-height:1.8 !important;
+}
+
+.plan-desc::after{
+  content:"";
+  display:block;
+  border-bottom:2px dotted currentColor;
+  margin-top:14px;
+}
+
+.plan-time-label,
+.plan-price-label{
+  margin:0 !important;
+  font-size:12px !important;
+  color:#777 !important;
+}
+
+.plan-time,
+.plan-price{
+  margin:0 !important;
+  padding:10px 14px !important;
+  min-height:0 !important;
+  height:auto !important;
+  display:flex !important;
+  align-items:center !important;
+  background:rgba(232,95,138,0.08) !important;
+}
+
+.plan-time{
+  font-size:18px !important;
+}
+
+.plan-price{
+  font-size:26px !important;
+}
+
+.select-plan-button{
+  height:48px !important;
+  margin:0 !important;
+  border:none !important;
+}
+
+.brand-ism .plan-time,
+.brand-ism .plan-price{
+  background:rgba(232,95,138,0.08) !important;
+}
+
+.brand-izm .plan-time,
+.brand-izm .plan-price{
+  background:rgba(201,162,39,0.10) !important;
+}
+
+.brand-over .plan-time,
+.brand-over .plan-price{
+  background:rgba(111,69,168,0.09) !important;
+}
+
+@media(max-width:600px){
+  .plan-card{
+    display:block !important;
+  }
+}
