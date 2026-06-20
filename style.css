@@ -1,1 +1,837 @@
+<style>
+body{
+  font-family:'Shippori Mincho', serif;
+  background:linear-gradient(180deg,#f8f7f3 0%,#eeeeea 100%);
+  padding:32px 16px;
+  color:#111;
+}
 
+.container{
+  max-width:980px;
+  margin:auto;
+  background:#fff;
+  padding:52px;
+  border:1px solid #d7d2ca;
+  box-shadow:0 24px 60px rgba(0,0,0,0.08);
+}
+
+.shop-name{
+  text-align:center;
+  font-size:18px;
+  letter-spacing:0.14em;
+  font-weight:700;
+  margin-bottom:14px;
+}
+
+.section-en{
+  text-align:center;
+  font-size:56px;
+  font-weight:700;
+  line-height:1;
+  letter-spacing:0.08em;
+  margin-bottom:14px;
+}
+
+h2{
+  text-align:center;
+  font-size:21px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.subtitle{
+  text-align:center;
+  color:#555;
+  margin-bottom:36px;
+  font-size:14px;
+}
+
+.search-panel{
+  padding:28px;
+  border:1px solid #d8d2ca;
+  margin-bottom:28px;
+  box-shadow:0 12px 28px rgba(0,0,0,0.05);
+  background:#fff;
+}
+
+.search-layout{
+  display:grid;
+  grid-template-columns:1.1fr 0.9fr;
+  gap:28px;
+  align-items:start;
+}
+
+.search-left{
+  border-right:1px solid #e2ddd4;
+  padding-right:28px;
+}
+
+.search-box label,
+.quick-cars-title,
+.select-title{
+  display:block;
+  font-size:13px;
+  color:#555;
+  letter-spacing:0.12em;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+#carSearch{
+  width:100%;
+  padding:15px 16px;
+  border:1px solid #cfc8be;
+  font-family:'Shippori Mincho', serif;
+  font-size:16px;
+  box-sizing:border-box;
+  background:#fff;
+}
+
+.search-results{
+  margin-top:8px;
+  border:1px solid #ddd;
+  background:#fff;
+  display:none;
+  max-height:300px;
+  overflow:auto;
+}
+
+.search-result-item{
+  padding:13px 15px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+  font-size:15px;
+}
+
+.search-result-item:hover{
+  background:#f6f4ef;
+}
+
+.quick-cars{
+  margin-top:18px;
+}
+
+.quick-car-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.quick-car-button{
+  padding:8px 12px;
+  background:#fff;
+  border:1px solid #cfc8be;
+  font-family:'Shippori Mincho', serif;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.quick-car-button:hover{
+  background:#111;
+  color:#fff;
+}
+
+select{
+  width:100%;
+  padding:15px 16px;
+  margin-bottom:16px;
+  border:1px solid #cfc8be;
+  border-radius:0;
+  font-family:'Shippori Mincho', serif;
+  font-size:16px;
+  background:#fff;
+}
+
+.size-guide{
+  margin:20px 0 30px;
+  border-top:1px solid #ddd6cc;
+  border-bottom:1px solid #ddd6cc;
+  background:#fff;
+}
+
+.size-guide summary{
+  padding:16px 18px;
+  cursor:pointer;
+  font-weight:700;
+  text-align:left;
+}
+
+.size-guide-content{
+  padding:0 18px 18px;
+  font-size:14px;
+  line-height:1.9;
+}
+
+.size-guide-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:12px;
+}
+
+.size-guide-item{
+  border:1px solid #ddd6cc;
+  background:#faf9f6;
+  padding:12px;
+}
+
+.size-guide-size{
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+#result{
+  margin-top:28px;
+}
+
+.selected-car-card{
+  padding:26px 28px;
+  border:1px solid #ddd6cc;
+  background:#fff;
+  box-shadow:0 10px 24px rgba(0,0,0,0.04);
+  margin-bottom:30px;
+}
+
+.selected-car-label{
+  font-size:13px;
+  color:#555;
+  letter-spacing:0.12em;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.car-name{
+  font-size:27px;
+  font-weight:700;
+}
+
+.car-size{
+  display:inline-block;
+  margin-top:12px;
+  padding:7px 16px;
+  background:#111;
+  color:#fff;
+  font-size:14px;
+  font-weight:600;
+}
+
+.category-area{
+  margin-bottom:28px;
+}
+
+.category-label{
+  font-size:13px;
+  color:#555;
+  letter-spacing:0.12em;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.wash-menu-area{
+  display:none;
+}
+
+.coating-area{
+  display:none;
+}
+
+.coating-heading{
+  margin:30px 0 24px;
+  text-align:left;
+}
+
+.coating-heading-title{
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:0.08em;
+  padding-bottom:12px;
+  border-bottom:1px solid #d8d2ca;
+}
+
+.coating-heading-text{
+  margin-top:14px;
+  line-height:1.8;
+  color:#444;
+  font-size:14px;
+}
+
+.coating-brand{
+  display:grid;
+  grid-template-columns:250px 1fr;
+  border:1px solid;
+  margin-bottom:26px;
+  background:#fff;
+  overflow:hidden;
+}
+
+.brand-panel{
+  color:#fff;
+  padding:38px 28px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  text-align:left;
+}
+
+.brand-title-line{
+  line-height:1.15;
+}
+
+.brand-sub{
+  font-size:15px;
+  letter-spacing:0.08em;
+}
+
+.brand-main{
+  font-size:42px;
+  line-height:1;
+  margin:10px 0;
+  letter-spacing:0.08em;
+}
+
+.brand-coat{
+  font-size:22px;
+  letter-spacing:0.08em;
+  margin-bottom:18px;
+}
+
+.brand-desc{
+  font-size:14px;
+  line-height:1.9;
+}
+
+.brand-ism{
+  border-color:#e66b91;
+}
+
+.brand-ism .brand-panel{
+  background:linear-gradient(135deg,#e75f8a,#f08aa9);
+}
+
+.brand-izm{
+  border-color:#d5ad32;
+}
+
+.brand-izm .brand-panel{
+  background:linear-gradient(135deg,#caa126,#e0bf4e);
+}
+
+.brand-over{
+  border-color:#927bc9;
+}
+
+.brand-over .brand-panel{
+  background:linear-gradient(135deg,#7e68bd,#a08adb);
+}
+
+.plan-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+}
+
+.plan-card{
+  border-left:1px solid #e4dfd7;
+  padding:28px 22px;
+  text-align:left;
+  background:#fff;
+}
+
+.plan-badge{
+  display:inline-block;
+  color:#fff;
+  padding:7px 22px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:18px;
+}
+
+.brand-ism .plan-badge,
+.brand-ism .select-plan-button{
+  background:#e65f8a;
+}
+
+.brand-izm .plan-badge,
+.brand-izm .select-plan-button{
+  background:#d2a82d;
+}
+
+.brand-over .plan-badge,
+.brand-over .select-plan-button{
+  background:#8c76c8;
+}
+
+.plan-desc{
+  font-size:13px;
+  line-height:1.9;
+  min-height:76px;
+}
+
+.plan-time-label{
+  margin-top:12px;
+  font-size:12px;
+  color:#999;
+}
+
+.plan-time{
+  font-size:18px;
+  font-weight:700;
+  margin:4px 0 18px;
+}
+
+.plan-price-label{
+  font-size:13px;
+  margin-bottom:6px;
+}
+
+.plan-price{
+  font-size:23px;
+  font-weight:700;
+  margin-bottom:18px;
+}
+
+.select-plan-button{
+  width:100%;
+  border:none;
+  color:#fff;
+  padding:12px;
+  font-family:'Shippori Mincho', serif;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.select-plan-button:hover{
+  filter:brightness(0.92);
+}
+
+.select-plan-button.active{
+  background:#111 !important;
+}
+
+.result-section{
+  margin-top:30px;
+}
+
+.result-label{
+  font-size:13px;
+  color:#666;
+  letter-spacing:0.12em;
+  margin-bottom:8px;
+  font-weight:700;
+}
+
+.result-value{
+  font-size:19px;
+  font-weight:600;
+  line-height:1.8;
+}
+
+.result-divider{
+  height:1px;
+  background:#ddd6cc;
+  margin:26px 0;
+}
+
+.info{
+  margin-top:8px;
+  color:#666;
+  font-size:14px;
+}
+
+#optionArea{
+  margin-top:30px;
+  padding:24px;
+  border:1px solid #ddd6cc;
+  background:#faf9f6;
+}
+
+#optionArea h3{
+  margin-top:0;
+  margin-bottom:18px;
+  font-size:20px;
+  font-weight:700;
+}
+
+#optionArea label{
+  display:block;
+  margin:12px 0;
+  font-size:15px;
+  line-height:1.6;
+}
+
+.total-card{
+  margin-top:30px;
+  padding:30px 24px;
+  background:linear-gradient(135deg,#050505 0%,#1a1a1a 55%,#050505 100%);
+  color:#fff;
+  text-align:left;
+  border:1px solid #2b2b2b;
+  box-shadow:0 16px 35px rgba(0,0,0,0.18);
+}
+
+.total-card .result-label{
+  color:#e8e0d4;
+  font-size:14px;
+  letter-spacing:0.18em;
+}
+
+.total-card .result-price{
+  color:#fff;
+  font-size:56px;
+  margin-top:10px;
+}
+
+.total-card .info{
+  color:#d8d8d8;
+}
+
+.estimate-card{
+  margin-top:34px;
+  padding:30px;
+  border:1px solid #d8d2ca;
+  background:#fff;
+}
+
+.estimate-title{
+  font-size:24px;
+  font-weight:700;
+  margin-bottom:24px;
+  text-align:left;
+}
+
+.estimate-row{
+  border-top:1px solid #e5e0d8;
+  padding:18px 0;
+}
+
+.estimate-label{
+  font-size:13px;
+  color:#666;
+  letter-spacing:0.12em;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.estimate-value{
+  font-size:18px;
+  font-weight:600;
+  line-height:1.8;
+}
+
+.estimate-total{
+  font-size:30px;
+  font-weight:700;
+}
+
+.estimate-actions{
+  margin-top:28px;
+  display:flex;
+  gap:12px;
+  flex-direction:column;
+}
+
+.contact-note{
+  margin:0;
+  font-size:15px;
+  line-height:1.8;
+  text-align:left;
+}
+
+.contact-subnote{
+  margin:8px 0 16px;
+  font-size:13px;
+  line-height:1.6;
+  text-align:left;
+  color:#777;
+}
+
+.copy-button,
+.line-button,
+.case-button{
+  display:block;
+  width:100%;
+  padding:16px;
+  text-align:center;
+  font-family:'Shippori Mincho', serif;
+  font-size:16px;
+  font-weight:700;
+  text-decoration:none;
+  cursor:pointer;
+  box-sizing:border-box;
+}
+
+.copy-button{
+  background:#fff;
+  color:#111;
+  border:1px solid #111;
+}
+
+.line-button{
+  background:#06c755;
+  color:#fff;
+  border:1px solid #06c755;
+}
+
+.case-button{
+  background:#111;
+  color:#fff;
+  border:1px solid #111;
+}
+
+.copy-message{
+  margin-top:10px;
+  font-size:14px;
+  color:#555;
+  text-align:left;
+}
+
+@media(max-width:800px){
+  .search-layout{
+    grid-template-columns:1fr;
+  }
+
+  .search-left{
+    border-right:none;
+    border-bottom:1px solid #e2ddd4;
+    padding-right:0;
+    padding-bottom:22px;
+  }
+
+  .coating-brand{
+    grid-template-columns:1fr;
+  }
+
+  .plan-grid{
+    grid-template-columns:1fr;
+  }
+
+  .plan-card{
+    border-left:none;
+    border-top:1px solid #e4dfd7;
+  }
+}
+
+@media(max-width:600px){
+  body{
+    padding:12px 8px;
+    font-size:14px;
+  }
+
+  .container{
+    padding:24px 14px;
+  }
+
+  .shop-name{
+    font-size:14px;
+  }
+
+  .section-en{
+    font-size:34px;
+  }
+
+  h2{
+    font-size:18px;
+  }
+
+  .subtitle{
+    font-size:12px;
+    margin-bottom:24px;
+  }
+
+  .search-panel{
+    padding:18px 14px;
+  }
+
+  #carSearch,
+  select{
+    padding:12px 13px;
+    font-size:14px;
+  }
+
+  .quick-car-button{
+    font-size:12px;
+    padding:7px 10px;
+  }
+
+  .size-guide-content{
+    font-size:12px;
+  }
+
+  .size-guide-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .selected-car-card{
+    padding:20px 16px;
+  }
+
+  .car-name{
+    font-size:21px;
+  }
+
+  .car-size{
+    font-size:12px;
+    padding:6px 13px;
+  }
+
+  .coating-heading{
+    margin:24px 0 18px;
+  }
+
+  .coating-heading-title{
+    font-size:17px;
+  }
+
+  .coating-heading-text{
+    font-size:12px;
+  }
+
+  .coating-brand{
+    margin-bottom:22px;
+  }
+
+  .brand-panel{
+    padding:18px 16px;
+  }
+
+  .brand-title-line{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:5px;
+  }
+
+  .brand-sub{
+    font-size:13px;
+  }
+
+  .brand-main{
+    font-size:23px;
+    margin:0;
+    letter-spacing:0.04em;
+  }
+
+  .brand-coat{
+    font-size:13px;
+    margin:0;
+  }
+
+  .brand-desc{
+    margin-top:10px;
+    font-size:12px;
+    line-height:1.7;
+  }
+
+  .plan-card{
+    padding:16px;
+  }
+
+  .plan-badge{
+    font-size:12px;
+    padding:6px 18px;
+    margin-bottom:10px;
+  }
+
+  .plan-desc{
+    min-height:auto;
+    font-size:12px;
+    line-height:1.7;
+    margin-bottom:12px;
+  }
+
+  .plan-time-label{
+    display:inline-block;
+    margin-top:0;
+    margin-right:8px;
+    font-size:11px;
+  }
+
+  .plan-time{
+    display:inline-block;
+    font-size:15px;
+    margin:0 0 10px;
+  }
+
+  .plan-price-label{
+    font-size:11px;
+    margin-top:4px;
+  }
+
+  .plan-price{
+    font-size:22px;
+    margin-bottom:12px;
+  }
+
+  .select-plan-button{
+    padding:13px;
+    font-size:13px;
+  }
+
+  .result-label,
+  .estimate-label{
+    font-size:11px;
+  }
+
+  .result-value{
+    font-size:16px;
+  }
+
+  #optionArea{
+    padding:18px 14px;
+  }
+
+  #optionArea h3{
+    font-size:17px;
+  }
+
+  #optionArea label{
+    font-size:13px;
+  }
+
+  .total-card{
+    padding:22px 16px;
+  }
+
+  .total-card .result-label{
+    font-size:12px;
+  }
+
+  .total-card .result-price{
+    font-size:34px;
+    line-height:1.25;
+  }
+
+  .estimate-card{
+    padding:22px 16px;
+  }
+
+  .estimate-title{
+    font-size:19px;
+  }
+
+  .estimate-value{
+    font-size:15px;
+  }
+
+  .estimate-total{
+    font-size:23px;
+  }
+
+  .contact-note{
+    font-size:13px;
+  }
+
+  .contact-subnote,
+  .copy-message{
+    font-size:12px;
+  }
+
+  .copy-button,
+  .line-button,
+  .case-button{
+    font-size:14px;
+    padding:14px;
+  }
+}
+</style>
