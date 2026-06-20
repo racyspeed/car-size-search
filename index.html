@@ -21,7 +21,6 @@ body{
   margin:auto;
   background:#fff;
   padding:46px;
-  border-radius:0;
   border:1px solid #d8d8d8;
   box-shadow:0 18px 45px rgba(0,0,0,0.08);
 }
@@ -38,7 +37,6 @@ body{
   text-align:center;
   font-size:52px;
   font-weight:700;
-  letter-spacing:0.02em;
   line-height:1;
   margin-bottom:14px;
 }
@@ -117,7 +115,6 @@ select:focus{
 .result-price{
   font-size:44px;
   font-weight:700;
-  letter-spacing:0.02em;
 }
 
 .result-divider{
@@ -179,6 +176,44 @@ select:focus{
 
 .total-card .info{
   color:#ddd;
+}
+
+.estimate-card{
+  margin-top:34px;
+  padding:30px;
+  border:1px solid #d8d8d8;
+  background:#fff;
+}
+
+.estimate-title{
+  font-size:24px;
+  font-weight:700;
+  margin-bottom:24px;
+  text-align:center;
+}
+
+.estimate-row{
+  border-top:1px solid #e5e5e5;
+  padding:18px 0;
+}
+
+.estimate-label{
+  font-size:13px;
+  color:#666;
+  letter-spacing:0.12em;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.estimate-value{
+  font-size:18px;
+  font-weight:600;
+  line-height:1.8;
+}
+
+.estimate-total{
+  font-size:32px;
+  font-weight:700;
 }
 
 @media(max-width:600px){
@@ -382,6 +417,11 @@ async function loadMenus(size) {
         .replace("サイズ", "")
         .trim();
 
+    const carName =
+      document.querySelector(".car-name")
+        .textContent
+        .trim();
+
     const menuName = this.value;
 
     if (!menuName) return;
@@ -495,6 +535,63 @@ async function loadMenus(size) {
         </div>
       </div>
 
+      <div class="estimate-card">
+        <div class="estimate-title">
+          お見積り内容
+        </div>
+
+        <div class="estimate-row">
+          <div class="estimate-label">
+            お車
+          </div>
+          <div class="estimate-value">
+            ${carName}
+          </div>
+        </div>
+
+        <div class="estimate-row">
+          <div class="estimate-label">
+            サイズ
+          </div>
+          <div class="estimate-value">
+            ${selectedSize}サイズ
+          </div>
+        </div>
+
+        <div class="estimate-row">
+          <div class="estimate-label">
+            施工メニュー
+          </div>
+          <div class="estimate-value">
+            ${menuName}
+          </div>
+        </div>
+
+        <div class="estimate-row">
+          <div class="estimate-label">
+            選択オプション
+          </div>
+          <div
+            id="estimateOptions"
+            class="estimate-value"
+          >
+            なし
+          </div>
+        </div>
+
+        <div class="estimate-row">
+          <div class="estimate-label">
+            お支払い総額
+          </div>
+          <div
+            id="estimateTotal"
+            class="estimate-total"
+          >
+            ${prices[0].price.toLocaleString()}円（税込）
+          </div>
+        </div>
+      </div>
+
       <div class="result-section">
         <div class="result-label">
           施工時間
@@ -519,16 +616,28 @@ async function loadMenus(size) {
           selectedOptions.push(check.dataset.name);
         });
 
+      const selectedOptionsText =
+        selectedOptions.length
+          ? selectedOptions.join("<br>")
+          : "なし";
+
+      const totalPrice =
+        basePrice + optionTotal;
+
       document.getElementById("optionTotalResult").textContent =
         `${optionTotal.toLocaleString()}円`;
 
       document.getElementById("totalPrice").textContent =
-        `${(basePrice + optionTotal).toLocaleString()}円`;
+        `${totalPrice.toLocaleString()}円`;
 
       document.getElementById("selectedOptionsResult").innerHTML =
-        selectedOptions.length
-          ? selectedOptions.join("<br>")
-          : "なし";
+        selectedOptionsText;
+
+      document.getElementById("estimateOptions").innerHTML =
+        selectedOptionsText;
+
+      document.getElementById("estimateTotal").textContent =
+        `${totalPrice.toLocaleString()}円（税込）`;
     }
 
     document
