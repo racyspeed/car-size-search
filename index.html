@@ -380,6 +380,63 @@ optionArea.innerHTML += `     <label style="display:block;margin:10px 0;">
   `;
 
 });
+    const basePrice = prices[0].price;
+
+function updateTotal() {
+
+  let optionTotal = 0;
+
+  document
+    .querySelectorAll(".optionCheck:checked")
+    .forEach(check => {
+
+      optionTotal += Number(
+        check.dataset.price
+      );
+
+    });
+
+  document.getElementById(
+    "totalPrice"
+  ).innerHTML = `
+
+    <div class="result-section">
+
+      <div class="result-label">
+        オプション合計
+      </div>
+
+      <div class="result-value">
+        ${optionTotal.toLocaleString()}円
+      </div>
+
+      <div class="result-label"
+           style="margin-top:15px;">
+        総額
+      </div>
+
+      <div class="result-price">
+        ${(basePrice + optionTotal)
+          .toLocaleString()}円
+      </div>
+
+    </div>
+
+  `;
+}
+
+document
+  .querySelectorAll(".optionCheck")
+  .forEach(check => {
+
+    check.addEventListener(
+      "change",
+      updateTotal
+    );
+
+  });
+
+updateTotal();
 optionArea.innerHTML += `
   <div id="optionTotal" style="margin-top:15px;font-weight:bold;">
     オプション合計：0円
