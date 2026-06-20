@@ -11,74 +11,80 @@
 <style>
 body{
   font-family:'Shippori Mincho', serif;
-  background:linear-gradient(180deg,#f7f6f3 0%,#eeeeea 100%);
+  background:linear-gradient(180deg,#f8f7f3 0%,#eeeeea 100%);
   padding:32px 16px;
   color:#111;
 }
 
 .container{
-  max-width:760px;
+  max-width:980px;
   margin:auto;
   background:#fff;
-  padding:48px;
+  padding:52px;
   border:1px solid #d7d2ca;
-  box-shadow:0 22px 55px rgba(0,0,0,0.09);
+  box-shadow:0 24px 60px rgba(0,0,0,0.08);
 }
 
 .shop-name{
   text-align:center;
   font-size:18px;
-  letter-spacing:0.12em;
+  letter-spacing:0.14em;
   font-weight:700;
-  margin-bottom:28px;
+  margin-bottom:14px;
 }
 
 .section-en{
   text-align:center;
-  font-size:54px;
+  font-size:56px;
   font-weight:700;
   line-height:1;
+  letter-spacing:0.08em;
   margin-bottom:14px;
-  letter-spacing:0.03em;
 }
 
 h2{
   text-align:center;
-  font-size:22px;
+  font-size:21px;
   font-weight:700;
-  margin-bottom:8px;
+  margin-bottom:10px;
 }
 
 .subtitle{
   text-align:center;
   color:#555;
-  margin-bottom:34px;
+  margin-bottom:36px;
   font-size:14px;
 }
 
 .search-panel{
-  position:sticky;
-  top:0;
-  z-index:50;
-  background:rgba(255,255,255,0.97);
-  backdrop-filter:blur(8px);
-  padding:22px;
+  padding:28px;
   border:1px solid #d8d2ca;
-  margin-bottom:30px;
-  box-shadow:0 10px 24px rgba(0,0,0,0.06);
+  margin-bottom:28px;
+  box-shadow:0 12px 28px rgba(0,0,0,0.05);
+  background:#fff;
 }
 
-.search-box{
-  margin-bottom:18px;
+.search-layout{
+  display:grid;
+  grid-template-columns:1.1fr 0.9fr;
+  gap:28px;
+  align-items:start;
 }
 
-.search-box label{
+.search-left{
+  border-right:1px solid #e2ddd4;
+  padding-right:28px;
+}
+
+.search-box label,
+.quick-cars-title,
+.select-title{
   display:block;
   font-size:13px;
-  color:#666;
+  color:#555;
   letter-spacing:0.12em;
   font-weight:700;
-  margin-bottom:8px;
+  margin-bottom:10px;
 }
 
 #carSearch{
@@ -96,7 +102,7 @@ h2{
   border:1px solid #ddd;
   background:#fff;
   display:none;
-  max-height:320px;
+  max-height:300px;
   overflow:auto;
 }
 
@@ -112,15 +118,7 @@ h2{
 }
 
 .quick-cars{
-  margin:18px 0 20px;
-}
-
-.quick-cars-title{
-  font-size:12px;
-  color:#666;
-  letter-spacing:0.12em;
-  font-weight:700;
-  margin-bottom:10px;
+  margin-top:18px;
 }
 
 .quick-car-buttons{
@@ -143,13 +141,6 @@ h2{
   color:#fff;
 }
 
-.select-note{
-  text-align:center;
-  margin:16px 0;
-  color:#777;
-  font-size:13px;
-}
-
 select{
   width:100%;
   padding:15px 16px;
@@ -162,15 +153,17 @@ select{
 }
 
 .size-guide{
-  margin:28px 0;
-  border:1px solid #d8d2ca;
-  background:#faf9f6;
+  margin:20px 0 30px;
+  border-top:1px solid #ddd6cc;
+  border-bottom:1px solid #ddd6cc;
+  background:#fff;
 }
 
 .size-guide summary{
   padding:16px 18px;
   cursor:pointer;
   font-weight:700;
+  text-align:center;
 }
 
 .size-guide-content{
@@ -188,7 +181,7 @@ select{
 
 .size-guide-item{
   border:1px solid #ddd6cc;
-  background:#fff;
+  background:#faf9f6;
   padding:12px;
 }
 
@@ -198,76 +191,272 @@ select{
 }
 
 #result{
-  margin-top:34px;
-  padding:34px;
-  background:#fff;
+  margin-top:28px;
+}
+
+.selected-car-card{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:24px;
+  align-items:center;
+  padding:26px 28px;
   border:1px solid #ddd6cc;
+  background:#fff;
+  box-shadow:0 10px 24px rgba(0,0,0,0.04);
+  margin-bottom:30px;
+}
+
+.selected-car-label{
+  font-size:13px;
+  color:#555;
+  letter-spacing:0.12em;
+  font-weight:700;
+  margin-bottom:10px;
 }
 
 .car-name{
-  font-size:25px;
+  font-size:27px;
   font-weight:700;
-  margin-bottom:12px;
 }
 
 .car-size{
   display:inline-block;
+  margin-top:12px;
   padding:7px 16px;
   background:#111;
   color:#fff;
   font-size:14px;
   font-weight:600;
-  margin-bottom:24px;
 }
 
-.menu-card-area{
-  display:none;
-  margin-top:18px;
+.worktime-box{
+  border:1px solid #e3ded7;
+  padding:20px 24px;
+  text-align:center;
+  min-width:180px;
 }
 
-.menu-card-title{
-  font-size:13px;
+.worktime-box-label{
+  font-size:12px;
   color:#666;
-  letter-spacing:0.12em;
+  letter-spacing:0.08em;
+  margin-bottom:8px;
+}
+
+.worktime-box-value{
+  font-size:20px;
   font-weight:700;
-  margin-bottom:12px;
 }
 
-.menu-card{
-  width:100%;
-  text-align:left;
-  background:#fff;
-  border:1px solid #d8d2ca;
-  padding:20px;
-  margin-bottom:14px;
-  font-family:'Shippori Mincho', serif;
-  cursor:pointer;
+.category-area{
+  margin-bottom:28px;
 }
 
-.menu-card:hover{
-  background:#faf9f6;
-}
-
-.menu-card.active{
-  background:#111;
-  color:#fff;
-  border-color:#111;
-}
-
-.menu-card-name{
-  font-size:19px;
+.category-label{
+  font-size:13px;
+  color:#555;
+  letter-spacing:0.12em;
   font-weight:700;
   margin-bottom:10px;
 }
 
-.menu-card-desc{
-  font-size:14px;
-  line-height:1.8;
-  color:#666;
+.wash-menu-area{
+  display:none;
 }
 
-.menu-card.active .menu-card-desc{
-  color:#e8e0d4;
+.coating-area{
+  display:none;
+}
+
+.coating-heading{
+  text-align:center;
+  margin:30px 0 26px;
+}
+
+.coating-heading-title{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:0.12em;
+}
+
+.coating-heading-title::before,
+.coating-heading-title::after{
+  content:"";
+  display:block;
+  width:160px;
+  height:1px;
+  background:#d8d2ca;
+}
+
+.coating-heading-text{
+  margin-top:14px;
+  line-height:1.8;
+  color:#444;
+  font-size:14px;
+}
+
+.coating-brand{
+  display:grid;
+  grid-template-columns:250px 1fr;
+  border:1px solid;
+  margin-bottom:26px;
+  background:#fff;
+  overflow:hidden;
+}
+
+.brand-panel{
+  color:#fff;
+  padding:42px 28px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  text-align:center;
+}
+
+.brand-sub{
+  font-size:15px;
+  letter-spacing:0.08em;
+}
+
+.brand-main{
+  font-size:42px;
+  line-height:1;
+  margin:10px 0;
+  letter-spacing:0.08em;
+}
+
+.brand-coat{
+  font-size:22px;
+  letter-spacing:0.08em;
+  margin-bottom:22px;
+}
+
+.brand-desc{
+  font-size:14px;
+  line-height:2;
+}
+
+.brand-detail{
+  margin:26px auto 0;
+  background:#111;
+  color:#fff;
+  border:1px solid #111;
+  padding:12px 26px;
+  font-family:'Shippori Mincho', serif;
+  font-size:14px;
+}
+
+.brand-ism{
+  border-color:#e66b91;
+}
+
+.brand-ism .brand-panel{
+  background:linear-gradient(135deg,#e75f8a,#f08aa9);
+}
+
+.brand-izm{
+  border-color:#d5ad32;
+}
+
+.brand-izm .brand-panel{
+  background:linear-gradient(135deg,#caa126,#e0bf4e);
+}
+
+.brand-over{
+  border-color:#927bc9;
+}
+
+.brand-over .brand-panel{
+  background:linear-gradient(135deg,#7e68bd,#a08adb);
+}
+
+.plan-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+}
+
+.plan-card{
+  border-left:1px solid #e4dfd7;
+  padding:28px 22px;
+  text-align:center;
+  background:#fff;
+}
+
+.plan-badge{
+  display:inline-block;
+  color:#fff;
+  padding:7px 28px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:18px;
+}
+
+.brand-ism .plan-badge,
+.brand-ism .select-plan-button{
+  background:#e65f8a;
+}
+
+.brand-izm .plan-badge,
+.brand-izm .select-plan-button{
+  background:#d2a82d;
+}
+
+.brand-over .plan-badge,
+.brand-over .select-plan-button{
+  background:#8c76c8;
+}
+
+.plan-desc{
+  font-size:13px;
+  line-height:1.9;
+  min-height:76px;
+}
+
+.plan-time-label{
+  margin-top:12px;
+  font-size:12px;
+  color:#999;
+}
+
+.plan-time{
+  font-size:19px;
+  font-weight:700;
+  margin:4px 0 18px;
+}
+
+.plan-price-label{
+  font-size:13px;
+  margin-bottom:6px;
+}
+
+.plan-price{
+  font-size:23px;
+  font-weight:700;
+  margin-bottom:18px;
+}
+
+.select-plan-button{
+  width:100%;
+  border:none;
+  color:#fff;
+  padding:12px;
+  font-family:'Shippori Mincho', serif;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.select-plan-button:hover{
+  filter:brightness(0.92);
+}
+
+.select-plan-button.active{
+  background:#111 !important;
 }
 
 .result-section{
@@ -447,6 +636,32 @@ select{
   text-align:center;
 }
 
+@media(max-width:800px){
+  .search-layout{
+    grid-template-columns:1fr;
+  }
+
+  .search-left{
+    border-right:none;
+    border-bottom:1px solid #e2ddd4;
+    padding-right:0;
+    padding-bottom:22px;
+  }
+
+  .coating-brand{
+    grid-template-columns:1fr;
+  }
+
+  .plan-grid{
+    grid-template-columns:1fr;
+  }
+
+  .plan-card{
+    border-left:none;
+    border-top:1px solid #e4dfd7;
+  }
+}
+
 @media(max-width:600px){
   body{
     padding:12px 8px;
@@ -459,7 +674,6 @@ select{
 
   .shop-name{
     font-size:14px;
-    margin-bottom:22px;
   }
 
   .section-en{
@@ -476,7 +690,7 @@ select{
   }
 
   .search-panel{
-    padding:16px 14px;
+    padding:18px 14px;
   }
 
   #carSearch,
@@ -498,12 +712,17 @@ select{
     grid-template-columns:1fr 1fr;
   }
 
-  #result{
-    padding:22px 16px;
+  .selected-car-card{
+    grid-template-columns:1fr;
+    padding:22px 18px;
+  }
+
+  .worktime-box{
+    min-width:auto;
   }
 
   .car-name{
-    font-size:20px;
+    font-size:21px;
   }
 
   .car-size{
@@ -511,16 +730,34 @@ select{
     padding:6px 13px;
   }
 
-  .menu-card{
-    padding:16px;
+  .coating-heading-title{
+    font-size:17px;
   }
 
-  .menu-card-name{
-    font-size:16px;
+  .coating-heading-title::before,
+  .coating-heading-title::after{
+    width:55px;
   }
 
-  .menu-card-desc{
+  .brand-panel{
+    padding:32px 22px;
+  }
+
+  .brand-main{
+    font-size:34px;
+  }
+
+  .plan-card{
+    padding:24px 18px;
+  }
+
+  .plan-desc{
+    min-height:auto;
     font-size:12px;
+  }
+
+  .plan-price{
+    font-size:21px;
   }
 
   .result-label,
@@ -597,7 +834,6 @@ select{
 <div class="container">
 
 <div class="shop-name">RACY'SPEED</div>
-
 <div class="section-en">PRICE</div>
 
 <h2>料金シミュレーター</h2>
@@ -607,41 +843,47 @@ select{
 </p>
 
 <div class="search-panel">
+  <div class="search-layout">
 
-  <div class="search-box">
-    <label>車種名で検索</label>
-    <input
-      id="carSearch"
-      type="text"
-      placeholder="例：ぷり、アルファード、BMW X3、ベンツ"
-    >
-    <div id="searchResults" class="search-results"></div>
-  </div>
+    <div class="search-left">
+      <div class="search-box">
+        <label>車種名で検索</label>
+        <input
+          id="carSearch"
+          type="text"
+          placeholder="例：ぷり、アルファード、BMW X3、ベンツ"
+        >
+        <div id="searchResults" class="search-results"></div>
+      </div>
 
-  <div class="quick-cars">
-    <div class="quick-cars-title">人気車種から選択</div>
-    <div class="quick-car-buttons">
-      <button class="quick-car-button" data-maker="トヨタ" data-model="プリウス">プリウス</button>
-      <button class="quick-car-button" data-maker="トヨタ" data-model="アルファード">アルファード</button>
-      <button class="quick-car-button" data-maker="トヨタ" data-model="ヴェルファイア">ヴェルファイア</button>
-      <button class="quick-car-button" data-maker="ホンダ" data-model="N-BOX">N-BOX</button>
-      <button class="quick-car-button" data-maker="トヨタ" data-model="ハリアー">ハリアー</button>
-      <button class="quick-car-button" data-maker="トヨタ" data-model="ランドクルーザー300">ランクル</button>
-      <button class="quick-car-button" data-maker="レクサス" data-model="NX">レクサスNX</button>
-      <button class="quick-car-button" data-maker="BMW" data-model="X3">BMW X3</button>
+      <div class="quick-cars">
+        <div class="quick-cars-title">人気車種から選択</div>
+        <div class="quick-car-buttons">
+          <button class="quick-car-button" data-maker="トヨタ" data-model="プリウス">プリウス</button>
+          <button class="quick-car-button" data-maker="トヨタ" data-model="アルファード">アルファード</button>
+          <button class="quick-car-button" data-maker="トヨタ" data-model="ヴェルファイア">ヴェルファイア</button>
+          <button class="quick-car-button" data-maker="ホンダ" data-model="N-BOX">N-BOX</button>
+          <button class="quick-car-button" data-maker="トヨタ" data-model="ハリアー">ハリアー</button>
+          <button class="quick-car-button" data-maker="トヨタ" data-model="ランドクルーザー300">ランクル</button>
+          <button class="quick-car-button" data-maker="レクサス" data-model="NX">レクサスNX</button>
+          <button class="quick-car-button" data-maker="BMW" data-model="X3">BMW X3</button>
+        </div>
+      </div>
     </div>
+
+    <div>
+      <div class="select-title">またはメーカーから選択</div>
+
+      <select id="makerSelect">
+        <option value="">メーカーを選択</option>
+      </select>
+
+      <select id="carSelect">
+        <option value="">車種を選択</option>
+      </select>
+    </div>
+
   </div>
-
-  <div class="select-note">またはメーカーから選択</div>
-
-  <select id="makerSelect">
-    <option value="">メーカーを選択</option>
-  </select>
-
-  <select id="carSelect">
-    <option value="">車種を選択</option>
-  </select>
-
 </div>
 
 <details class="size-guide">
@@ -700,22 +942,71 @@ if (error) {
   const cars = data;
 
   function formatMenuName(name) {
-    return String(name).replaceAll("2層研磨", "2周研磨");
+    return String(name)
+      .replaceAll("2層研磨", "2周研磨")
+      .replaceAll("MIYABI+ISM", "MIYABI＋ISM")
+      .replaceAll("MIYABI+IZM", "MIYABI＋IZM")
+      .replaceAll("MIYABI+OVER COAT", "MIYABI＋OVER COAT");
   }
 
-  function getCoatingDescription(menuName) {
+  function getBrandType(menuName) {
+    if (menuName.includes("ISM")) return "ism";
+    if (menuName.includes("IZM")) return "izm";
+    if (menuName.includes("OVER COAT")) return "over";
+    return "other";
+  }
+
+  function getBrandInfo(type) {
+    if (type === "ism") {
+      return {
+        sub:"MIYABI＋",
+        main:"ISM",
+        coat:"COAT",
+        desc:"深い艶と優れた撥水性を両立したハイグレードコーティング",
+        className:"brand-ism"
+      };
+    }
+
+    if (type === "izm") {
+      return {
+        sub:"MIYABI＋",
+        main:"IZM",
+        coat:"COAT",
+        desc:"圧倒的な艶と強靭な被膜で愛車を守るプレミアムコーティング",
+        className:"brand-izm"
+      };
+    }
+
+    return {
+      sub:"MIYABI＋",
+      main:"OVER COAT",
+      coat:"SEALANT",
+      desc:"コーティング被膜を保護し、美しさを長く維持するためのシーラントコーティング",
+      className:"brand-over"
+    };
+  }
+
+  function getPlanLabel(menuName) {
     const name = formatMenuName(menuName);
+    if (name.includes("研磨なし")) return "研磨なし";
+    if (name.includes("軽研磨")) return "軽研磨";
+    if (name.includes("2周研磨")) return "2周研磨";
+    return "プラン";
+  }
 
-    if (name.includes("研磨なし")) {
-      return "新車や状態の良いお車におすすめ。塗装への負担を抑えながら艶と保護性能を高めます。";
+  function getPlanDescription(menuName) {
+    const label = getPlanLabel(menuName);
+
+    if (label === "研磨なし") {
+      return "新車や状態の良いお車におすすめ。塗装への負担を抑えながら、艶と保護性能をしっかり保護。";
     }
 
-    if (name.includes("軽研磨")) {
-      return "軽い雨染み・小キズが気になるお車におすすめ。艶感を整えてからコーティングします。";
+    if (label === "軽研磨") {
+      return "軽い雨染みや小キズが気になるお車におすすめ。艶感を整え、美しさを引き出してから施工。";
     }
 
-    if (name.includes("2周研磨")) {
-      return "艶をしっかり出したい方におすすめ。下地を丁寧に整え、より美しい仕上がりを目指します。";
+    if (label === "2周研磨") {
+      return "艶をしっかり出したい方におすすめ。下地を丁寧に整え、より美しい仕上がりを実現。";
     }
 
     return "お車の状態に合わせて施工いたします。";
@@ -878,32 +1169,36 @@ if (error) {
     select.value = car.model;
 
     result.innerHTML = `
-      <h3>お選びのお車</h3>
+      <div class="selected-car-card">
+        <div>
+          <div class="selected-car-label">お選びのお車</div>
+          <div class="car-name">${car.maker} ${car.model}</div>
+          <div class="car-size">${car.size}サイズ</div>
+        </div>
 
-      <div class="car-name">
-        ${car.maker} ${car.model}
+        <div class="worktime-box">
+          <div class="worktime-box-label">施工時間の目安</div>
+          <div class="worktime-box-value">3日〜7日程度</div>
+          <div class="info">※メニューにより異なります</div>
+        </div>
       </div>
 
-      <div class="car-size">
-        ${car.size}サイズ
+      <div class="category-area">
+        <div class="category-label">施工カテゴリ</div>
+        <select id="categorySelect">
+          <option value="">選択してください</option>
+          <option value="wash">洗車</option>
+          <option value="coating">コーティング</option>
+        </select>
       </div>
 
-      <br>
+      <div class="wash-menu-area" id="washMenuArea">
+        <select id="menuSelect">
+          <option value="">メニューを選択</option>
+        </select>
+      </div>
 
-      <label>施工カテゴリ</label>
-      <select id="categorySelect">
-        <option value="">選択してください</option>
-        <option value="wash">洗車</option>
-        <option value="coating">コーティング</option>
-      </select>
-
-      <br><br>
-
-      <select id="menuSelect">
-        <option value="">メニューを選択</option>
-      </select>
-
-      <div id="menuCardArea" class="menu-card-area"></div>
+      <div id="coatingArea" class="coating-area"></div>
 
       <div id="optionArea"></div>
       <div id="priceResult"></div>
@@ -1011,102 +1306,151 @@ if (error) {
   });
 
   async function loadMenus(size) {
+    const categorySelect = document.getElementById("categorySelect");
+    const washMenuArea = document.getElementById("washMenuArea");
     const menuSelect = document.getElementById("menuSelect");
-    const menuCardArea = document.getElementById("menuCardArea");
+    const coatingArea = document.getElementById("coatingArea");
 
     const { data: menus } = await supabase
       .from("menus")
       .select("*");
+
+    const { data: sizePrices } = await supabase
+      .from("prices")
+      .select("*")
+      .eq("size", size);
 
     menus.sort((a,b) => {
       const order = {
         "純水手洗い洗車":1,
         "徹底洗車":2,
         "徹底洗車ライト":3,
-        "MIYABI+OVER COAT（研磨なし）":4,
-        "MIYABI+OVER COAT（軽研磨）":5,
-        "MIYABI+OVER COAT（2層研磨）":6,
-        "MIYABI+ISM（研磨なし）":7,
-        "MIYABI+ISM（軽研磨）":8,
-        "MIYABI+ISM（2層研磨）":9,
-        "MIYABI+IZM（研磨なし）":10,
-        "MIYABI+IZM（軽研磨）":11,
-        "MIYABI+IZM（2層研磨）":12
+        "MIYABI+ISM（研磨なし）":4,
+        "MIYABI+ISM（軽研磨）":5,
+        "MIYABI+ISM（2層研磨）":6,
+        "MIYABI+IZM（研磨なし）":7,
+        "MIYABI+IZM（軽研磨）":8,
+        "MIYABI+IZM（2層研磨）":9,
+        "MIYABI+OVER COAT（研磨なし）":10,
+        "MIYABI+OVER COAT（軽研磨）":11,
+        "MIYABI+OVER COAT（2層研磨）":12
       };
 
       return (order[a.menu_name] || 999) - (order[b.menu_name] || 999);
     });
 
-    const categorySelect = document.getElementById("categorySelect");
-
     categorySelect.addEventListener("change", function() {
       menuSelect.innerHTML = '<option value="">メニューを選択</option>';
-      menuCardArea.innerHTML = "";
-      menuCardArea.style.display = "none";
-      menuSelect.style.display = "block";
-
+      coatingArea.innerHTML = "";
+      coatingArea.style.display = "none";
+      washMenuArea.style.display = "none";
       document.getElementById("optionArea").innerHTML = "";
       document.getElementById("priceResult").innerHTML = "";
 
       const selectedCategory = this.value;
+      const filteredMenus = menus.filter(menu => menu.category === selectedCategory);
 
-      const filteredMenus = menus.filter(menu =>
-        menu.category === selectedCategory
-      );
-
-      if (selectedCategory === "coating") {
-        menuSelect.style.display = "none";
-        menuCardArea.style.display = "block";
-
-        menuCardArea.innerHTML = `
-          <div class="menu-card-title">
-            コーティングメニューを選択
-          </div>
-        `;
+      if (selectedCategory === "wash") {
+        washMenuArea.style.display = "block";
 
         filteredMenus.forEach(menu => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.className = "menu-card";
-          button.dataset.menuName = menu.menu_name;
-
-          button.innerHTML = `
-            <div class="menu-card-name">
-              ${formatMenuName(menu.menu_name)}
-            </div>
-            <div class="menu-card-desc">
-              ${getCoatingDescription(menu.menu_name)}
-            </div>
-          `;
-
-          button.addEventListener("click", function() {
-            document.querySelectorAll(".menu-card").forEach(card => {
-              card.classList.remove("active");
-            });
-
-            this.classList.add("active");
-
-            showPrice(menu.menu_name);
-          });
-
-          menuCardArea.appendChild(button);
+          const option = document.createElement("option");
+          option.value = menu.menu_name;
+          option.textContent = formatMenuName(menu.menu_name);
+          menuSelect.appendChild(option);
         });
 
         return;
       }
 
-      filteredMenus.forEach(menu => {
-        const option = document.createElement("option");
-        option.value = menu.menu_name;
-        option.textContent = formatMenuName(menu.menu_name);
-        menuSelect.appendChild(option);
-      });
+      if (selectedCategory === "coating") {
+        coatingArea.style.display = "block";
+        renderCoatingMenus(filteredMenus);
+      }
     });
 
     menuSelect.addEventListener("change", function() {
       if (!this.value) return;
       showPrice(this.value);
     });
+
+    function renderCoatingMenus(coatingMenus) {
+      coatingArea.innerHTML = `
+        <div class="coating-heading">
+          <div class="coating-heading-title">コーティングメニュー</div>
+          <div class="coating-heading-text">
+            塗装の状態やご希望に合わせて、最適なプランをお選びいただけます。
+          </div>
+        </div>
+      `;
+
+      ["ism","izm","over"].forEach(type => {
+        const brandMenus = coatingMenus.filter(menu => getBrandType(menu.menu_name) === type);
+
+        if (!brandMenus.length) return;
+
+        const brand = getBrandInfo(type);
+
+        const brandBlock = document.createElement("div");
+        brandBlock.className = `coating-brand ${brand.className}`;
+
+        brandBlock.innerHTML = `
+          <div class="brand-panel">
+            <div class="brand-sub">${brand.sub}</div>
+            <div class="brand-main">${brand.main}</div>
+            <div class="brand-coat">${brand.coat}</div>
+            <div class="brand-desc">${brand.desc}</div>
+            <button class="brand-detail" type="button">詳細を見る　〉</button>
+          </div>
+
+          <div class="plan-grid"></div>
+        `;
+
+        const planGrid = brandBlock.querySelector(".plan-grid");
+
+        brandMenus.forEach(menu => {
+          const priceData = sizePrices.find(price => price.menu_name === menu.menu_name);
+          const priceText = priceData ? `${priceData.price.toLocaleString()}円` : "料金未設定";
+
+          const planCard = document.createElement("div");
+          planCard.className = "plan-card";
+
+          planCard.innerHTML = `
+            <div class="plan-badge">${getPlanLabel(menu.menu_name)}</div>
+            <div class="plan-desc">${getPlanDescription(menu.menu_name)}</div>
+            <div class="plan-time-label">施工期間</div>
+            <div class="plan-time">${menu.work_time}</div>
+            <div class="plan-price-label">料金（税込）</div>
+            <div class="plan-price">${priceText}</div>
+            <button
+              type="button"
+              class="select-plan-button"
+              data-menu-name="${menu.menu_name}"
+            >
+              このプランを選択
+            </button>
+          `;
+
+          planGrid.appendChild(planCard);
+        });
+
+        coatingArea.appendChild(brandBlock);
+      });
+
+      document.querySelectorAll(".select-plan-button").forEach(button => {
+        button.addEventListener("click", function() {
+          document.querySelectorAll(".select-plan-button").forEach(btn => {
+            btn.classList.remove("active");
+            btn.textContent = "このプランを選択";
+          });
+
+          this.classList.add("active");
+          this.textContent = "選択中";
+
+          showPrice(this.dataset.menuName);
+        });
+      });
+    }
 
     async function showPrice(menuName) {
       const selectedSize =
