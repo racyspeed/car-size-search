@@ -1063,3 +1063,70 @@ select{
   }
 
 }
+/* ===== 今日のラスト修正：点線位置・料金中央揃え ===== */
+
+.plan-desc{
+  height:72px !important;
+  min-height:72px !important;
+  margin:0 0 14px !important;
+  padding:0 0 14px !important;
+  border-bottom:2px dotted currentColor !important;
+  line-height:1.8 !important;
+  text-align:left !important;
+  overflow:hidden !important;
+}
+
+.plan-desc::after{
+  content:none !important;
+}
+
+.plan-time-label,
+.plan-price-label{
+  display:block !important;
+  margin:0 0 5px !important;
+  font-size:12px !important;
+  color:#666 !important;
+}
+
+.plan-time{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  height:42px !important;
+  margin:0 0 10px !important;
+  padding:0 12px !important;
+  font-size:17px !important;
+  font-weight:700 !important;
+  text-align:center !important;
+  box-sizing:border-box !important;
+}
+
+.plan-price{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  height:50px !important;
+  margin:0 0 12px !important;
+  padding:0 12px !important;
+  font-size:26px !important;
+  font-weight:700 !important;
+  text-align:center !important;
+  box-sizing:border-box !important;
+}
+
+.brand-ism .plan-price{
+  color:#e65f8a !important;
+}
+
+.brand-izm .plan-price{
+  color:#c9a227 !important;
+}
+
+.brand-over .plan-price{
+  color:#6f45a8 !important;
+}
+
+.select-plan-button{
+  height:46px !important;
+  margin-top:auto !important;
+}
