@@ -55,8 +55,19 @@ h2{
   font-size:14px;
 }
 
+.search-panel{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:#fff;
+  padding:18px 0 12px;
+  border-top:1px solid #eee;
+  border-bottom:1px solid #ddd;
+  margin-bottom:26px;
+}
+
 .search-box{
-  margin-bottom:24px;
+  margin-bottom:18px;
 }
 
 .search-box label{
@@ -87,6 +98,8 @@ h2{
   border:1px solid #ddd;
   background:#fff;
   display:none;
+  max-height:320px;
+  overflow:auto;
 }
 
 .search-result-item{
@@ -106,7 +119,7 @@ h2{
 
 .select-note{
   text-align:center;
-  margin:20px 0;
+  margin:16px 0;
   color:#777;
   font-size:13px;
 }
@@ -329,12 +342,21 @@ select:focus{
 }
 
 @media(max-width:600px){
+  body{
+    padding:18px 10px;
+  }
+
   .container{
-    padding:28px 20px;
+    padding:28px 18px;
   }
 
   .section-en{
     font-size:38px;
+  }
+
+  .search-panel{
+    top:0;
+    padding:14px 0 10px;
   }
 
   .result-price{
@@ -362,27 +384,31 @@ select:focus{
 お車に合わせた施工料金をご確認いただけます
 </p>
 
-<div class="search-box">
-  <label>車種名で検索</label>
-  <input
-    id="carSearch"
-    type="text"
-    placeholder="例：ぷり、アルファード、BMW X3、ベンツ"
-  >
-  <div id="searchResults" class="search-results"></div>
+<div class="search-panel">
+
+  <div class="search-box">
+    <label>車種名で検索</label>
+    <input
+      id="carSearch"
+      type="text"
+      placeholder="例：ぷり、アルファード、BMW X3、ベンツ"
+    >
+    <div id="searchResults" class="search-results"></div>
+  </div>
+
+  <div class="select-note">
+    またはメーカーから選択
+  </div>
+
+  <select id="makerSelect">
+    <option value="">メーカーを選択</option>
+  </select>
+
+  <select id="carSelect">
+    <option value="">車種を選択</option>
+  </select>
+
 </div>
-
-<div class="select-note">
-  またはメーカーから選択
-</div>
-
-<select id="makerSelect">
-  <option value="">メーカーを選択</option>
-</select>
-
-<select id="carSelect">
-  <option value="">車種を選択</option>
-</select>
 
 <div id="result"></div>
 
