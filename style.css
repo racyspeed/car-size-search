@@ -269,19 +269,22 @@ select{
   display:flex;
   flex-direction:column;
   justify-content:center;
-  text-align:left;
+  text-align:center;
 }
 
 .brand-title-line{
   line-height:1.15;
+  display:block;
 }
 
 .brand-sub{
+  display:block;
   font-size:15px;
   letter-spacing:0.08em;
 }
 
 .brand-main{
+  display:block;
   font-size:42px;
   line-height:1;
   margin:10px 0;
@@ -289,6 +292,7 @@ select{
 }
 
 .brand-coat{
+  display:block;
   font-size:22px;
   letter-spacing:0.08em;
   margin-bottom:18px;
