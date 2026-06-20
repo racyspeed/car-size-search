@@ -397,32 +397,14 @@ function updateTotal() {
     });
 
   document.getElementById(
-    "totalPrice"
-  ).innerHTML = `
+  "optionTotalResult"
+).innerHTML =
+  `オプション合計：${optionTotal.toLocaleString()}円`;
 
-    <div class="result-section">
-
-      <div class="result-label">
-        オプション合計
-      </div>
-
-      <div class="result-value">
-        ${optionTotal.toLocaleString()}円
-      </div>
-
-      <div class="result-label"
-           style="margin-top:15px;">
-        総額
-      </div>
-
-      <div class="result-price">
-        ${(basePrice + optionTotal)
-          .toLocaleString()}円
-      </div>
-
-    </div>
-
-  `;
+document.getElementById(
+  "totalPrice"
+).innerHTML =
+  `総額：${(basePrice + optionTotal).toLocaleString()}円`;
 }
 
 document
