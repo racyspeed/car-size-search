@@ -1253,3 +1253,116 @@ select{
     display:block !important;
   }
 }
+/* 最終修正：コーティングカード完全整列 */
+.plan-card{
+  display:flex !important;
+  flex-direction:column !important;
+  padding:24px 22px 20px !important;
+  box-sizing:border-box !important;
+}
+
+.plan-badge{
+  height:34px !important;
+  line-height:20px !important;
+  margin:0 auto 18px !important;
+}
+
+.plan-desc{
+  height:86px !important;
+  min-height:86px !important;
+  margin:0 0 16px !important;
+  padding:0 0 14px !important;
+  border-bottom:2px dotted currentColor !important;
+  box-sizing:border-box !important;
+  line-height:1.8 !important;
+  overflow:hidden !important;
+}
+
+/* 施工期間の行 */
+.plan-card > div:has(.plan-time-label){
+  height:54px !important;
+  margin:0 0 10px !important;
+  padding:10px 14px !important;
+  box-sizing:border-box !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  background:rgba(232,95,138,0.08) !important;
+}
+
+.plan-time-label{
+  margin:0 !important;
+  color:#111 !important;
+  font-size:12px !important;
+  white-space:nowrap !important;
+}
+
+.plan-time{
+  margin:0 !important;
+  padding:0 !important;
+  background:none !important;
+  font-size:18px !important;
+  line-height:1.2 !important;
+}
+
+/* 料金 */
+.plan-price-label{
+  height:18px !important;
+  margin:0 0 4px !important;
+  font-size:12px !important;
+  color:#111 !important;
+}
+
+.plan-price{
+  height:58px !important;
+  margin:0 0 12px !important;
+  padding:10px 14px !important;
+  box-sizing:border-box !important;
+  display:flex !important;
+  align-items:center !important;
+  background:rgba(232,95,138,0.08) !important;
+  font-size:26px !important;
+  line-height:1.2 !important;
+}
+
+.select-plan-button{
+  height:48px !important;
+  margin-top:auto !important;
+  border:none !important;
+}
+
+/* 色別背景 */
+.brand-ism .plan-card > div:has(.plan-time-label),
+.brand-ism .plan-price{
+  background:rgba(232,95,138,0.08) !important;
+}
+
+.brand-izm .plan-card > div:has(.plan-time-label),
+.brand-izm .plan-price{
+  background:rgba(201,162,39,0.10) !important;
+}
+
+.brand-over .plan-card > div:has(.plan-time-label),
+.brand-over .plan-price{
+  background:rgba(111,69,168,0.09) !important;
+}
+
+/* スマホは崩れ防止 */
+@media(max-width:600px){
+  .plan-card{
+    display:block !important;
+  }
+
+  .plan-desc{
+    height:auto !important;
+    min-height:auto !important;
+  }
+
+  .plan-card > div:has(.plan-time-label){
+    height:auto !important;
+  }
+
+  .plan-price{
+    height:auto !important;
+  }
+}
