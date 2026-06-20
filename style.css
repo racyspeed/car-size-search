@@ -837,3 +837,199 @@ select{
     padding:14px;
   }
 }
+/* コーティングカード最終デザイン */
+.coating-brand{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  border:1px solid;
+  border-radius:0 6px 6px 0;
+  overflow:hidden;
+}
+
+.brand-panel{
+  text-align:center;
+  padding:36px 24px;
+  color:#fff;
+  justify-content:center;
+}
+
+.brand-title-line{
+  display:block;
+}
+
+.brand-sub,
+.brand-main,
+.brand-coat{
+  display:block;
+}
+
+.brand-main{
+  font-size:52px;
+  margin:8px 0;
+}
+
+.brand-desc{
+  max-width:190px;
+  margin:22px auto 0;
+  font-size:14px;
+  line-height:1.9;
+  text-align:center;
+}
+
+.plan-card{
+  padding:24px 22px;
+  text-align:left;
+}
+
+.plan-badge{
+  display:block;
+  width:max-content;
+  margin:0 auto 20px;
+  padding:7px 28px;
+}
+
+.plan-desc{
+  min-height:auto;
+  font-size:13px;
+  line-height:1.8;
+  text-align:left;
+  margin-bottom:18px;
+  padding-bottom:16px;
+  border-bottom:2px dotted currentColor;
+}
+
+.plan-time,
+.plan-price{
+  background:rgba(232,95,138,0.08);
+  padding:14px 16px;
+  margin:8px 0 12px;
+  display:block;
+}
+
+.plan-time-label,
+.plan-price-label{
+  display:block;
+  font-size:12px;
+  margin-bottom:4px;
+}
+
+.plan-price{
+  font-size:26px;
+}
+
+/* ISM ピンク */
+.brand-ism{
+  border-color:#e65f8a;
+}
+
+.brand-ism .brand-panel{
+  background:linear-gradient(135deg,#d91f67,#f08aaa);
+}
+
+.brand-ism .plan-badge,
+.brand-ism .select-plan-button{
+  background:#e65f8a;
+}
+
+.brand-ism .plan-desc{
+  border-color:#e65f8a;
+}
+
+.brand-ism .plan-time,
+.brand-ism .plan-price{
+  background:rgba(232,95,138,0.08);
+}
+
+/* IZM ゴールド */
+.brand-izm{
+  border-color:#c9a227;
+}
+
+.brand-izm .brand-panel{
+  background:linear-gradient(135deg,#b88a00,#e5c85a);
+}
+
+.brand-izm .plan-badge,
+.brand-izm .select-plan-button{
+  background:#c9a227;
+}
+
+.brand-izm .plan-desc{
+  border-color:#c9a227;
+}
+
+.brand-izm .plan-time,
+.brand-izm .plan-price{
+  background:rgba(201,162,39,0.10);
+}
+
+/* OVER COAT パープル */
+.brand-over{
+  border-color:#6f45a8;
+}
+
+.brand-over .brand-panel{
+  background:linear-gradient(135deg,#3f246e,#8d6ac8);
+}
+
+.brand-over .plan-badge,
+.brand-over .select-plan-button{
+  background:#6f45a8;
+}
+
+.brand-over .plan-desc{
+  border-color:#6f45a8;
+}
+
+.brand-over .plan-time,
+.brand-over .plan-price{
+  background:rgba(111,69,168,0.09);
+}
+
+/* スマホは今の見やすさ優先 */
+@media(max-width:600px){
+  .coating-brand{
+    grid-template-columns:1fr;
+  }
+
+  .brand-panel{
+    text-align:left;
+    padding:18px 16px;
+  }
+
+  .brand-title-line{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:5px;
+  }
+
+  .brand-main{
+    font-size:23px;
+    margin:0;
+  }
+
+  .brand-desc{
+    max-width:none;
+    margin:10px 0 0;
+    text-align:left;
+    font-size:12px;
+  }
+
+  .plan-badge{
+    margin:0 auto 12px;
+  }
+
+  .plan-desc{
+    font-size:12px;
+  }
+
+  .plan-time,
+  .plan-price{
+    padding:12px 14px;
+  }
+
+  .plan-price{
+    font-size:22px;
+  }
+}
