@@ -394,25 +394,66 @@ document.getElementById("priceResult").innerHTML = `
 </div>
 
 <div class="result-section">
+
   <div class="result-label">
     施工料金
   </div>
 
- <div class="result-price">
-  ${prices[0].price.toLocaleString()}円
+  <div class="result-value">
+    ${prices[0].price.toLocaleString()}円
+  </div>
+
 </div>
 
-<div id="optionTotalResult">
-  オプション合計：0円
+<div class="result-section">
+
+  <div class="result-label">
+    オプション合計
+  </div>
+
+  <div
+    id="optionTotalResult"
+    class="result-value"
+  >
+    0円
+  </div>
+
 </div>
 
-<div id="totalPrice">
-  総額：${prices[0].price.toLocaleString()}円
-</div>
+<div class="result-divider"></div>
 
-<div class="info">
-  （税込）
-</div>
+<div class="result-section">
+
+  <div
+    class="result-label"
+    style="
+      text-align:center;
+      font-size:16px;
+      font-weight:700;
+    "
+  >
+    お支払い総額
+  </div>
+
+  <div
+    id="totalPrice"
+    class="result-price"
+    style="
+      text-align:center;
+      font-size:64px;
+      margin-top:15px;
+    "
+  >
+    ${prices[0].price.toLocaleString()}円
+  </div>
+
+  <div
+    class="info"
+    style="text-align:center;"
+  >
+    （税込）
+  </div>
+
 </div>
 
 <div class="result-section">
@@ -442,14 +483,14 @@ function updateTotal() {
     });
 
   document.getElementById(
-    "optionTotalResult"
-  ).textContent =
-    `オプション合計：${optionTotal.toLocaleString()}円`;
+  "optionTotalResult"
+).textContent =
+  `${optionTotal.toLocaleString()}円`;
 
-  document.getElementById(
-    "totalPrice"
-  ).textContent =
-    `総額：${(basePrice + optionTotal).toLocaleString()}円`;
+document.getElementById(
+  "totalPrice"
+).textContent =
+  `${(basePrice + optionTotal).toLocaleString()}円`;
 
 }
 
