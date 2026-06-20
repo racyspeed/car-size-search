@@ -15,7 +15,7 @@ body{
   padding:32px 16px;
   color:#111;
 }
-  
+
 .container{
   max-width:760px;
   margin:auto;
@@ -91,11 +91,6 @@ h2{
   background:#fff;
 }
 
-#carSearch:focus{
-  outline:none;
-  border-color:#111;
-}
-
 .search-results{
   margin-top:8px;
   border:1px solid #ddd;
@@ -146,7 +141,6 @@ h2{
 .quick-car-button:hover{
   background:#111;
   color:#fff;
-  border-color:#111;
 }
 
 .select-note{
@@ -177,14 +171,12 @@ select{
   padding:16px 18px;
   cursor:pointer;
   font-weight:700;
-  letter-spacing:0.06em;
 }
 
 .size-guide-content{
   padding:0 18px 18px;
   font-size:14px;
   line-height:1.9;
-  color:#333;
 }
 
 .size-guide-grid{
@@ -203,21 +195,6 @@ select{
 .size-guide-size{
   font-weight:700;
   margin-bottom:4px;
-}
-
-.case-button{
-  display:block;
-  width:100%;
-  padding:16px;
-  text-align:center;
-  font-family:'Shippori Mincho', serif;
-  font-size:16px;
-  font-weight:700;
-  text-decoration:none;
-  box-sizing:border-box;
-  background:#111;
-  color:#fff;
-  border:1px solid #111;
 }
 
 #result{
@@ -243,6 +220,56 @@ select{
   margin-bottom:24px;
 }
 
+.menu-card-area{
+  display:none;
+  margin-top:18px;
+}
+
+.menu-card-title{
+  font-size:13px;
+  color:#666;
+  letter-spacing:0.12em;
+  font-weight:700;
+  margin-bottom:12px;
+}
+
+.menu-card{
+  width:100%;
+  text-align:left;
+  background:#fff;
+  border:1px solid #d8d2ca;
+  padding:20px;
+  margin-bottom:14px;
+  font-family:'Shippori Mincho', serif;
+  cursor:pointer;
+}
+
+.menu-card:hover{
+  background:#faf9f6;
+}
+
+.menu-card.active{
+  background:#111;
+  color:#fff;
+  border-color:#111;
+}
+
+.menu-card-name{
+  font-size:19px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.menu-card-desc{
+  font-size:14px;
+  line-height:1.8;
+  color:#666;
+}
+
+.menu-card.active .menu-card-desc{
+  color:#e8e0d4;
+}
+
 .result-section{
   margin-top:30px;
 }
@@ -259,11 +286,6 @@ select{
   font-size:19px;
   font-weight:600;
   line-height:1.8;
-}
-
-.result-price{
-  font-size:42px;
-  font-weight:700;
 }
 
 .result-divider{
@@ -297,10 +319,6 @@ select{
   margin:12px 0;
   font-size:15px;
   line-height:1.6;
-}
-
-.optionCheck{
-  margin-right:8px;
 }
 
 .total-card{
@@ -379,7 +397,6 @@ select{
   font-size:15px;
   line-height:1.8;
   text-align:center;
-  color:#222;
 }
 
 .contact-subnote{
@@ -391,7 +408,8 @@ select{
 }
 
 .copy-button,
-.line-button{
+.line-button,
+.case-button{
   display:block;
   width:100%;
   padding:16px;
@@ -414,6 +432,12 @@ select{
   background:#06c755;
   color:#fff;
   border:1px solid #06c755;
+}
+
+.case-button{
+  background:#111;
+  color:#fff;
+  border:1px solid #111;
 }
 
 .copy-message{
@@ -453,13 +477,6 @@ select{
 
   .search-panel{
     padding:16px 14px;
-    margin-bottom:22px;
-  }
-
-  .search-box label,
-  .result-label,
-  .estimate-label{
-    font-size:11px;
   }
 
   #carSearch,
@@ -481,21 +498,8 @@ select{
     grid-template-columns:1fr 1fr;
   }
 
-  .search-result-item{
-    font-size:13px;
-    padding:11px 13px;
-  }
-
-  .select-note{
-    font-size:12px;
-  }
-
   #result{
     padding:22px 16px;
-  }
-
-  #result h3{
-    font-size:17px;
   }
 
   .car-name{
@@ -507,16 +511,25 @@ select{
     padding:6px 13px;
   }
 
-  .result-section{
-    margin-top:24px;
+  .menu-card{
+    padding:16px;
+  }
+
+  .menu-card-name{
+    font-size:16px;
+  }
+
+  .menu-card-desc{
+    font-size:12px;
+  }
+
+  .result-label,
+  .estimate-label{
+    font-size:11px;
   }
 
   .result-value{
     font-size:16px;
-  }
-
-  .result-price{
-    font-size:32px;
   }
 
   #optionArea{
@@ -533,7 +546,6 @@ select{
 
   .total-card{
     padding:22px 16px;
-    margin-top:24px;
   }
 
   .total-card .result-label{
@@ -607,10 +619,7 @@ select{
   </div>
 
   <div class="quick-cars">
-    <div class="quick-cars-title">
-      人気車種から選択
-    </div>
-
+    <div class="quick-cars-title">人気車種から選択</div>
     <div class="quick-car-buttons">
       <button class="quick-car-button" data-maker="トヨタ" data-model="プリウス">プリウス</button>
       <button class="quick-car-button" data-maker="トヨタ" data-model="アルファード">アルファード</button>
@@ -623,9 +632,7 @@ select{
     </div>
   </div>
 
-  <div class="select-note">
-    またはメーカーから選択
-  </div>
+  <div class="select-note">またはメーカーから選択</div>
 
   <select id="makerSelect">
     <option value="">メーカーを選択</option>
@@ -639,35 +646,16 @@ select{
 
 <details class="size-guide">
   <summary>サイズ区分の目安を見る</summary>
-
   <div class="size-guide-content">
     車両サイズはお車の大きさをもとに、SS〜XXLで分類しています。実際のお車の状態や仕様により、店頭確認時に前後する場合があります。
 
     <div class="size-guide-grid">
-      <div class="size-guide-item">
-        <div class="size-guide-size">SSサイズ</div>
-        小型軽自動車など
-      </div>
-      <div class="size-guide-item">
-        <div class="size-guide-size">Sサイズ</div>
-        背の高い軽自動車・コンパクトカーなど
-      </div>
-      <div class="size-guide-item">
-        <div class="size-guide-size">Mサイズ</div>
-        普通車・コンパクトSUVなど
-      </div>
-      <div class="size-guide-item">
-        <div class="size-guide-size">Lサイズ</div>
-        セダン・SUVなど
-      </div>
-      <div class="size-guide-item">
-        <div class="size-guide-size">XLサイズ</div>
-        ミニバン・大型SUVなど
-      </div>
-      <div class="size-guide-item">
-        <div class="size-guide-size">XXLサイズ</div>
-        大型ミニバン・大型SUVなど
-      </div>
+      <div class="size-guide-item"><div class="size-guide-size">SSサイズ</div>小型軽自動車など</div>
+      <div class="size-guide-item"><div class="size-guide-size">Sサイズ</div>背の高い軽自動車・コンパクトカーなど</div>
+      <div class="size-guide-item"><div class="size-guide-size">Mサイズ</div>普通車・コンパクトSUVなど</div>
+      <div class="size-guide-item"><div class="size-guide-size">Lサイズ</div>セダン・SUVなど</div>
+      <div class="size-guide-item"><div class="size-guide-size">XLサイズ</div>ミニバン・大型SUVなど</div>
+      <div class="size-guide-item"><div class="size-guide-size">XXLサイズ</div>大型ミニバン・大型SUVなど</div>
     </div>
   </div>
 </details>
@@ -693,54 +681,11 @@ const carSearch = document.getElementById("carSearch");
 const searchResults = document.getElementById("searchResults");
 
 const JAPANESE_MAKERS = [
-  "トヨタ",
-  "レクサス",
-  "ホンダ",
-  "日産",
-  "マツダ",
-  "スバル",
-  "スズキ",
-  "ダイハツ",
-  "三菱"
+  "トヨタ","レクサス","ホンダ","日産","マツダ","スバル","スズキ","ダイハツ","三菱"
 ];
 
 const IMPORT_MAKERS = [
-  "BMW",
-  "MINI",
-  "メルセデス・ベンツ",
-  "アウディ",
-  "フォルクスワーゲン",
-  "ポルシェ",
-  "ボルボ",
-  "ジープ",
-  "プジョー",
-  "ルノー",
-  "ランドローバー",
-  "ジャガー",
-  "マセラティ",
-  "アルファロメオ",
-  "フィアット",
-  "シトロエン",
-  "DS",
-  "BYD",
-  "テスラ",
-  "シボレー",
-  "キャデラック",
-  "フォード",
-  "リンカーン",
-  "ダッジ",
-  "クライスラー",
-  "ハマー",
-  "ベントレー",
-  "ロールスロイス",
-  "フェラーリ",
-  "ランボルギーニ",
-  "アストンマーティン",
-  "マクラーレン",
-  "アバルト",
-  "ロータス",
-  "ヒョンデ",
-  "KIA"
+  "BMW","MINI","メルセデス・ベンツ","アウディ","フォルクスワーゲン","ポルシェ","ボルボ","ジープ","プジョー","ルノー","ランドローバー","ジャガー","マセラティ","アルファロメオ","フィアット","シトロエン","DS","BYD","テスラ","シボレー","キャデラック","フォード","リンカーン","ダッジ","クライスラー","ハマー","ベントレー","ロールスロイス","フェラーリ","ランボルギーニ","アストンマーティン","マクラーレン","アバルト","ロータス","ヒョンデ","KIA"
 ];
 
 const { data, error } = await supabase
@@ -758,16 +703,34 @@ if (error) {
     return String(name).replaceAll("2層研磨", "2周研磨");
   }
 
+  function getCoatingDescription(menuName) {
+    const name = formatMenuName(menuName);
+
+    if (name.includes("研磨なし")) {
+      return "新車や状態の良いお車におすすめ。塗装への負担を抑えながら艶と保護性能を高めます。";
+    }
+
+    if (name.includes("軽研磨")) {
+      return "軽い雨染み・小キズが気になるお車におすすめ。艶感を整えてからコーティングします。";
+    }
+
+    if (name.includes("2周研磨")) {
+      return "艶をしっかり出したい方におすすめ。下地を丁寧に整え、より美しい仕上がりを目指します。";
+    }
+
+    return "お車の状態に合わせて施工いたします。";
+  }
+
   function toKatakana(str) {
-    return str.replace(/[ぁ-ん]/g, function(char) {
-      return String.fromCharCode(char.charCodeAt(0) + 0x60);
-    });
+    return str.replace(/[ぁ-ん]/g, char =>
+      String.fromCharCode(char.charCodeAt(0) + 0x60)
+    );
   }
 
   function toHalfWidth(str) {
-    return str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(char) {
-      return String.fromCharCode(char.charCodeAt(0) - 0xFEE0);
-    });
+    return str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, char =>
+      String.fromCharCode(char.charCodeAt(0) - 0xFEE0)
+    );
   }
 
   function normalizeText(str) {
@@ -781,11 +744,11 @@ if (error) {
     const words = [];
 
     if (car.maker === "メルセデス・ベンツ") {
-      words.push("ベンツ", "benz", "mercedes", "mercedesbenz", "mb");
+      words.push("ベンツ","benz","mercedes","mercedesbenz","mb");
     }
 
     if (car.maker === "フォルクスワーゲン") {
-      words.push("vw", "volkswagen", "ワーゲン");
+      words.push("vw","volkswagen","ワーゲン");
     }
 
     if (car.maker === "レクサス") words.push("lexus");
@@ -802,16 +765,14 @@ if (error) {
     if (car.maker === "アウディ") words.push("audi");
     if (car.maker === "ボルボ") words.push("volvo");
     if (car.maker === "ジープ") words.push("jeep");
-    if (car.maker === "シボレー") words.push("chevrolet");
-    if (car.maker === "キャデラック") words.push("cadillac");
-    if (car.maker === "ランドローバー") words.push("landrover", "rangerover");
+    if (car.maker === "ランドローバー") words.push("landrover","rangerover");
 
     if (car.model === "プリウス") words.push("prius");
-    if (car.model === "アルファード") words.push("alphard", "アル");
+    if (car.model === "アルファード") words.push("alphard","アル");
     if (car.model === "ヴェルファイア") words.push("vellfire");
     if (car.model === "ハイエース") words.push("hiace");
     if (car.model === "ランドクルーザー250" || car.model === "ランドクルーザー300") {
-      words.push("ランクル", "landcruiser");
+      words.push("ランクル","landcruiser");
     }
 
     return words;
@@ -843,41 +804,28 @@ if (error) {
   }
 
   function getMakerSortIndex(maker) {
-    if (JAPANESE_MAKERS.includes(maker)) {
-      return JAPANESE_MAKERS.indexOf(maker);
-    }
-
-    if (IMPORT_MAKERS.includes(maker)) {
-      return 100 + IMPORT_MAKERS.indexOf(maker);
-    }
-
+    if (JAPANESE_MAKERS.includes(maker)) return JAPANESE_MAKERS.indexOf(maker);
+    if (IMPORT_MAKERS.includes(maker)) return 100 + IMPORT_MAKERS.indexOf(maker);
     return 999;
   }
 
   function addMakerOptions() {
     const makers = [...new Set(cars.map(car => car.maker))]
-      .sort((a, b) => {
-        const diff =
-          getMakerSortIndex(a) - getMakerSortIndex(b);
-
+      .sort((a,b) => {
+        const diff = getMakerSortIndex(a) - getMakerSortIndex(b);
         if (diff !== 0) return diff;
-
-        return a.localeCompare(b, "ja");
+        return a.localeCompare(b,"ja");
       });
 
-    makerSelect.innerHTML =
-      '<option value="">メーカーを選択</option>';
+    makerSelect.innerHTML = '<option value="">メーカーを選択</option>';
 
-    const japaneseGroup =
-      document.createElement("optgroup");
+    const japaneseGroup = document.createElement("optgroup");
     japaneseGroup.label = "日本車";
 
-    const importGroup =
-      document.createElement("optgroup");
+    const importGroup = document.createElement("optgroup");
     importGroup.label = "輸入車";
 
-    const otherGroup =
-      document.createElement("optgroup");
+    const otherGroup = document.createElement("optgroup");
     otherGroup.label = "その他";
 
     makers.forEach(maker => {
@@ -905,22 +853,17 @@ if (error) {
   addMakerOptions();
 
   function populateCarsByMaker(maker) {
-    select.innerHTML =
-      '<option value="">車種を選択</option>';
+    select.innerHTML = '<option value="">車種を選択</option>';
 
     cars
       .filter(car => car.maker === maker)
-      .sort((a, b) =>
-        a.model.localeCompare(b.model, "ja")
-      )
+      .sort((a,b) => a.model.localeCompare(b.model,"ja"))
       .forEach(car => {
         const option = document.createElement("option");
-
         option.value = car.model;
         option.textContent = car.model;
         option.dataset.size = car.size;
         option.dataset.maker = car.maker;
-
         select.appendChild(option);
       });
   }
@@ -932,7 +875,6 @@ if (error) {
 
     makerSelect.value = car.maker;
     populateCarsByMaker(car.maker);
-
     select.value = car.model;
 
     result.innerHTML = `
@@ -961,6 +903,8 @@ if (error) {
         <option value="">メニューを選択</option>
       </select>
 
+      <div id="menuCardArea" class="menu-card-area"></div>
+
       <div id="optionArea"></div>
       <div id="priceResult"></div>
     `;
@@ -968,25 +912,19 @@ if (error) {
     loadMenus(car.size);
   }
 
-  document
-    .querySelectorAll(".quick-car-button")
-    .forEach(button => {
-      button.addEventListener("click", function() {
-        const car = cars.find(item =>
-          item.maker === this.dataset.maker &&
-          item.model === this.dataset.model
-        );
+  document.querySelectorAll(".quick-car-button").forEach(button => {
+    button.addEventListener("click", function() {
+      const car = cars.find(item =>
+        item.maker === this.dataset.maker &&
+        item.model === this.dataset.model
+      );
 
-        if (car) {
-          showCar(car);
-        }
-      });
+      if (car) showCar(car);
     });
+  });
 
   makerSelect.addEventListener("change", function() {
-    const selectedMaker = this.value;
-
-    populateCarsByMaker(selectedMaker);
+    populateCarsByMaker(this.value);
     result.innerHTML = "";
     carSearch.value = "";
     searchResults.innerHTML = "";
@@ -1006,9 +944,7 @@ if (error) {
       item.model === option.value
     );
 
-    if (car) {
-      showCar(car);
-    }
+    if (car) showCar(car);
   });
 
   carSearch.addEventListener("input", function() {
@@ -1022,56 +958,37 @@ if (error) {
       return;
     }
 
-    const keywords =
-      rawKeyword
-        .split(/\s+/)
-        .map(word => normalizeText(word))
-        .filter(Boolean);
+    const keywords = rawKeyword
+      .split(/\s+/)
+      .map(word => normalizeText(word))
+      .filter(Boolean);
 
-    const effectiveKeywords =
-      keywords.length ? keywords : [keyword];
+    const effectiveKeywords = keywords.length ? keywords : [keyword];
 
-    const matchedCars =
-      cars
-        .map(car => {
-          const searchText = getSearchText(car);
+    const matchedCars = cars
+      .map(car => {
+        const searchText = getSearchText(car);
 
-          const isMatch =
-            effectiveKeywords.every(word =>
-              searchText.includes(word)
-            ) || searchText.includes(keyword);
+        const isMatch =
+          effectiveKeywords.every(word => searchText.includes(word)) ||
+          searchText.includes(keyword);
 
-          if (!isMatch) {
-            return null;
-          }
+        if (!isMatch) return null;
 
-          const score =
-            Math.max(
-              getSearchScore(car, keyword),
-              ...effectiveKeywords.map(word =>
-                getSearchScore(car, word)
-              )
-            );
+        const score = Math.max(
+          getSearchScore(car, keyword),
+          ...effectiveKeywords.map(word => getSearchScore(car, word))
+        );
 
-          return {
-            car,
-            score
-          };
-        })
-        .filter(Boolean)
-        .sort((a, b) => {
-          if (b.score !== a.score) {
-            return b.score - a.score;
-          }
-
-          return `${a.car.maker}${a.car.model}`
-            .localeCompare(
-              `${b.car.maker}${b.car.model}`,
-              "ja"
-            );
-        })
-        .slice(0, 20)
-        .map(item => item.car);
+        return { car, score };
+      })
+      .filter(Boolean)
+      .sort((a,b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return `${a.car.maker}${a.car.model}`.localeCompare(`${b.car.maker}${b.car.model}`,"ja");
+      })
+      .slice(0,20)
+      .map(item => item.car);
 
     if (!matchedCars.length) {
       searchResults.innerHTML =
@@ -1082,16 +999,11 @@ if (error) {
 
     matchedCars.forEach(car => {
       const item = document.createElement("div");
-
       item.className = "search-result-item";
-
-      item.textContent =
-        `${car.maker} ${car.model}／${car.size}サイズ`;
-
+      item.textContent = `${car.maker} ${car.model}／${car.size}サイズ`;
       item.addEventListener("click", function() {
         showCar(car);
       });
-
       searchResults.appendChild(item);
     });
 
@@ -1100,25 +1012,26 @@ if (error) {
 
   async function loadMenus(size) {
     const menuSelect = document.getElementById("menuSelect");
+    const menuCardArea = document.getElementById("menuCardArea");
 
     const { data: menus } = await supabase
       .from("menus")
       .select("*");
 
-    menus.sort((a, b) => {
+    menus.sort((a,b) => {
       const order = {
-        "純水手洗い洗車": 1,
-        "徹底洗車": 2,
-        "徹底洗車ライト": 3,
-        "MIYABI+OVER COAT（研磨なし）": 4,
-        "MIYABI+OVER COAT（軽研磨）": 5,
-        "MIYABI+OVER COAT（2層研磨）": 6,
-        "MIYABI+ISM（研磨なし）": 7,
-        "MIYABI+ISM（軽研磨）": 8,
-        "MIYABI+ISM（2層研磨）": 9,
-        "MIYABI+IZM（研磨なし）": 10,
-        "MIYABI+IZM（軽研磨）": 11,
-        "MIYABI+IZM（2層研磨）": 12
+        "純水手洗い洗車":1,
+        "徹底洗車":2,
+        "徹底洗車ライト":3,
+        "MIYABI+OVER COAT（研磨なし）":4,
+        "MIYABI+OVER COAT（軽研磨）":5,
+        "MIYABI+OVER COAT（2層研磨）":6,
+        "MIYABI+ISM（研磨なし）":7,
+        "MIYABI+ISM（軽研磨）":8,
+        "MIYABI+ISM（2層研磨）":9,
+        "MIYABI+IZM（研磨なし）":10,
+        "MIYABI+IZM（軽研磨）":11,
+        "MIYABI+IZM（2層研磨）":12
       };
 
       return (order[a.menu_name] || 999) - (order[b.menu_name] || 999);
@@ -1127,17 +1040,60 @@ if (error) {
     const categorySelect = document.getElementById("categorySelect");
 
     categorySelect.addEventListener("change", function() {
-      menuSelect.innerHTML =
-        '<option value="">メニューを選択</option>';
+      menuSelect.innerHTML = '<option value="">メニューを選択</option>';
+      menuCardArea.innerHTML = "";
+      menuCardArea.style.display = "none";
+      menuSelect.style.display = "block";
 
       document.getElementById("optionArea").innerHTML = "";
       document.getElementById("priceResult").innerHTML = "";
 
       const selectedCategory = this.value;
 
-      const filteredMenus = menus.filter(
-        menu => menu.category === selectedCategory
+      const filteredMenus = menus.filter(menu =>
+        menu.category === selectedCategory
       );
+
+      if (selectedCategory === "coating") {
+        menuSelect.style.display = "none";
+        menuCardArea.style.display = "block";
+
+        menuCardArea.innerHTML = `
+          <div class="menu-card-title">
+            コーティングメニューを選択
+          </div>
+        `;
+
+        filteredMenus.forEach(menu => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "menu-card";
+          button.dataset.menuName = menu.menu_name;
+
+          button.innerHTML = `
+            <div class="menu-card-name">
+              ${formatMenuName(menu.menu_name)}
+            </div>
+            <div class="menu-card-desc">
+              ${getCoatingDescription(menu.menu_name)}
+            </div>
+          `;
+
+          button.addEventListener("click", function() {
+            document.querySelectorAll(".menu-card").forEach(card => {
+              card.classList.remove("active");
+            });
+
+            this.classList.add("active");
+
+            showPrice(menu.menu_name);
+          });
+
+          menuCardArea.appendChild(button);
+        });
+
+        return;
+      }
 
       filteredMenus.forEach(menu => {
         const option = document.createElement("option");
@@ -1147,11 +1103,16 @@ if (error) {
       });
     });
 
-    menuSelect.addEventListener("change", async function() {
+    menuSelect.addEventListener("change", function() {
+      if (!this.value) return;
+      showPrice(this.value);
+    });
+
+    async function showPrice(menuName) {
       const selectedSize =
         document.querySelector(".car-size")
           .textContent
-          .replace("サイズ", "")
+          .replace("サイズ","")
           .trim();
 
       const carName =
@@ -1159,10 +1120,7 @@ if (error) {
           .textContent
           .trim();
 
-      const menuName = this.value;
       const displayMenuName = formatMenuName(menuName);
-
-      if (!menuName) return;
 
       const { data: prices } = await supabase
         .from("prices")
@@ -1186,11 +1144,9 @@ if (error) {
         .select("*")
         .eq("size", selectedSize);
 
-      const optionArea =
-        document.getElementById("optionArea");
+      const optionArea = document.getElementById("optionArea");
 
-      optionArea.innerHTML =
-        "<h3>追加オプション</h3>";
+      optionArea.innerHTML = "<h3>追加オプション</h3>";
 
       options.forEach(option => {
         optionArea.innerHTML += `
@@ -1211,126 +1167,64 @@ if (error) {
         <div class="result-divider"></div>
 
         <div class="result-section">
-          <div class="result-label">
-            施工メニュー
-          </div>
-
-          <div class="result-value">
-            ${displayMenuName}
-          </div>
+          <div class="result-label">施工メニュー</div>
+          <div class="result-value">${displayMenuName}</div>
         </div>
 
         <div class="result-section">
-          <div class="result-label">
-            施工料金
-          </div>
-
-          <div class="result-value">
-            ${prices[0].price.toLocaleString()}円
-          </div>
+          <div class="result-label">施工料金</div>
+          <div class="result-value">${prices[0].price.toLocaleString()}円</div>
         </div>
 
         <div class="result-section">
-          <div class="result-label">
-            選択オプション
-          </div>
-
-          <div
-            id="selectedOptionsResult"
-            class="result-value"
-          >
-            なし
-          </div>
+          <div class="result-label">選択オプション</div>
+          <div id="selectedOptionsResult" class="result-value">なし</div>
         </div>
 
         <div class="result-section">
-          <div class="result-label">
-            オプション合計
-          </div>
-
-          <div
-            id="optionTotalResult"
-            class="result-value"
-          >
-            0円
-          </div>
+          <div class="result-label">オプション合計</div>
+          <div id="optionTotalResult" class="result-value">0円</div>
         </div>
 
         <div class="total-card">
-          <div class="result-label">
-            お支払い総額
-          </div>
-
-          <div
-            id="totalPrice"
-            class="result-price"
-          >
+          <div class="result-label">お支払い総額</div>
+          <div id="totalPrice" class="result-price">
             ${prices[0].price.toLocaleString()}円
           </div>
-
-          <div class="info">
-            （税込）
-          </div>
+          <div class="info">（税込）</div>
         </div>
 
         <div class="estimate-card">
-          <div class="estimate-title">
-            お見積り内容
+          <div class="estimate-title">お見積り内容</div>
+
+          <div class="estimate-row">
+            <div class="estimate-label">お車</div>
+            <div class="estimate-value">${carName}</div>
           </div>
 
           <div class="estimate-row">
-            <div class="estimate-label">
-              お車
-            </div>
-            <div class="estimate-value">
-              ${carName}
-            </div>
+            <div class="estimate-label">サイズ</div>
+            <div class="estimate-value">${selectedSize}サイズ</div>
           </div>
 
           <div class="estimate-row">
-            <div class="estimate-label">
-              サイズ
-            </div>
-            <div class="estimate-value">
-              ${selectedSize}サイズ
-            </div>
+            <div class="estimate-label">施工メニュー</div>
+            <div class="estimate-value">${displayMenuName}</div>
           </div>
 
           <div class="estimate-row">
-            <div class="estimate-label">
-              施工メニュー
-            </div>
-            <div class="estimate-value">
-              ${displayMenuName}
-            </div>
+            <div class="estimate-label">選択オプション</div>
+            <div id="estimateOptions" class="estimate-value">なし</div>
           </div>
 
           <div class="estimate-row">
-            <div class="estimate-label">
-              選択オプション
-            </div>
-            <div
-              id="estimateOptions"
-              class="estimate-value"
-            >
-              なし
-            </div>
-          </div>
-
-          <div class="estimate-row">
-            <div class="estimate-label">
-              お支払い総額
-            </div>
-            <div
-              id="estimateTotal"
-              class="estimate-total"
-            >
+            <div class="estimate-label">お支払い総額</div>
+            <div id="estimateTotal" class="estimate-total">
               ${prices[0].price.toLocaleString()}円（税込）
             </div>
           </div>
 
           <div class="estimate-actions">
-
             <p class="contact-note">
               内容をご確認のうえ、ご相談・ご予約をご希望の方はLINEよりお問い合わせください。
             </p>
@@ -1339,18 +1233,11 @@ if (error) {
               ※この時点では予約確定ではありません。
             </p>
 
-            <a
-              class="case-button"
-              href="${caseUrl}"
-            >
+            <a class="case-button" href="${caseUrl}">
               施工事例を見る
             </a>
 
-            <button
-              id="copyEstimateBtn"
-              class="copy-button"
-              type="button"
-            >
+            <button id="copyEstimateBtn" class="copy-button" type="button">
               お見積り内容をコピー
             </button>
 
@@ -1364,22 +1251,13 @@ if (error) {
               この内容でLINE問い合わせ
             </a>
 
-            <div
-              id="copyMessage"
-              class="copy-message"
-            ></div>
-
+            <div id="copyMessage" class="copy-message"></div>
           </div>
         </div>
 
         <div class="result-section">
-          <div class="result-label">
-            施工時間
-          </div>
-
-          <div class="result-value">
-            ${menuData[0].work_time}
-          </div>
+          <div class="result-label">施工時間</div>
+          <div class="result-value">${menuData[0].work_time}</div>
         </div>
       `;
 
@@ -1407,8 +1285,7 @@ if (error) {
             ? selectedOptions.map(name => `・${name}`).join("\\n")
             : "なし";
 
-        const totalPrice =
-          basePrice + optionTotal;
+        const totalPrice = basePrice + optionTotal;
 
         document.getElementById("optionTotalResult").textContent =
           `${optionTotal.toLocaleString()}円`;
@@ -1446,17 +1323,14 @@ ${menuData[0].work_time}
 この内容で問い合わせ希望です。`;
       }
 
-      document
-        .querySelectorAll(".optionCheck")
-        .forEach(check => {
-          check.addEventListener("change", updateTotal);
-        });
+      document.querySelectorAll(".optionCheck").forEach(check => {
+        check.addEventListener("change", updateTotal);
+      });
 
       document
         .getElementById("copyEstimateBtn")
         .addEventListener("click", async function() {
-          const copyMessage =
-            document.getElementById("copyMessage");
+          const copyMessage = document.getElementById("copyMessage");
 
           try {
             await navigator.clipboard.writeText(currentEstimateText);
@@ -1469,7 +1343,7 @@ ${menuData[0].work_time}
         });
 
       updateTotal();
-    });
+    }
   }
 }
 </script>
