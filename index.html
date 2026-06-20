@@ -223,6 +223,22 @@ select:focus{
   flex-direction:column;
 }
 
+.contact-note{
+  margin:0;
+  font-size:15px;
+  line-height:1.8;
+  text-align:center;
+  color:#222;
+}
+
+.contact-subnote{
+  margin:8px 0 16px;
+  font-size:13px;
+  line-height:1.6;
+  text-align:center;
+  color:#777;
+}
+
 .copy-button,
 .line-button{
   display:block;
@@ -633,6 +649,15 @@ async function loadMenus(size) {
         </div>
 
         <div class="estimate-actions">
+
+          <p class="contact-note">
+            内容をご確認のうえ、ご相談・ご予約をご希望の方はLINEよりお問い合わせください。
+          </p>
+
+          <p class="contact-subnote">
+            ※この時点では予約確定ではありません。
+          </p>
+
           <button
             id="copyEstimateBtn"
             class="copy-button"
@@ -655,6 +680,7 @@ async function loadMenus(size) {
             id="copyMessage"
             class="copy-message"
           ></div>
+
         </div>
       </div>
 
