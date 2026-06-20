@@ -340,16 +340,6 @@ select{
   line-height:2;
 }
 
-.brand-detail{
-  margin:26px auto 0;
-  background:#111;
-  color:#fff;
-  border:1px solid #111;
-  padding:12px 26px;
-  font-family:'Shippori Mincho', serif;
-  font-size:14px;
-}
-
 .brand-ism{
   border-color:#e66b91;
 }
@@ -714,11 +704,17 @@ select{
 
   .selected-car-card{
     grid-template-columns:1fr;
-    padding:22px 18px;
+    padding:20px 16px;
+    gap:16px;
   }
 
   .worktime-box{
     min-width:auto;
+    padding:14px;
+  }
+
+  .worktime-box-value{
+    font-size:16px;
   }
 
   .car-name{
@@ -730,6 +726,10 @@ select{
     padding:6px 13px;
   }
 
+  .coating-heading{
+    margin:24px 0 18px;
+  }
+
   .coating-heading-title{
     font-size:17px;
   }
@@ -739,25 +739,81 @@ select{
     width:55px;
   }
 
+  .coating-heading-text{
+    font-size:12px;
+  }
+
+  .coating-brand{
+    margin-bottom:22px;
+  }
+
   .brand-panel{
-    padding:32px 22px;
+    padding:24px 18px;
+  }
+
+  .brand-sub{
+    font-size:12px;
   }
 
   .brand-main{
-    font-size:34px;
+    font-size:30px;
+    margin:8px 0;
+  }
+
+  .brand-coat{
+    font-size:17px;
+    margin-bottom:12px;
+  }
+
+  .brand-desc{
+    font-size:12px;
+    line-height:1.7;
   }
 
   .plan-card{
-    padding:24px 18px;
+    padding:16px;
+    text-align:left;
+  }
+
+  .plan-badge{
+    font-size:12px;
+    padding:6px 18px;
+    margin-bottom:10px;
   }
 
   .plan-desc{
     min-height:auto;
     font-size:12px;
+    line-height:1.7;
+    margin-bottom:12px;
+  }
+
+  .plan-time-label{
+    display:inline-block;
+    margin-top:0;
+    margin-right:8px;
+    font-size:11px;
+  }
+
+  .plan-time{
+    display:inline-block;
+    font-size:15px;
+    margin:0 0 10px;
+  }
+
+  .plan-price-label{
+    font-size:11px;
+    margin-top:4px;
   }
 
   .plan-price{
-    font-size:21px;
+    font-size:22px;
+    margin-bottom:12px;
+  }
+
+  .select-plan-button{
+    padding:13px;
+    font-size:13px;
   }
 
   .result-label,
@@ -998,15 +1054,15 @@ if (error) {
     const label = getPlanLabel(menuName);
 
     if (label === "研磨なし") {
-      return "新車や状態の良いお車におすすめ。塗装への負担を抑えながら、艶と保護性能をしっかり保護。";
+      return "新車や状態の良いお車におすすめ。塗装への負担を抑えながら施工します。";
     }
 
     if (label === "軽研磨") {
-      return "軽い雨染みや小キズが気になるお車におすすめ。艶感を整え、美しさを引き出してから施工。";
+      return "軽い雨染みや小キズが気になるお車におすすめ。艶感を整えます。";
     }
 
     if (label === "2周研磨") {
-      return "艶をしっかり出したい方におすすめ。下地を丁寧に整え、より美しい仕上がりを実現。";
+      return "艶をしっかり出したい方におすすめ。下地を丁寧に整えます。";
     }
 
     return "お車の状態に合わせて施工いたします。";
@@ -1400,7 +1456,6 @@ if (error) {
             <div class="brand-main">${brand.main}</div>
             <div class="brand-coat">${brand.coat}</div>
             <div class="brand-desc">${brand.desc}</div>
-            <button class="brand-detail" type="button">詳細を見る　〉</button>
           </div>
 
           <div class="plan-grid"></div>
@@ -1418,8 +1473,10 @@ if (error) {
           planCard.innerHTML = `
             <div class="plan-badge">${getPlanLabel(menu.menu_name)}</div>
             <div class="plan-desc">${getPlanDescription(menu.menu_name)}</div>
-            <div class="plan-time-label">施工期間</div>
-            <div class="plan-time">${menu.work_time}</div>
+            <div>
+              <span class="plan-time-label">施工期間</span>
+              <span class="plan-time">${menu.work_time}</span>
+            </div>
             <div class="plan-price-label">料金（税込）</div>
             <div class="plan-price">${priceText}</div>
             <button
