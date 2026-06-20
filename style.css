@@ -333,10 +333,9 @@ select{
 }
 
 .plan-card{
-  border-left:1px solid #e4dfd7;
-  padding:28px 22px;
-  text-align:left;
-  background:#fff;
+  display:flex;
+  flex-direction:column;
+  padding:22px;
 }
 
 .plan-badge{
@@ -365,9 +364,14 @@ select{
 }
 
 .plan-desc{
+  height:72px;
+  line-height:1.8;
   font-size:13px;
-  line-height:1.9;
-  min-height:76px;
+  text-align:left;
+  margin-bottom:12px;
+  padding-bottom:12px;
+  border-bottom:2px dotted currentColor;
+  overflow:hidden;
 }
 
 .plan-time-label{
@@ -377,9 +381,10 @@ select{
 }
 
 .plan-time{
-  font-size:18px;
-  font-weight:700;
-  margin:4px 0 18px;
+  background:rgba(0,0,0,0.04);
+  padding:10px 14px;
+  min-height:auto;
+  margin-bottom:10px;
 }
 
 .plan-price-label{
@@ -388,12 +393,16 @@ select{
 }
 
 .plan-price{
-  font-size:23px;
-  font-weight:700;
-  margin-bottom:18px;
+  background:rgba(0,0,0,0.04);
+  padding:10px 14px;
+  font-size:22px;
+  margin-bottom:14px;
 }
 
 .select-plan-button{
+  margin-top:auto;
+  height:48px;
+}
   width:100%;
   border:none;
   color:#fff;
