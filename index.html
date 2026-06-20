@@ -163,7 +163,7 @@ select{
   padding:16px 18px;
   cursor:pointer;
   font-weight:700;
-  text-align:center;
+  text-align:left;
 }
 
 .size-guide-content{
@@ -195,10 +195,6 @@ select{
 }
 
 .selected-car-card{
-  display:grid;
-  grid-template-columns:1fr auto;
-  gap:24px;
-  align-items:center;
   padding:26px 28px;
   border:1px solid #ddd6cc;
   background:#fff;
@@ -229,25 +225,6 @@ select{
   font-weight:600;
 }
 
-.worktime-box{
-  border:1px solid #e3ded7;
-  padding:20px 24px;
-  text-align:center;
-  min-width:180px;
-}
-
-.worktime-box-label{
-  font-size:12px;
-  color:#666;
-  letter-spacing:0.08em;
-  margin-bottom:8px;
-}
-
-.worktime-box-value{
-  font-size:20px;
-  font-weight:700;
-}
-
 .category-area{
   margin-bottom:28px;
 }
@@ -269,27 +246,16 @@ select{
 }
 
 .coating-heading{
-  text-align:center;
-  margin:30px 0 26px;
+  margin:30px 0 24px;
+  text-align:left;
 }
 
 .coating-heading-title{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:18px;
   font-size:22px;
   font-weight:700;
-  letter-spacing:0.12em;
-}
-
-.coating-heading-title::before,
-.coating-heading-title::after{
-  content:"";
-  display:block;
-  width:160px;
-  height:1px;
-  background:#d8d2ca;
+  letter-spacing:0.08em;
+  padding-bottom:12px;
+  border-bottom:1px solid #d8d2ca;
 }
 
 .coating-heading-text{
@@ -310,11 +276,15 @@ select{
 
 .brand-panel{
   color:#fff;
-  padding:42px 28px;
+  padding:38px 28px;
   display:flex;
   flex-direction:column;
   justify-content:center;
-  text-align:center;
+  text-align:left;
+}
+
+.brand-title-line{
+  line-height:1.15;
 }
 
 .brand-sub{
@@ -332,12 +302,12 @@ select{
 .brand-coat{
   font-size:22px;
   letter-spacing:0.08em;
-  margin-bottom:22px;
+  margin-bottom:18px;
 }
 
 .brand-desc{
   font-size:14px;
-  line-height:2;
+  line-height:1.9;
 }
 
 .brand-ism{
@@ -372,14 +342,14 @@ select{
 .plan-card{
   border-left:1px solid #e4dfd7;
   padding:28px 22px;
-  text-align:center;
+  text-align:left;
   background:#fff;
 }
 
 .plan-badge{
   display:inline-block;
   color:#fff;
-  padding:7px 28px;
+  padding:7px 22px;
   border-radius:999px;
   font-size:14px;
   font-weight:700;
@@ -414,7 +384,7 @@ select{
 }
 
 .plan-time{
-  font-size:19px;
+  font-size:18px;
   font-weight:700;
   margin:4px 0 18px;
 }
@@ -505,7 +475,7 @@ select{
   padding:30px 24px;
   background:linear-gradient(135deg,#050505 0%,#1a1a1a 55%,#050505 100%);
   color:#fff;
-  text-align:center;
+  text-align:left;
   border:1px solid #2b2b2b;
   box-shadow:0 16px 35px rgba(0,0,0,0.18);
 }
@@ -537,7 +507,7 @@ select{
   font-size:24px;
   font-weight:700;
   margin-bottom:24px;
-  text-align:center;
+  text-align:left;
 }
 
 .estimate-row{
@@ -575,14 +545,14 @@ select{
   margin:0;
   font-size:15px;
   line-height:1.8;
-  text-align:center;
+  text-align:left;
 }
 
 .contact-subnote{
   margin:8px 0 16px;
   font-size:13px;
   line-height:1.6;
-  text-align:center;
+  text-align:left;
   color:#777;
 }
 
@@ -623,7 +593,7 @@ select{
   margin-top:10px;
   font-size:14px;
   color:#555;
-  text-align:center;
+  text-align:left;
 }
 
 @media(max-width:800px){
@@ -703,18 +673,7 @@ select{
   }
 
   .selected-car-card{
-    grid-template-columns:1fr;
     padding:20px 16px;
-    gap:16px;
-  }
-
-  .worktime-box{
-    min-width:auto;
-    padding:14px;
-  }
-
-  .worktime-box-value{
-    font-size:16px;
   }
 
   .car-name{
@@ -734,11 +693,6 @@ select{
     font-size:17px;
   }
 
-  .coating-heading-title::before,
-  .coating-heading-title::after{
-    width:55px;
-  }
-
   .coating-heading-text{
     font-size:12px;
   }
@@ -748,31 +702,39 @@ select{
   }
 
   .brand-panel{
-    padding:24px 18px;
+    padding:18px 16px;
+  }
+
+  .brand-title-line{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:5px;
   }
 
   .brand-sub{
-    font-size:12px;
+    font-size:13px;
   }
 
   .brand-main{
-    font-size:30px;
-    margin:8px 0;
+    font-size:23px;
+    margin:0;
+    letter-spacing:0.04em;
   }
 
   .brand-coat{
-    font-size:17px;
-    margin-bottom:12px;
+    font-size:13px;
+    margin:0;
   }
 
   .brand-desc{
+    margin-top:10px;
     font-size:12px;
     line-height:1.7;
   }
 
   .plan-card{
     padding:16px;
-    text-align:left;
   }
 
   .plan-badge{
@@ -1226,17 +1188,9 @@ if (error) {
 
     result.innerHTML = `
       <div class="selected-car-card">
-        <div>
-          <div class="selected-car-label">お選びのお車</div>
-          <div class="car-name">${car.maker} ${car.model}</div>
-          <div class="car-size">${car.size}サイズ</div>
-        </div>
-
-        <div class="worktime-box">
-          <div class="worktime-box-label">施工時間の目安</div>
-          <div class="worktime-box-value">3日〜7日程度</div>
-          <div class="info">※メニューにより異なります</div>
-        </div>
+        <div class="selected-car-label">お選びのお車</div>
+        <div class="car-name">${car.maker} ${car.model}</div>
+        <div class="car-size">${car.size}サイズ</div>
       </div>
 
       <div class="category-area">
@@ -1452,9 +1406,11 @@ if (error) {
 
         brandBlock.innerHTML = `
           <div class="brand-panel">
-            <div class="brand-sub">${brand.sub}</div>
-            <div class="brand-main">${brand.main}</div>
-            <div class="brand-coat">${brand.coat}</div>
+            <div class="brand-title-line">
+              <span class="brand-sub">${brand.sub}</span>
+              <span class="brand-main">${brand.main}</span>
+              <span class="brand-coat">${brand.coat}</span>
+            </div>
             <div class="brand-desc">${brand.desc}</div>
           </div>
 
