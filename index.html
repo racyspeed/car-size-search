@@ -369,10 +369,13 @@ optionArea.innerHTML =
 
 options.forEach(option => {
 
-optionArea.innerHTML += `     <label style="display:block;margin:10px 0;">       <input
-        type="checkbox"
-        class="optionCheck"
-        data-price="${option.price}"       >
+optionArea.innerHTML += `     <label style="display:block;margin:10px 0;">       
+<input
+  type="checkbox"
+  class="optionCheck"
+  data-price="${option.price}"
+  data-name="${option.option_name}"
+>
       ${option.option_name}
       （${option.price.toLocaleString()}円）     </label>
   `;
@@ -380,7 +383,20 @@ optionArea.innerHTML += `     <label style="display:block;margin:10px 0;">      
 });
 
 document.getElementById("priceResult").innerHTML = `
+<div class="result-section">
 
+  <div class="result-label">
+    選択オプション
+  </div>
+
+  <div
+    id="selectedOptionsResult"
+    class="result-value"
+  >
+    なし
+  </div>
+
+</div>
 <div class="result-divider"></div>
 
 <div class="result-section">
@@ -471,7 +487,7 @@ const basePrice = prices[0].price;
 function updateTotal() {
 
   let optionTotal = 0;
-
+let selectedOptions = [];
   document
     .querySelectorAll(".optionCheck:checked")
     .forEach(check => {
@@ -479,7 +495,7 @@ function updateTotal() {
       optionTotal += Number(
         check.dataset.price
       );
-
+selectedOptions.push(check.dataset.name);
     });
 
   document.getElementById(
@@ -491,6 +507,13 @@ document.getElementById(
   "totalPrice"
 ).textContent =
   `${(basePrice + optionTotal).toLocaleString()}円`;
+
+  document.getElementById(
+  "selectedOptionsResult"
+).innerHTML =
+  selectedOptions.length
+    ? selectedOptions.join("<br>")
+    : "なし";
 
 }
 
