@@ -367,7 +367,7 @@ select:focus{
   <input
     id="carSearch"
     type="text"
-    placeholder="例：プリウス、アルファード、BMW X3"
+    placeholder="例：ぷり、アルファード、BMW X3、ベンツ"
   >
   <div id="searchResults" class="search-results"></div>
 </div>
@@ -413,6 +413,96 @@ if (error) {
   console.error(error);
 } else {
   const cars = data;
+
+  function toKatakana(str) {
+    return str.replace(/[ぁ-ん]/g, function(char) {
+      return String.fromCharCode(
+        char.charCodeAt(0) + 0x60
+      );
+    });
+  }
+
+  function toHalfWidth(str) {
+    return str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(char) {
+      return String.fromCharCode(
+        char.charCodeAt(0) - 0xFEE0
+      );
+    });
+  }
+
+  function normalizeText(str) {
+    return toHalfWidth(
+      toKatakana(String(str))
+    )
+      .toLowerCase()
+      .replace(/[・\s　\-\_\.\/／]/g, "")
+      .replace(/[（）\(\)]/g, "");
+  }
+
+  function getAliasWords(car) {
+    const words = [];
+
+    if (car.maker === "メルセデス・ベンツ") {
+      words.push("ベンツ", "benz", "mercedes", "mercedesbenz", "mb");
+    }
+
+    if (car.maker === "フォルクスワーゲン") {
+      words.push("vw", "volkswagen", "ワーゲン");
+    }
+
+    if (car.maker === "レクサス") words.push("lexus");
+    if (car.maker === "トヨタ") words.push("toyota");
+    if (car.maker === "ホンダ") words.push("honda");
+    if (car.maker === "日産") words.push("nissan");
+    if (car.maker === "マツダ") words.push("mazda");
+    if (car.maker === "スバル") words.push("subaru");
+    if (car.maker === "スズキ") words.push("suzuki");
+    if (car.maker === "ダイハツ") words.push("daihatsu");
+    if (car.maker === "三菱") words.push("mitsubishi");
+    if (car.maker === "テスラ") words.push("tesla");
+    if (car.maker === "ポルシェ") words.push("porsche");
+    if (car.maker === "アウディ") words.push("audi");
+    if (car.maker === "ボルボ") words.push("volvo");
+    if (car.maker === "ジープ") words.push("jeep");
+    if (car.maker === "シボレー") words.push("chevrolet");
+    if (car.maker === "キャデラック") words.push("cadillac");
+    if (car.maker === "ランドローバー") words.push("landrover", "rangerover");
+
+    if (car.model === "プリウス") words.push("prius");
+    if (car.model === "アルファード") words.push("alphard", "アル");
+    if (car.model === "ヴェルファイア") words.push("vellfire");
+    if (car.model === "ハイエース") words.push("hiace");
+    if (car.model === "ランドクルーザー250" || car.model === "ランドクルーザー300") {
+      words.push("ランクル", "landcruiser");
+    }
+
+    return words;
+  }
+
+  function getSearchText(car) {
+    return normalizeText([
+      car.maker,
+      car.model,
+      `${car.maker}${car.model}`,
+      ...getAliasWords(car)
+    ].join(" "));
+  }
+
+  function getSearchScore(car, keyword) {
+    const maker = normalizeText(car.maker);
+    const model = normalizeText(car.model);
+    const makerModel = normalizeText(`${car.maker}${car.model}`);
+    const searchText = getSearchText(car);
+
+    if (model === keyword) return 100;
+    if (makerModel === keyword) return 95;
+    if (model.startsWith(keyword)) return 90;
+    if (makerModel.startsWith(keyword)) return 85;
+    if (maker.startsWith(keyword)) return 80;
+    if (searchText.includes(keyword)) return 60;
+
+    return 0;
+  }
 
   const makers = [...new Set(cars.map(car => car.maker))];
 
@@ -516,10 +606,8 @@ if (error) {
   });
 
   carSearch.addEventListener("input", function() {
-    const keyword =
-      this.value
-        .trim()
-        .toLowerCase();
+    const rawKeyword = this.value.trim();
+    const keyword = normalizeText(rawKeyword);
 
     searchResults.innerHTML = "";
 
@@ -529,22 +617,55 @@ if (error) {
     }
 
     const keywords =
-      keyword
+      rawKeyword
         .split(/\s+/)
+        .map(word => normalizeText(word))
         .filter(Boolean);
+
+    const effectiveKeywords =
+      keywords.length ? keywords : [keyword];
 
     const matchedCars =
       cars
-        .filter(car => {
-          const text =
-            `${car.maker} ${car.model}`
-              .toLowerCase();
+        .map(car => {
+          const searchText = getSearchText(car);
 
-          return keywords.every(word =>
-            text.includes(word)
-          );
+          const isMatch =
+            effectiveKeywords.every(word =>
+              searchText.includes(word)
+            ) || searchText.includes(keyword);
+
+          if (!isMatch) {
+            return null;
+          }
+
+          const score =
+            Math.max(
+              getSearchScore(car, keyword),
+              ...effectiveKeywords.map(word =>
+                getSearchScore(car, word)
+              )
+            );
+
+          return {
+            car,
+            score
+          };
         })
-        .slice(0, 20);
+        .filter(Boolean)
+        .sort((a, b) => {
+          if (b.score !== a.score) {
+            return b.score - a.score;
+          }
+
+          return `${a.car.maker}${a.car.model}`
+            .localeCompare(
+              `${b.car.maker}${b.car.model}`,
+              "ja"
+            );
+        })
+        .slice(0, 20)
+        .map(item => item.car);
 
     if (!matchedCars.length) {
       searchResults.innerHTML =
@@ -554,11 +675,9 @@ if (error) {
     }
 
     matchedCars.forEach(car => {
-      const item =
-        document.createElement("div");
+      const item = document.createElement("div");
 
-      item.className =
-        "search-result-item";
+      item.className = "search-result-item";
 
       item.textContent =
         `${car.maker} ${car.model}／${car.size}サイズ`;
