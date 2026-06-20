@@ -216,6 +216,45 @@ select:focus{
   font-weight:700;
 }
 
+.estimate-actions{
+  margin-top:28px;
+  display:flex;
+  gap:12px;
+  flex-direction:column;
+}
+
+.copy-button,
+.line-button{
+  display:block;
+  width:100%;
+  padding:16px;
+  text-align:center;
+  font-family:'Shippori Mincho', serif;
+  font-size:16px;
+  font-weight:700;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.copy-button{
+  background:#fff;
+  color:#111;
+  border:1px solid #111;
+}
+
+.line-button{
+  background:#06c755;
+  color:#fff;
+  border:1px solid #06c755;
+}
+
+.copy-message{
+  margin-top:10px;
+  font-size:14px;
+  color:#555;
+  text-align:center;
+}
+
 @media(max-width:600px){
   .container{
     padding:28px 20px;
@@ -267,6 +306,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabaseUrl = "https://klfijtvnbgdkqcslntsp.supabase.co";
 const supabaseKey = "sb_publishable_jm8kPE51RZJitnkw11orxA_au9j3f6Z";
+
+const lineUrl = "https://lin.ee/2ESfOqD";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -590,6 +631,31 @@ async function loadMenus(size) {
             ${prices[0].price.toLocaleString()}円（税込）
           </div>
         </div>
+
+        <div class="estimate-actions">
+          <button
+            id="copyEstimateBtn"
+            class="copy-button"
+            type="button"
+          >
+            お見積り内容をコピー
+          </button>
+
+          <a
+            id="lineContactBtn"
+            class="line-button"
+            href="${lineUrl}"
+            target="_blank"
+            rel="noopener"
+          >
+            この内容でLINE問い合わせ
+          </a>
+
+          <div
+            id="copyMessage"
+            class="copy-message"
+          ></div>
+        </div>
       </div>
 
       <div class="result-section">
@@ -604,6 +670,7 @@ async function loadMenus(size) {
     `;
 
     const basePrice = prices[0].price;
+    let currentEstimateText = "";
 
     function updateTotal() {
       let optionTotal = 0;
@@ -619,6 +686,11 @@ async function loadMenus(size) {
       const selectedOptionsText =
         selectedOptions.length
           ? selectedOptions.join("<br>")
+          : "なし";
+
+      const selectedOptionsCopyText =
+        selectedOptions.length
+          ? selectedOptions.map(name => `・${name}`).join("\\n")
           : "なし";
 
       const totalPrice =
@@ -638,12 +710,48 @@ async function loadMenus(size) {
 
       document.getElementById("estimateTotal").textContent =
         `${totalPrice.toLocaleString()}円（税込）`;
+
+      currentEstimateText =
+`RACY'SPEED お見積り内容
+
+お車：${carName}
+サイズ：${selectedSize}サイズ
+
+施工メニュー：
+${menuName}
+
+選択オプション：
+${selectedOptionsCopyText}
+
+お支払い総額：
+${totalPrice.toLocaleString()}円（税込）
+
+施工時間：
+${menuData[0].work_time}
+
+この内容で問い合わせ希望です。`;
     }
 
     document
       .querySelectorAll(".optionCheck")
       .forEach(check => {
         check.addEventListener("change", updateTotal);
+      });
+
+    document
+      .getElementById("copyEstimateBtn")
+      .addEventListener("click", async function() {
+        const copyMessage =
+          document.getElementById("copyMessage");
+
+        try {
+          await navigator.clipboard.writeText(currentEstimateText);
+          copyMessage.textContent =
+            "お見積り内容をコピーしました。LINEで貼り付けて送信できます。";
+        } catch (error) {
+          copyMessage.textContent =
+            "コピーできませんでした。画面のお見積り内容を選択してコピーしてください。";
+        }
       });
 
     updateTotal();
