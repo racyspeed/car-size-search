@@ -2088,19 +2088,33 @@ body{
 }
 
 
-/* v10.6 compact wash menu */
+/* v10.6b: clean duplicate summary without removing required DOM */
 .wash-menu-area{
   margin-top:12px !important;
 }
+
 #optionArea{
   margin-top:12px !important;
 }
+
+/* 追加オプション下の重複表示を非表示。計算用DOMは残す */
+#priceResult > .result-divider,
+#priceResult > .result-section,
+#priceResult > .total-card{
+  display:none !important;
+}
+
 @media (max-width:560px){
   .wash-menu-area{
     margin-top:8px !important;
   }
+
   #optionArea{
     margin-top:10px !important;
+  }
+
+  .estimate-card{
+    margin-top:12px !important;
   }
 }
 
@@ -2475,7 +2489,366 @@ if (error) {
       <div id="coatingArea" class="coating-area"></div>
 
       <div id="optionArea"></div>
-      <div class="estimate-card">
+      <div id="priceResult"></div>
+    `;
+
+    loadMenus(car.size);
+  }
+
+  document.querySelectorAll(".quick-car-button").forEach(button => {
+    button.addEventListener("click", function() {
+      const car = cars.find(item =>
+        item.maker === this.dataset.maker &&
+        item.model === this.dataset.model
+      );
+
+      if (car) showCar(car);
+    });
+  });
+
+  makerSelect.addEventListener("change", function() {
+    populateCarsByMaker(this.value);
+    result.innerHTML = "";
+    carSearch.value = "";
+    searchResults.innerHTML = "";
+    searchResults.style.display = "none";
+  });
+
+  select.addEventListener("change", function() {
+    const option = this.selectedOptions[0];
+
+    if (!option.value) {
+      result.innerHTML = "";
+      return;
+    }
+
+    const car = cars.find(item =>
+      item.maker === option.dataset.maker &&
+      item.model === option.value
+    );
+
+    if (car) showCar(car);
+  });
+
+  carSearch.addEventListener("input", function() {
+    const rawKeyword = this.value.trim();
+    const keyword = normalizeText(rawKeyword);
+
+    searchResults.innerHTML = "";
+
+    if (!keyword) {
+      searchResults.style.display = "none";
+      return;
+    }
+
+    const keywords = rawKeyword
+      .split(/\s+/)
+      .map(word => normalizeText(word))
+      .filter(Boolean);
+
+    const effectiveKeywords = keywords.length ? keywords : [keyword];
+
+    const matchedCars = cars
+      .map(car => {
+        const searchText = getSearchText(car);
+
+        const isMatch =
+          effectiveKeywords.every(word => searchText.includes(word)) ||
+          searchText.includes(keyword);
+
+        if (!isMatch) return null;
+
+        const score = Math.max(
+          getSearchScore(car, keyword),
+          ...effectiveKeywords.map(word => getSearchScore(car, word))
+        );
+
+        return { car, score };
+      })
+      .filter(Boolean)
+      .sort((a,b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return `${a.car.maker}${a.car.model}`.localeCompare(`${b.car.maker}${b.car.model}`,"ja");
+      })
+      .slice(0,20)
+      .map(item => item.car);
+
+    if (!matchedCars.length) {
+      searchResults.innerHTML =
+        '<div class="search-result-item">該当する車種がありません</div>';
+      searchResults.style.display = "block";
+      return;
+    }
+
+    matchedCars.forEach(car => {
+      const item = document.createElement("div");
+      item.className = "search-result-item";
+      item.textContent = `${car.maker} ${car.model}／${car.size}サイズ`;
+      item.addEventListener("click", function() {
+        showCar(car);
+      });
+      searchResults.appendChild(item);
+    });
+
+    searchResults.style.display = "block";
+  });
+
+  async function loadMenus(size) {
+    const categorySelect = document.getElementById("categorySelect");
+    const washMenuArea = document.getElementById("washMenuArea");
+    const menuSelect = document.getElementById("menuSelect");
+    const coatingArea = document.getElementById("coatingArea");
+
+    const { data: menus } = await supabase
+      .from("menus")
+      .select("*");
+
+    const { data: sizePrices } = await supabase
+      .from("prices")
+      .select("*")
+      .eq("size", size);
+
+    menus.sort((a,b) => {
+      const order = {
+        "純水手洗い洗車":1,
+        "徹底洗車":2,
+        "徹底洗車ライト":3,
+        "MIYABI+ISM（研磨なし）":4,
+        "MIYABI+ISM（軽研磨）":5,
+        "MIYABI+ISM（2層研磨）":6,
+        "MIYABI+IZM（研磨なし）":7,
+        "MIYABI+IZM（軽研磨）":8,
+        "MIYABI+IZM（2層研磨）":9,
+        "MIYABI+OVER COAT（研磨なし）":10,
+        "MIYABI+OVER COAT（軽研磨）":11,
+        "MIYABI+OVER COAT（2層研磨）":12
+      };
+
+      return (order[a.menu_name] || 999) - (order[b.menu_name] || 999);
+    });
+
+    categorySelect.addEventListener("change", function() {
+      menuSelect.innerHTML = '<option value="">メニューを選択</option>';
+      coatingArea.innerHTML = "";
+      coatingArea.style.display = "none";
+      washMenuArea.style.display = "none";
+      document.getElementById("optionArea").innerHTML = "";
+      document.getElementById("priceResult").innerHTML = "";
+      currentQuoteState = null;
+
+      const selectedCategory = this.value;
+      const filteredMenus = menus.filter(menu => menu.category === selectedCategory);
+
+      if (selectedCategory === "wash") {
+        washMenuArea.style.display = "block";
+
+        filteredMenus.forEach(menu => {
+          const option = document.createElement("option");
+          option.value = menu.menu_name;
+          option.textContent = formatMenuName(menu.menu_name);
+          menuSelect.appendChild(option);
+        });
+
+        return;
+      }
+
+      if (selectedCategory === "coating") {
+        coatingArea.style.display = "block";
+        renderCoatingMenus(filteredMenus);
+      }
+    });
+
+    menuSelect.addEventListener("change", function() {
+      if (!this.value) return;
+      showPrice(this.value);
+    });
+
+    function renderCoatingMenus(coatingMenus) {
+      coatingArea.innerHTML = `
+        <div class="coating-heading">
+          <div class="coating-heading-title">コーティングメニュー</div>
+          <div class="coating-heading-text">
+            塗装の状態やご希望に合わせて、最適なプランをお選びいただけます。
+          </div>
+        </div>
+      `;
+
+      ["ism","izm","over"].forEach(type => {
+        const brandMenus = coatingMenus.filter(menu => getBrandType(menu.menu_name) === type);
+
+        if (!brandMenus.length) return;
+
+        const brand = getBrandInfo(type);
+
+        const brandBlock = document.createElement("div");
+        brandBlock.className = `coating-brand ${brand.className}`;
+
+        brandBlock.innerHTML = `
+          <div class="brand-panel">
+            <div class="brand-title-line">
+              <span class="brand-sub">${brand.sub}</span>
+              <span class="brand-main">${brand.main}</span>
+              <span class="brand-coat">${brand.coat}</span>
+            </div>
+            <div class="brand-desc">${brand.desc}</div>
+          </div>
+
+          <div class="plan-grid"></div>
+        `;
+
+        const planGrid = brandBlock.querySelector(".plan-grid");
+
+        brandMenus.forEach(menu => {
+          const priceData = sizePrices.find(price => price.menu_name === menu.menu_name);
+          const priceText = priceData ? `${priceData.price.toLocaleString()}円` : "料金未設定";
+
+          const planCard = document.createElement("div");
+          planCard.className = "plan-card";
+
+          planCard.innerHTML = `
+            <div class="plan-badge">${getPlanLabel(menu.menu_name)}</div>
+            <div class="plan-desc">${getPlanDescription(menu.menu_name)}</div>
+            <div>
+              <span class="plan-time-label">施工期間</span>
+              <span class="plan-time">${menu.work_time}</span>
+            </div>
+            <div class="plan-price-label">料金（税込）</div>
+            <div class="plan-price">${priceText}</div>
+            <button
+              type="button"
+              class="select-plan-button"
+              data-menu-name="${menu.menu_name}"
+            >
+              このプランを選択
+            </button>
+          `;
+
+          planGrid.appendChild(planCard);
+        });
+
+        coatingArea.appendChild(brandBlock);
+      });
+
+      document.querySelectorAll(".select-plan-button").forEach(button => {
+        button.addEventListener("click", function() {
+          document.querySelectorAll(".select-plan-button").forEach(btn => {
+            btn.classList.remove("active");
+            btn.textContent = "このプランを選択";
+          });
+
+          this.classList.add("active");
+          this.textContent = "選択中";
+
+          showPrice(this.dataset.menuName);
+        });
+      });
+    }
+
+    async function showPrice(menuName) {
+      const selectedSize =
+        document.querySelector(".car-size")
+          .textContent
+          .replace("サイズ","")
+          .trim();
+
+      const carName =
+        document.querySelector(".car-name")
+          .textContent
+          .trim();
+
+      const displayMenuName = formatMenuName(menuName);
+
+      const { data: prices } = await supabase
+        .from("prices")
+        .select("*")
+        .eq("menu_name", menuName)
+        .eq("size", selectedSize);
+
+      if (!prices || !prices.length) {
+        document.getElementById("priceResult").innerHTML =
+          "<br>料金未設定";
+        return;
+      }
+
+      const { data: menuData } = await supabase
+        .from("menus")
+        .select("*")
+        .eq("menu_name", menuName);
+
+      const { data: options } = await supabase
+        .from("options")
+        .select("*")
+        .eq("size", selectedSize);
+
+      const selectedMenu = menuData[0];
+      const optionArea = document.getElementById("optionArea");
+
+      optionArea.innerHTML = "<h3>追加オプション</h3>";
+
+      options.forEach(option => {
+        const optionTime = option.work_time || "";
+
+        optionArea.innerHTML += `
+          <label class="option-item">
+            <input
+              type="checkbox"
+              class="optionCheck"
+              data-price="${option.price}"
+              data-name="${option.option_name}"
+              data-time="${optionTime}"
+            >
+            <span class="option-text">
+              <span class="option-name">${option.option_name}</span>
+              <span class="option-meta">（${option.price.toLocaleString()}円）${optionTime ? `／＋${optionTime}` : ""}</span>
+            </span>
+          </label>
+        `;
+      });
+
+      document.getElementById("priceResult").innerHTML = `
+        <div class="result-divider"></div>
+
+        <div class="result-section">
+          <div class="result-label">施工メニュー</div>
+          <div class="result-value">${displayMenuName}</div>
+        </div>
+
+        <div class="result-section">
+          <div class="result-label">施工料金</div>
+          <div class="result-value">${prices[0].price.toLocaleString()}円</div>
+        </div>
+
+        <div class="result-section">
+          <div class="result-label">選択オプション</div>
+          <div id="selectedOptionsResult" class="result-value">なし</div>
+        </div>
+
+        <div class="result-section">
+          <div class="result-label">オプション合計</div>
+          <div id="optionTotalResult" class="result-value">0円</div>
+        </div>
+
+        <div class="result-section">
+          <div class="result-label">基本施工時間</div>
+          <div class="result-value">${selectedMenu.work_time}</div>
+        </div>
+
+        <div class="result-section">
+          <div class="result-label">オプション追加時間</div>
+          <div id="optionTimeResult" class="result-value">なし</div>
+        </div>
+
+        <div class="total-card total-card-center">
+          <div class="result-label">お支払い総額</div>
+          <div class="total-price-inline">
+            <span id="totalPrice" class="result-price">
+              ${prices[0].price.toLocaleString()}円
+            </span>
+            <span class="info">（税込）</span>
+          </div>
+        </div>
+
+        <div class="estimate-card">
           <div class="estimate-title">お見積り内容</div>
 
           <div class="estimate-row">
