@@ -1127,6 +1127,355 @@ h2{
   }
 }
 
+
+/* v10: PC subtitle one-line + full smartphone scale adjustment */
+.subtitle{
+  white-space:nowrap;
+}
+
+.subtitle-line{
+  display:inline;
+}
+
+.subtitle-line + .subtitle-line::before{
+  content:"";
+}
+
+@media (max-width:560px){
+  body{
+    overflow-x:hidden;
+  }
+
+  .container{
+    padding-left:12px !important;
+    padding-right:12px !important;
+  }
+
+  .shop-name{
+    font-size:13px !important;
+    letter-spacing:.22em !important;
+    margin-bottom:8px !important;
+  }
+
+  .section-en{
+    font-size:8px !important;
+    letter-spacing:.11em !important;
+    gap:7px !important;
+  }
+
+  .section-en::before,
+  .section-en::after{
+    width:18px !important;
+  }
+
+  h2{
+    font-size:22px !important;
+    letter-spacing:.04em !important;
+    margin-bottom:8px !important;
+  }
+
+  .subtitle{
+    white-space:normal !important;
+    font-size:12px !important;
+    line-height:1.7 !important;
+    letter-spacing:.04em !important;
+    margin-bottom:20px !important;
+  }
+
+  .subtitle-line{
+    display:block;
+  }
+
+  .search-panel{
+    padding:16px 12px !important;
+  }
+
+  .search-layout{
+    gap:14px !important;
+  }
+
+  .search-box label,
+  .select-title,
+  .quick-cars-title,
+  .category-label{
+    font-size:12px !important;
+  }
+
+  input,
+  select{
+    min-height:42px !important;
+    font-size:13px !important;
+  }
+
+  .quick-car-buttons{
+    gap:7px !important;
+  }
+
+  .quick-car-button{
+    font-size:11px !important;
+    padding:8px 9px !important;
+  }
+
+  .size-guide summary{
+    font-size:12px !important;
+  }
+
+  .selected-car-card{
+    padding:18px 14px !important;
+  }
+
+  .selected-car-label{
+    font-size:11px !important;
+  }
+
+  .car-name{
+    font-size:20px !important;
+    line-height:1.35 !important;
+  }
+
+  .car-size{
+    font-size:12px !important;
+    padding:6px 11px !important;
+  }
+
+  .category-area,
+  .wash-menu-area{
+    margin-top:16px !important;
+  }
+
+  .coating-heading{
+    padding:16px 12px !important;
+  }
+
+  .coating-heading-title{
+    font-size:17px !important;
+  }
+
+  .coating-heading-text,
+  .brand-desc,
+  .plan-desc{
+    font-size:12px !important;
+    line-height:1.7 !important;
+  }
+
+  .brand-panel,
+  .plan-card{
+    padding:16px 12px !important;
+  }
+
+  .brand-sub,
+  .brand-coat{
+    font-size:11px !important;
+  }
+
+  .brand-main{
+    font-size:24px !important;
+  }
+
+  .plan-grid{
+    gap:10px !important;
+  }
+
+  .plan-card{
+    gap:8px !important;
+  }
+
+  .plan-badge{
+    font-size:13px !important;
+  }
+
+  .plan-price{
+    font-size:20px !important;
+  }
+
+  .select-plan-button,
+  .copy-button,
+  .line-button,
+  .case-button{
+    font-size:12px !important;
+    padding:12px 10px !important;
+  }
+
+  #optionArea{
+    margin-top:18px !important;
+  }
+
+  #optionArea h3{
+    font-size:16px !important;
+    margin-bottom:10px !important;
+  }
+
+  #optionArea label{
+    font-size:12px !important;
+    line-height:1.6 !important;
+    padding:10px 0 !important;
+  }
+
+  .result-section{
+    padding:13px 0 !important;
+    gap:8px !important;
+  }
+
+  .result-label,
+  .estimate-label{
+    font-size:11px !important;
+  }
+
+  .result-value,
+  .estimate-value{
+    font-size:13px !important;
+    line-height:1.6 !important;
+  }
+
+  .total-card{
+    padding:18px 12px !important;
+  }
+
+  .result-price{
+    font-size:25px !important;
+  }
+
+  .estimate-card{
+    padding:18px 12px !important;
+  }
+
+  .estimate-title{
+    font-size:18px !important;
+  }
+
+  .estimate-row{
+    padding:12px 0 !important;
+    gap:8px !important;
+  }
+
+  .estimate-total{
+    font-size:16px !important;
+  }
+
+  .contact-note,
+  .contact-subnote{
+    font-size:12px !important;
+    line-height:1.7 !important;
+  }
+
+  .reservation-card{
+    padding:16px 8px !important;
+    margin-left:-8px !important;
+    margin-right:-8px !important;
+    margin-top:22px !important;
+  }
+
+  .reservation-card .estimate-title{
+    font-size:17px !important;
+    letter-spacing:.08em !important;
+  }
+
+  .reservation-calendar-head{
+    grid-template-columns:48px 1fr 48px !important;
+    padding:8px 5px !important;
+    gap:5px !important;
+  }
+
+  .calendar-month-title{
+    font-size:13px !important;
+    letter-spacing:.03em !important;
+  }
+
+  .calendar-nav-button{
+    font-size:9px !important;
+    padding:7px 0 !important;
+  }
+
+  .calendar-legend{
+    gap:6px 8px !important;
+    margin:10px 0 !important;
+  }
+
+  .calendar-legend span{
+    font-size:9px !important;
+    letter-spacing:0 !important;
+  }
+
+  .calendar-grid{
+    grid-template-columns:repeat(7,minmax(0,1fr)) !important;
+    gap:2px !important;
+    padding:4px !important;
+  }
+
+  .calendar-weekday{
+    font-size:9px !important;
+    padding:4px 0 !important;
+  }
+
+  .calendar-weekday-ja{
+    font-size:9px !important;
+  }
+
+  .calendar-weekday-en{
+    font-size:6px !important;
+    letter-spacing:0 !important;
+    margin-top:1px !important;
+  }
+
+  .calendar-day{
+    min-height:41px !important;
+    padding:2px 0 !important;
+    gap:1px !important;
+  }
+
+  .calendar-day-number{
+    font-size:13px !important;
+  }
+
+  .calendar-day-status{
+    font-size:7px !important;
+    letter-spacing:0 !important;
+    transform:scale(.86) !important;
+    max-width:100%;
+  }
+
+  .reservation-selected-date{
+    font-size:12px !important;
+    margin-top:10px !important;
+  }
+
+  .time-slot-area{
+    margin-top:14px !important;
+    padding:10px 6px !important;
+  }
+
+  .time-slot-area .result-label{
+    font-size:12px !important;
+  }
+
+  .time-slot-grid{
+    gap:6px !important;
+  }
+
+  .time-slot-button{
+    min-width:58px !important;
+    padding:9px 6px !important;
+    font-size:11px !important;
+  }
+
+  #reservationMessage,
+  #reservationSaveMessage,
+  .reservation-time-note{
+    font-size:12px !important;
+    line-height:1.7 !important;
+  }
+
+  .reservation-form{
+    gap:10px !important;
+  }
+
+  .reservation-form input,
+  .reservation-form textarea{
+    padding:11px !important;
+    font-size:12px !important;
+  }
+}
+
 </style>
 </head>
 
@@ -1140,7 +1489,7 @@ h2{
 <h2>オンライン見積り・予約</h2>
 
 <p class="subtitle">
-お車に合わせた施工料金の確認と<br>オンライン予約ができます
+<span class="subtitle-line">お車に合わせた施工料金の確認と</span><span class="subtitle-line">オンライン予約ができます</span>
 </p>
 
 <div class="search-panel">
