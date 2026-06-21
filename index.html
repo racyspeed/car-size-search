@@ -622,6 +622,143 @@ if (error) {
     }
 
     async function showPrice(menuName) {
+          async function renderReservationArea({ carName, selectedSize, menuName, displayMenuName, menuData, totalPrice }) {
+      const priceResult = document.getElementById("priceResult");
+
+      const reservationHtml = `
+        <div class="reservation-card">
+          <div class="estimate-title">予約希望日</div>
+          <p class="contact-subnote">
+            お客様は施工開始日のみお選びください。月曜・火曜は定休日です。
+          </p>
+
+          <input id="reservationDate" type="date">
+
+          <div id="reservationMessage" class="copy-message"></div>
+
+          <button id="checkReservationBtn" class="copy-button" type="button">
+            この日で空きを確認
+          </button>
+        </div>
+      `;
+
+      priceResult.insertAdjacentHTML("beforeend", reservationHtml);
+
+      document
+        .getElementById("checkReservationBtn")
+        .addEventListener("click", async function() {
+          const dateValue = document.getElementById("reservationDate").value;
+          const message = document.getElementById("reservationMessage");
+
+          if (!dateValue) {
+            message.textContent = "予約希望日を選択してください。";
+            return;
+          }
+
+          const available = await checkReservationAvailable(dateValue, menuData);
+
+          if (!available.ok) {
+            message.textContent = available.message;
+            return;
+          }
+
+          message.textContent =
+            "この日程は仮予約可能です。LINEでお問い合わせください。";
+        });
+    }
+
+    function isClosedDay(dateString) {
+      const date = new Date(dateString + "T00:00:00");
+      const day = date.getDay();
+
+      return day === 1 || day === 2;
+    }
+
+    function addBusinessDays(startDateString, workDays) {
+      const dates = [];
+      const date = new Date(startDateString + "T00:00:00");
+
+      while (dates.length < workDays) {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        const dd = String(date.getDate()).padStart(2, "0");
+        const dateString = `${yyyy}-${mm}-${dd}`;
+
+        if (!isClosedDay(dateString)) {
+          dates.push(dateString);
+        }
+
+        date.setDate(date.getDate() + 1);
+      }
+
+      return dates;
+    }
+
+    async function checkReservationAvailable(startDate, menuData) {
+      if (isClosedDay(startDate)) {
+        return {
+          ok: false,
+          message: "月曜・火曜は定休日のため選択できません。"
+        };
+      }
+
+      const workDays = Number(menuData.work_days || 1);
+      const bookingLane = menuData.booking_lane || "main";
+      const dailyLimit = Number(menuData.daily_limit || 1);
+
+      if (bookingLane === "sub") {
+        const { data: reservations, error } = await supabase
+          .from("reservations")
+          .select("*")
+          .eq("start_date", startDate)
+          .eq("booking_lane", "sub");
+
+        if (error) {
+          console.error(error);
+          return {
+            ok: false,
+            message: "予約状況の確認中にエラーが発生しました。"
+          };
+        }
+
+        if (reservations.length >= dailyLimit) {
+          return {
+            ok: false,
+            message: "この日は純水手洗い洗車の予約枠が満車です。"
+          };
+        }
+
+        return { ok: true };
+      }
+
+      const blockDates = addBusinessDays(startDate, workDays);
+
+      for (const date of blockDates) {
+        const { data: reservations, error } = await supabase
+          .from("reservations")
+          .select("*")
+          .lte("start_date", date)
+          .gte("end_date", date)
+          .eq("booking_lane", "main");
+
+        if (error) {
+          console.error(error);
+          return {
+            ok: false,
+            message: "予約状況の確認中にエラーが発生しました。"
+          };
+        }
+
+        if (reservations.length > 0) {
+          return {
+            ok: false,
+            message: "この開始日はコーティング予約が重なるため選択できません。"
+          };
+        }
+      }
+
+      return { ok: true };
+    }
       const selectedSize =
         document.querySelector(".car-size")
           .textContent
@@ -940,7 +1077,16 @@ document
               "コピーできませんでした。画面のお見積り内容を選択してコピーしてください。";
           }
         });
-
+      
+      renderReservationArea({
+        carName,
+        selectedSize,
+        menuName,
+        displayMenuName,
+        menuData: menuData[0],
+        totalPrice: basePrice
+      });
+      
       updateTotal();
     }
   }
@@ -949,4 +1095,3 @@ document
 
 </body>
 </html>
-```
