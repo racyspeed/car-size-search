@@ -23,7 +23,13 @@
   overflow:hidden;
 }
 .reservation-card::before{
-  display:none !important;
+  content:"";
+  position:absolute;
+  left:24px;
+  right:24px;
+  top:0;
+  height:3px;
+  background:linear-gradient(90deg,transparent,#d4af37,transparent);
 }
 .reservation-card .estimate-title{
   font-family:'Shippori Mincho', serif;
@@ -891,6 +897,38 @@
   color:#ffffff !important;
 }
 
+
+/* Remove gold top line from online reservation card */
+.reservation-card::before{
+  display:none !important;
+}
+
+
+/* Wash lane reservation final adjustments */
+.calendar-day:hover:not(:disabled){
+  border-color:#ffffff !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.65) !important;
+}
+.time-slot-area .result-label,
+#reservationMessage{
+  color:#ffffff !important;
+}
+.time-slot-button{
+  border-color:#ffffff !important;
+  background:#111111 !important;
+  color:#ffffff !important;
+}
+.time-slot-button:hover:not(:disabled){
+  border-color:#ffffff !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.65) !important;
+  transform:none !important;
+}
+.time-slot-button.active{
+  background:#ffffff !important;
+  color:#000000 !important;
+  border-color:#ffffff !important;
+}
+
 </style>
 </head>
 
@@ -992,6 +1030,9 @@ let currentQuoteState = null;
 
 const WASH_START_HOURS = [10,11,12,13,14];
 const WASH_DURATION_HOURS = 3;
+const WASH_MENU_NAMES = ["純水手洗い洗車", "徹底洗車", "徹底洗車ライト"];
+const FULL_DAY_WASH_START_TIME = "10:00";
+const FULL_DAY_WASH_END_TIME = "18:00";
 
 const JAPANESE_MAKERS = [
   "トヨタ","レクサス","ホンダ","日産","マツダ","スバル","スズキ","ダイハツ","三菱"
@@ -1920,6 +1961,36 @@ ${optionTimeCopyText}
       timeToMinutes(endA) > timeToMinutes(startB);
   }
 
+  function isPureHandWash(menuData) {
+    return menuData.menu_name === "純水手洗い洗車";
+  }
+
+  function isThoroughWash(menuData) {
+    return menuData.menu_name === "徹底洗車";
+  }
+
+  function isLightWash(menuData) {
+    return menuData.menu_name === "徹底洗車ライト";
+  }
+
+  function isWashMenu(menuData) {
+    return WASH_MENU_NAMES.includes(menuData.menu_name);
+  }
+
+  function getEffectiveWorkDays(menuData) {
+    if (isThoroughWash(menuData)) return 3;
+    if (isLightWash(menuData)) return 1;
+    return Number(menuData.work_days || 1);
+  }
+
+  function dateRangesOverlap(startA, endA, startB, endB) {
+    return startA <= endB && endA >= startB;
+  }
+
+  function isWashReservation(reservation) {
+    return WASH_MENU_NAMES.includes(reservation.menu_name);
+  }
+
   async function isMainDateAvailable(startDate, menuData) {
     if (isClosedDay(startDate)) {
       return {
@@ -1935,7 +2006,7 @@ ${optionTimeCopyText}
       };
     }
 
-    const workDays = Number(menuData.work_days || 1);
+    const workDays = getEffectiveWorkDays(menuData);
     const blockDates = addBusinessDays(startDate, workDays);
     const endDate = blockDates[blockDates.length - 1];
 
@@ -2002,6 +2073,73 @@ ${optionTimeCopyText}
     return baseHours + getSelectedOptionDurationHours();
   }
 
+  async function getWashBlockingReservations(startDate, endDate) {
+    const { data: reservations, error } = await supabase
+      .from("reservations")
+      .select("*")
+      .lte("start_date", endDate)
+      .gte("end_date", startDate);
+
+    if (error) {
+      console.error(error);
+      return { error, reservations:[] };
+    }
+
+    return {
+      error:null,
+      reservations:(reservations || []).filter(isWashReservation)
+    };
+  }
+
+  async function isWashBlockDateAvailable(startDate, menuData) {
+    if (isClosedDay(startDate)) {
+      return {
+        ok:false,
+        message:"月曜・火曜は定休日のため選択できません。"
+      };
+    }
+
+    if (isPastDate(startDate)) {
+      return {
+        ok:false,
+        message:"過去の日付は選択できません。"
+      };
+    }
+
+    const workDays = getEffectiveWorkDays(menuData);
+    const blockDates = addBusinessDays(startDate, workDays);
+    const endDate = blockDates[blockDates.length - 1];
+
+    const { data: reservations, error } = await supabase
+      .from("reservations")
+      .select("*")
+      .lte("start_date", endDate)
+      .gte("end_date", startDate);
+
+    if (error) {
+      console.error(error);
+      return {
+        ok:false,
+        message:"予約状況の確認中にエラーが発生しました。"
+      };
+    }
+
+    if (reservations && reservations.length > 0) {
+      return {
+        ok:false,
+        message:"この日は既存予約と重なるため選択できません。"
+      };
+    }
+
+    return {
+      ok:true,
+      endDate,
+      blockDates,
+      startTime:FULL_DAY_WASH_START_TIME,
+      endTime:FULL_DAY_WASH_END_TIME
+    };
+  }
+
   async function getAvailableWashSlots(dateString, menuData) {
     if (isClosedDay(dateString)) {
       return [];
@@ -2011,22 +2149,27 @@ ${optionTimeCopyText}
       return [];
     }
 
-    const dailyLimit = Number(menuData.daily_limit || 2);
-
-    const { data: reservations, error } = await supabase
-      .from("reservations")
-      .select("*")
-      .eq("start_date", dateString)
-      .eq("booking_lane", "sub");
+    const { reservations, error } = await getWashBlockingReservations(dateString, dateString);
 
     if (error) {
-      console.error(error);
       return [];
     }
 
-    const timedReservations = (reservations || []).filter(reservation =>
-      reservation.start_time && reservation.end_time
+    const fullDayWashReservation = reservations.some(reservation =>
+      reservation.menu_name === "徹底洗車" || reservation.menu_name === "徹底洗車ライト"
     );
+
+    if (fullDayWashReservation) {
+      return [];
+    }
+
+    const timedReservations = reservations.filter(reservation =>
+      reservation.menu_name === "純水手洗い洗車" &&
+      reservation.start_time &&
+      reservation.end_time
+    );
+
+    const dailyLimit = Number(menuData.daily_limit || 2);
 
     if (timedReservations.length >= dailyLimit) {
       return [];
@@ -2037,7 +2180,6 @@ ${optionTimeCopyText}
       const endTime = addHours(startTime, getWashReservationDurationHours(menuData));
 
       const overlap = timedReservations.some(reservation => {
-        if (!reservation.start_time || !reservation.end_time) return false;
         return isTimeOverlap(
           startTime,
           endTime,
@@ -2060,7 +2202,8 @@ ${optionTimeCopyText}
     if (oldReservation) oldReservation.remove();
 
     const bookingLane = menuData.booking_lane || "main";
-    const isWashTimeBooking = bookingLane === "sub";
+    const isPureWashTimeBooking = isPureHandWash(menuData);
+    const isWashBlockBooking = isThoroughWash(menuData) || isLightWash(menuData);
 
     priceResult.insertAdjacentHTML(
       "beforeend",
@@ -2068,9 +2211,11 @@ ${optionTimeCopyText}
         <div id="reservationArea" class="reservation-card">
           <div class="estimate-title">オンライン予約</div>
           <p class="contact-subnote">
-            ${isWashTimeBooking
+            ${isPureWashTimeBooking
               ? "純水手洗い洗車は、日付と開始時間をお選びください。月曜・火曜は定休日です。"
-              : "コーティングは施工開始日のみお選びください。月曜・火曜は定休日です。"}
+              : isWashBlockBooking
+                ? `${formatMenuName(menuData.menu_name)}は、施工開始日と開始時間をお選びください。月曜・火曜は定休日です。`
+                : "コーティングは施工開始日のみお選びください。月曜・火曜は定休日です。"}
           </p>
 
           <div class="reservation-calendar-head">
@@ -2199,9 +2344,8 @@ ${optionTimeCopyText}
 
       await Promise.all(dayButtons.map(async item => {
         const { button, statusLabel, dateString } = item;
-        const bookingLane = menuData.booking_lane || "main";
 
-        if (bookingLane === "sub") {
+        if (isPureHandWash(menuData)) {
           const slots = await getAvailableWashSlots(dateString, menuData);
           const availableCount = slots.filter(slot => slot.available).length;
 
@@ -2217,6 +2361,22 @@ ${optionTimeCopyText}
           statusLabel.textContent = availableCount <= 1
             ? "△残りわずか"
             : "○空きあり";
+          return;
+        }
+
+        if (isThoroughWash(menuData) || isLightWash(menuData)) {
+          const available = await isWashBlockDateAvailable(dateString, menuData);
+
+          if (!available.ok) {
+            button.classList.add("unavailable");
+            button.disabled = true;
+            statusLabel.textContent = "✕満枠";
+            return;
+          }
+
+          button.classList.add("available");
+          button.disabled = false;
+          statusLabel.textContent = "○空きあり";
           return;
         }
 
@@ -2239,7 +2399,6 @@ ${optionTimeCopyText}
   }
 
   async function handleDateSelected(dateString, menuData) {
-    const bookingLane = menuData.booking_lane || "main";
     const selectedDate = document.getElementById("reservationSelectedDate");
     const timeSlotArea = document.getElementById("timeSlotArea");
     const message = document.getElementById("reservationMessage");
@@ -2247,7 +2406,7 @@ ${optionTimeCopyText}
     resetReservationSelection();
     selectedDate.textContent = `選択日：${dateString}`;
 
-    if (bookingLane === "sub") {
+    if (isPureHandWash(menuData)) {
       message.textContent = "空き時間を確認しています。";
 
       const slots = await getAvailableWashSlots(dateString, menuData);
@@ -2293,6 +2452,50 @@ ${optionTimeCopyText}
         grid.appendChild(button);
       });
 
+      return;
+    }
+
+    if (isThoroughWash(menuData) || isLightWash(menuData)) {
+      message.textContent = "空き状況を確認しています。";
+
+      const available = await isWashBlockDateAvailable(dateString, menuData);
+      message.textContent = "";
+
+      if (!available.ok) {
+        message.textContent = available.message;
+        return;
+      }
+
+      timeSlotArea.innerHTML = `
+        <div class="result-label">開始時間を選択</div>
+        <div class="time-slot-grid"></div>
+      `;
+
+      const grid = timeSlotArea.querySelector(".time-slot-grid");
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "time-slot-button";
+      button.textContent = available.startTime;
+      button.title = `施工終了予定日：${available.endDate}`;
+
+      button.addEventListener("click", function() {
+        document.querySelectorAll(".time-slot-button").forEach(slotButton => {
+          slotButton.classList.remove("active");
+        });
+
+        this.classList.add("active");
+        message.textContent = `この時間で仮予約できます。施工終了予定日：${available.endDate}`;
+
+        showReservationForm({
+          startDate:dateString,
+          endDate:available.endDate,
+          startTime:available.startTime,
+          endTime:available.endTime,
+          menuData
+        });
+      });
+
+      grid.appendChild(button);
       return;
     }
 
@@ -2394,9 +2597,10 @@ ${optionTimeCopyText}
     saveButton.disabled = true;
     saveMessage.textContent = "予約状況を再確認しています。";
 
-    const bookingLane = menuData.booking_lane || "main";
+    let bookingLane = menuData.booking_lane || "main";
 
-    if (bookingLane === "sub") {
+    if (isPureHandWash(menuData)) {
+      bookingLane = "sub";
       const slots = await getAvailableWashSlots(startDate, menuData);
       const targetSlot = slots.find(slot =>
         slot.startTime === startTime &&
@@ -2409,7 +2613,16 @@ ${optionTimeCopyText}
         saveMessage.textContent = "この時間は先に予約が入ったため選択できません。別の時間をお選びください。";
         return;
       }
+    } else if (isThoroughWash(menuData) || isLightWash(menuData)) {
+      bookingLane = "main";
+      const available = await isWashBlockDateAvailable(startDate, menuData);
+      if (!available.ok) {
+        saveButton.disabled = false;
+        saveMessage.textContent = available.message;
+        return;
+      }
     } else {
+      bookingLane = "main";
       const available = await isMainDateAvailable(startDate, menuData);
       if (!available.ok) {
         saveButton.disabled = false;
@@ -2443,7 +2656,7 @@ ${optionTimeCopyText}
           options:selectedOptions.join(" / "),
           total_price:totalPrice,
           work_time:menuData.work_time,
-          work_days:Number(menuData.work_days || 1),
+          work_days:getEffectiveWorkDays(menuData),
           start_date:startDate,
           end_date:endDate,
           start_time:startTime,
