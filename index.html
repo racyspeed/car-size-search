@@ -2115,6 +2115,22 @@ body{
   }
 }
 
+
+/* v10.8: category-to-menu spacing and confirmed wash durations */
+.wash-menu-area{
+  margin-top:6px !important;
+}
+
+.category-area{
+  margin-bottom:0 !important;
+}
+
+@media (max-width:560px){
+  .wash-menu-area{
+    margin-top:4px !important;
+  }
+}
+
 </style>
 </head>
 
@@ -3207,6 +3223,10 @@ ${optionTimeCopyText}
   }
 
   function getWashReservationDurationHours(menuData) {
+    if (isPureHandWash(menuData)) {
+      return WASH_DURATION_HOURS + getSelectedOptionDurationHours();
+    }
+
     const baseHours = parseWorkTimeToHours(menuData.work_time) || WASH_DURATION_HOURS;
     return baseHours + getSelectedOptionDurationHours();
   }
@@ -3670,7 +3690,7 @@ ${optionTimeCopyText}
     let timeText = "";
 
     if (isPureHandWash(menuData) && startTime && endTime) {
-      timeText = `<div class="contact-subnote reservation-time-note">開始時間：<span>${startTime}</span><br>作業終了目安：<span>${endTime}</span></div>`;
+      timeText = `<div class="contact-subnote reservation-time-note">開始時間：<span>${startTime}</span><br>作業終了目安：<span>${isLightWash(menuData) ? FULL_DAY_WASH_END_TIME : endTime}</span></div>`;
     } else if ((isThoroughWash(menuData) || isLightWash(menuData)) && startDate && endDate) {
       timeText = `<div class="contact-subnote reservation-time-note">開始時間：<span>${startTime || FULL_DAY_WASH_START_TIME}</span><br>作業期間：<span>${startDate}〜${endDate}</span></div>`;
     } else if (startDate && endDate) {
