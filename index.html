@@ -306,7 +306,7 @@
   box-shadow:0 16px 34px rgba(0,0,0,.36);
 }
 .calendar-month-title{
-  color:#ffffff !important;
+  color:#f7e7bd;
 }
 .calendar-nav-button{
   border:1px solid rgba(212,175,55,.50);
@@ -583,9 +583,7 @@
   display:none !important;
 }
 .legend-open-text{ color:#ffffff !important; }
-.legend-few-text{
-  color:#ffffff !important;
-}
+.legend-few-text{ color:#d4af37 !important; }
 .legend-full-text{ color:#777777 !important; }
 .legend-closed-text{ color:#d32f2f !important; }
 .calendar-day.closed,
@@ -664,7 +662,7 @@
   color:#d4af37 !important;
 }
 .legend-full-text{
-  color:#ffffff !important;
+  color:#888888 !important;
 }
 .legend-closed-text{
   color:#d32f2f !important;
@@ -679,10 +677,7 @@
 .calendar-day.past .calendar-day-status{
   color:#888888 !important;
 }
-.calendar-day.closed{
-  color:#ffffff !important;
-}
-
+.calendar-day.closed,
 .calendar-day.closed .calendar-day-status{
   color:#d32f2f !important;
 }
@@ -690,12 +685,146 @@
   border-color:#ffffff !important;
 }
 .calendar-day.selected{
-  background:#ffffff !important;
+  background:#d4af37 !important;
   color:#000000 !important;
   border-color:#ffffff !important;
 }
 .calendar-day.selected .calendar-day-status{
   color:#000000 !important;
+}
+
+
+/* Final request v3: black / white calendar refinement */
+.reservation-card{
+  background:#000000 !important;
+  color:#ffffff !important;
+  border:1px solid #ffffff !important;
+  border-radius:0 !important;
+}
+.reservation-card::before{
+  background:linear-gradient(90deg,transparent,#d4af37,transparent) !important;
+}
+.reservation-calendar-head,
+.calendar-grid,
+.calendar-day,
+.time-slot-area,
+.time-slot-button,
+.reservation-form input,
+.reservation-form textarea,
+.calendar-nav-button{
+  border-color:#ffffff !important;
+  border-radius:0 !important;
+}
+.calendar-month-title{
+  color:#ffffff !important;
+}
+.calendar-weekday{
+  color:#ffffff !important;
+}
+.calendar-weekday-ja,
+.calendar-weekday-en{
+  display:block;
+  color:#ffffff !important;
+  line-height:1.25;
+}
+.calendar-weekday-ja{
+  font-size:12px;
+}
+.calendar-weekday-en{
+  margin-top:2px;
+  font-size:9px;
+  letter-spacing:.12em;
+}
+.calendar-legend,
+.legend-open-text,
+.legend-few-text,
+.legend-full-text{
+  color:#ffffff !important;
+}
+.legend-closed-text{
+  color:#d32f2f !important;
+}
+.calendar-day{
+  background:#000000 !important;
+  color:#ffffff !important;
+  border-color:#ffffff !important;
+  box-shadow:none !important;
+}
+.calendar-day:hover:not(:disabled){
+  border-color:#ffffff !important;
+  box-shadow:inset 0 0 0 1px #ffffff !important;
+  transform:none !important;
+}
+.calendar-day.available,
+.calendar-day.few,
+.calendar-day.unavailable,
+.calendar-day.past,
+.calendar-day.closed{
+  background:#000000 !important;
+  border-color:#ffffff !important;
+}
+.calendar-day-number,
+.calendar-day.available .calendar-day-status,
+.calendar-day.few .calendar-day-status,
+.calendar-day.unavailable .calendar-day-status,
+.calendar-day.past .calendar-day-status{
+  color:#ffffff !important;
+}
+.calendar-day.closed{
+  color:#ffffff !important;
+}
+.calendar-day.closed .calendar-day-number{
+  color:#ffffff !important;
+}
+.calendar-day.closed .calendar-day-status{
+  color:#d32f2f !important;
+}
+.calendar-day.selected{
+  background:#ffffff !important;
+  color:#000000 !important;
+  border-color:#ffffff !important;
+  box-shadow:none !important;
+}
+.calendar-day.selected .calendar-day-number,
+.calendar-day.selected .calendar-day-status{
+  color:#000000 !important;
+}
+.time-slot-area{
+  background:#000000 !important;
+  color:#ffffff !important;
+}
+.time-slot-area .result-label{
+  color:#ffffff !important;
+}
+.time-slot-button{
+  background:#000000 !important;
+  color:#ffffff !important;
+  border:1px solid #ffffff !important;
+  box-shadow:none !important;
+}
+.time-slot-button:hover:not(:disabled){
+  background:#000000 !important;
+  color:#ffffff !important;
+  border-color:#ffffff !important;
+  box-shadow:inset 0 0 0 1px #ffffff !important;
+  transform:none !important;
+}
+.time-slot-button.active{
+  background:#ffffff !important;
+  color:#000000 !important;
+  border-color:#ffffff !important;
+}
+.time-slot-button:disabled{
+  background:#000000 !important;
+  color:#777777 !important;
+  border-color:#ffffff !important;
+}
+#reservationMessage,
+.reservation-card .copy-message{
+  color:#ffffff !important;
+}
+.reservation-selected-date{
+  color:#ffffff !important;
 }
 
 </style>
@@ -1895,7 +2024,15 @@ ${optionTimeCopyText}
       const title = document.getElementById("calendarMonthTitle");
       const firstDate = new Date(calendarYear, calendarMonth, 1);
       const lastDate = new Date(calendarYear, calendarMonth + 1, 0);
-      const weekdays = ["日","月","火","水","木","金","土"];
+      const weekdays = [
+        { ja:"日", en:"SUN" },
+        { ja:"月", en:"MON" },
+        { ja:"火", en:"TUE" },
+        { ja:"水", en:"WED" },
+        { ja:"木", en:"THU" },
+        { ja:"金", en:"FRI" },
+        { ja:"土", en:"SAT" }
+      ];
 
       title.textContent = `${calendarYear}年${calendarMonth + 1}月`;
       calendar.innerHTML = "";
@@ -1903,7 +2040,10 @@ ${optionTimeCopyText}
       weekdays.forEach(day => {
         const weekday = document.createElement("div");
         weekday.className = "calendar-weekday";
-        weekday.textContent = day;
+        weekday.innerHTML = `
+          <span class="calendar-weekday-ja">${day.ja}</span>
+          <span class="calendar-weekday-en">${day.en}</span>
+        `;
         calendar.appendChild(weekday);
       });
 
