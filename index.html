@@ -281,6 +281,135 @@
   .calendar-day{min-height:52px;border-radius:12px;}
   .calendar-day-status{font-size:10px;}
 }
+
+
+/* Black luxury calendar theme */
+.reservation-card{
+  border:1px solid rgba(212,175,55,.38);
+  background:
+    radial-gradient(circle at top left, rgba(212,175,55,.16), transparent 34%),
+    linear-gradient(180deg,#151515 0%,#1d1b18 48%,#101010 100%);
+  box-shadow:0 24px 60px rgba(0,0,0,.34);
+}
+.reservation-card::before{
+  background:linear-gradient(90deg,transparent,#d4af37,transparent);
+}
+.reservation-card .estimate-title{
+  color:#f6edd8;
+}
+.reservation-card .contact-subnote{
+  color:#b9ad96;
+}
+.reservation-calendar-head{
+  border:1px solid rgba(212,175,55,.55);
+  background:linear-gradient(135deg,#050505 0%,#2c261b 52%,#070707 100%);
+  box-shadow:0 16px 34px rgba(0,0,0,.36);
+}
+.calendar-month-title{
+  color:#f7e7bd;
+}
+.calendar-nav-button{
+  border:1px solid rgba(212,175,55,.50);
+  background:rgba(255,255,255,.05);
+  color:#f7e7bd;
+}
+.calendar-nav-button:hover{
+  background:rgba(212,175,55,.18);
+}
+.calendar-legend{
+  color:#c8bea9;
+}
+.legend-closed{
+  background:#34312c;
+  border:1px solid #575046;
+}
+.calendar-grid{
+  border:1px solid rgba(212,175,55,.25);
+  background:rgba(255,255,255,.035);
+}
+.calendar-weekday{
+  color:#d4af37;
+}
+.calendar-day{
+  border:1px solid rgba(212,175,55,.20);
+  background:linear-gradient(180deg,#222 0%,#171717 100%);
+  color:#eee2c7;
+  box-shadow:0 8px 18px rgba(0,0,0,.18);
+}
+.calendar-day:hover:not(:disabled){
+  border-color:#d4af37;
+  box-shadow:0 12px 26px rgba(212,175,55,.12);
+}
+.calendar-day.closed,
+.calendar-day.past,
+.calendar-day.unavailable{
+  color:#777;
+  background:#202020;
+  border-color:#303030;
+}
+.calendar-day.available{
+  background:linear-gradient(180deg,#24211b 0%,#171717 100%);
+}
+.calendar-day.few{
+  background:linear-gradient(180deg,#302816 0%,#191714 100%);
+  border-color:#a78332;
+}
+.calendar-day.selected{
+  color:#fff6dd;
+  border-color:#d4af37;
+  background:linear-gradient(180deg,#4a3812 0%,#1a1711 100%);
+  box-shadow:0 0 0 2px rgba(212,175,55,.42) inset,0 16px 30px rgba(0,0,0,.28);
+}
+.calendar-day-status{
+  color:#d8bf6a;
+}
+.calendar-day.unavailable .calendar-day-status,
+.calendar-day.closed .calendar-day-status,
+.calendar-day.past .calendar-day-status{
+  color:#777;
+}
+.time-slot-area{
+  border:1px solid rgba(212,175,55,.24);
+  background:rgba(255,255,255,.045);
+  color:#eee2c7;
+}
+.time-slot-button{
+  border:1px solid rgba(212,175,55,.32);
+  background:#1b1b1b;
+  color:#eee2c7;
+}
+.time-slot-button:hover:not(:disabled){
+  border-color:#d4af37;
+  box-shadow:0 9px 20px rgba(212,175,55,.10);
+}
+.time-slot-button.active{
+  background:linear-gradient(135deg,#d4af37,#8f6f1f);
+  color:#111;
+  border-color:#f0d783;
+}
+.time-slot-button:disabled{
+  color:#666;
+  background:#242424;
+}
+.reservation-form input,
+.reservation-form textarea{
+  border:1px solid rgba(212,175,55,.24);
+  background:#181818;
+  color:#f5eddc;
+}
+.reservation-form input::placeholder,
+.reservation-form textarea::placeholder{
+  color:#8f8777;
+}
+.reservation-form input:focus,
+.reservation-form textarea:focus{
+  border-color:#d4af37;
+  box-shadow:0 0 0 3px rgba(212,175,55,.16);
+}
+.reservation-selected-date{
+  color:#f5eddc;
+}
+
 </style>
 </head>
 
@@ -1378,7 +1507,11 @@ ${optionTimeCopyText}
       return [];
     }
 
-    if ((reservations || []).length >= dailyLimit) {
+    const timedReservations = (reservations || []).filter(reservation =>
+      reservation.start_time && reservation.end_time
+    );
+
+    if (timedReservations.length >= dailyLimit) {
       return [];
     }
 
@@ -1386,7 +1519,7 @@ ${optionTimeCopyText}
       const startTime = hourToTime(hour);
       const endTime = addHours(startTime, WASH_DURATION_HOURS);
 
-      const overlap = (reservations || []).some(reservation => {
+      const overlap = timedReservations.some(reservation => {
         if (!reservation.start_time || !reservation.end_time) return false;
         return isTimeOverlap(
           startTime,
