@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RACY'SPEED 管理画面</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      color: #fff;
+      font-family: Arial, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      padding: 24px;
+    }
+
+    .admin-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .shop-name {
+      text-align: center;
+      letter-spacing: 0.25em;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 26px;
+      margin: 0 0 30px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: #000;
+      color: #fff;
+      border: 1px solid #fff;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .tab-btn.active {
+      background: #fff;
+      color: #000;
+    }
+
+    .reservation-card {
+      border: 1px solid #fff;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .reservation-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .status {
+      border: 1px solid #fff;
+      padding: 5px 10px;
+      font-size: 13px;
+    }
+
+    .status.pending {
+      color: #ffd966;
+      border-color: #ffd966;
+    }
+
+    .status.confirmed {
+      color: #9cff9c;
+      border-color: #9cff9c;
+    }
+
+    .status.rejected {
+      color: #ff7777;
+      border-color: #ff7777;
+    }
+
+    .info {
+      line-height: 1.9;
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      background: #000;
+      color: #fff;
+      border: 1px solid #fff;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .approve-btn:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    .reject-btn:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    .empty {
+      border: 1px solid #fff;
+      padding: 30px;
+      text-align: center;
+      color: #aaa;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      .reservation-head {
+        display: block;
+      }
+
+      .status {
+        display: inline-block;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="admin-wrap">
+    <div class="shop-name">RACY'SPEED</div>
+    <h1>予約管理画面</h1>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-status="仮予約">仮予約</button>
+      <button class="tab-btn" data-status="予約確定">予約確定</button>
+      <button class="tab-btn" data-status="却下">却下</button>
+      <button class="tab-btn" data-status="all">すべて</button>
+    </div>
+
+    <div id="reservationList"></div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "ここにindex.htmlと同じURL";
+    const SUPABASE_ANON_KEY = "ここにindex.htmlと同じanon key";
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const reservationList = document.getElementById("reservationList");
+    const tabButtons = document.querySelectorAll(".tab-btn");
+
+    let currentStatus = "仮予約";
+
+    async function loadReservations() {
+      reservationList.innerHTML = `<div class="empty">読み込み中...</div>`;
+
+      let query = supabaseClient
+        .from("reservations")
+        .select("*")
+        .order("reservation_date", { ascending: true })
+        .order("start_time", { ascending: true });
+
+      if (currentStatus !== "all") {
+        query = query.eq("status", currentStatus);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error(error);
+        reservationList.innerHTML = `<div class="empty">予約一覧の取得に失敗しました</div>`;
+        return;
+      }
+
+      renderReservations(data || []);
+    }
+
+    function renderReservations(reservations) {
+      if (!reservations.length) {
+        reservationList.innerHTML = `<div class="empty">該当する予約はありません</div>`;
+        return;
+      }
+
+      reservationList.innerHTML = reservations.map(r => {
+        const statusClass =
+          r.status === "予約確定" ? "confirmed" :
+          r.status === "却下" ? "rejected" :
+          "pending";
+
+        return `
+          <div class="reservation-card">
+            <div class="reservation-head">
+              <strong>${escapeHtml(r.customer_name || "お名前未入力")}</strong>
+              <span class="status ${statusClass}">${escapeHtml(r.status || "仮予約")}</span>
+            </div>
+
+            <div class="info">
+              <div>予約日：${escapeHtml(r.reservation_date || "-")}</div>
+              <div>開始時間：${escapeHtml(r.start_time || "10:00")}</div>
+              <div>終了目安：${escapeHtml(r.end_time || "-")}</div>
+              <div>車種：${escapeHtml(r.maker || "")} ${escapeHtml(r.car_model || "")}</div>
+              <div>サイズ：${escapeHtml(r.size || "-")}</div>
+              <div>メニュー：${escapeHtml(r.menu_name || "-")}</div>
+              <div>オプション：${escapeHtml(r.options_text || "なし")}</div>
+              <div>金額：${formatPrice(r.total_price)}</div>
+              <div>電話番号：${escapeHtml(r.phone || "-")}</div>
+              <div>メール：${escapeHtml(r.email || "-")}</div>
+              <div>備考：${escapeHtml(r.note || "-")}</div>
+            </div>
+
+            <div class="actions">
+              ${r.status !== "予約確定" ? `<button class="action-btn approve-btn" onclick="updateStatus('${r.id}', '予約確定')">承認</button>` : ""}
+              ${r.status !== "却下" ? `<button class="action-btn reject-btn" onclick="updateStatus('${r.id}', '却下')">却下</button>` : ""}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function updateStatus(id, status) {
+      const ok = confirm(`この予約を「${status}」に変更しますか？`);
+      if (!ok) return;
+
+      const { error } = await supabaseClient
+        .from("reservations")
+        .update({ status })
+        .eq("id", id);
+
+      if (error) {
+        console.error(error);
+        alert("更新に失敗しました");
+        return;
+      }
+
+      alert(`予約を「${status}」に変更しました`);
+      loadReservations();
+    }
+
+    function formatPrice(price) {
+      if (price === null || price === undefined || price === "") return "-";
+      return Number(price).toLocaleString() + "円";
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentStatus = btn.dataset.status;
+        loadReservations();
+      });
+    });
+
+    loadReservations();
+  </script>
+</body>
+</html>
