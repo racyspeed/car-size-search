@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -8,7 +9,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
@@ -179,17 +179,9 @@ if (error) {
   function getPlanDescription(menuName) {
     const label = getPlanLabel(menuName);
 
-    if (label === "研磨なし") {
-      return "新車や状態の良いお車におすすめ。";
-    }
-
-    if (label === "軽研磨") {
-      return "軽い雨染みや小キズが気になるお車におすすめ。";
-    }
-
-    if (label === "2周研磨") {
-      return "艶をしっかり出したい方におすすめ。";
-    }
+    if (label === "研磨なし") return "新車や状態の良いお車におすすめ。";
+    if (label === "軽研磨") return "軽い雨染みや小キズが気になるお車におすすめ。";
+    if (label === "2周研磨") return "艶をしっかり出したい方におすすめ。";
 
     return "お車の状態に合わせて施工いたします。";
   }
@@ -670,6 +662,8 @@ if (error) {
       optionArea.innerHTML = "<h3>追加オプション</h3>";
 
       options.forEach(option => {
+        const optionTime = option.work_time || "";
+
         optionArea.innerHTML += `
           <label>
             <input
@@ -677,9 +671,11 @@ if (error) {
               class="optionCheck"
               data-price="${option.price}"
               data-name="${option.option_name}"
+              data-time="${optionTime}"
             >
             ${option.option_name}
             （${option.price.toLocaleString()}円）
+            ${optionTime ? `<span class="option-time">／＋${optionTime}</span>` : ""}
           </label>
         `;
       });
@@ -705,6 +701,16 @@ if (error) {
         <div class="result-section">
           <div class="result-label">オプション合計</div>
           <div id="optionTotalResult" class="result-value">0円</div>
+        </div>
+
+        <div class="result-section">
+          <div class="result-label">基本施工時間</div>
+          <div class="result-value">${menuData[0].work_time}</div>
+        </div>
+
+        <div class="result-section">
+          <div class="result-label">オプション追加時間</div>
+          <div id="optionTimeResult" class="result-value">なし</div>
         </div>
 
         <div class="total-card">
@@ -736,6 +742,14 @@ if (error) {
           <div class="estimate-row">
             <div class="estimate-label">選択オプション</div>
             <div id="estimateOptions" class="estimate-value">なし</div>
+          </div>
+
+          <div class="estimate-row">
+            <div class="estimate-label">施工時間</div>
+            <div class="estimate-value">
+              基本：${menuData[0].work_time}<br>
+              <span id="estimateOptionTime">オプション：なし</span>
+            </div>
           </div>
 
           <div class="estimate-row">
@@ -775,11 +789,6 @@ if (error) {
             <div id="copyMessage" class="copy-message"></div>
           </div>
         </div>
-
-        <div class="result-section">
-          <div class="result-label">施工時間</div>
-          <div class="result-value">${menuData[0].work_time}</div>
-        </div>
       `;
 
       const basePrice = prices[0].price;
@@ -788,12 +797,35 @@ if (error) {
       function updateTotal() {
         let optionTotal = 0;
         let selectedOptions = [];
+        let selectedOptionsCopy = [];
+        let selectedOptionTimes = [];
+        let selectedOptionTimesCopy = [];
 
         document
           .querySelectorAll(".optionCheck:checked")
           .forEach(check => {
-            optionTotal += Number(check.dataset.price);
-            selectedOptions.push(check.dataset.name);
+            const price = Number(check.dataset.price);
+            const name = check.dataset.name;
+            const time = check.dataset.time;
+
+            optionTotal += price;
+
+            selectedOptions.push(
+              time
+                ? `${name}<br><span class="option-time">＋${time}</span>`
+                : name
+            );
+
+            selectedOptionsCopy.push(
+              time
+                ? `・${name}（＋${time}）`
+                : `・${name}`
+            );
+
+            if (time) {
+              selectedOptionTimes.push(`${name}（＋${time}）`);
+              selectedOptionTimesCopy.push(`・${name}：＋${time}`);
+            }
           });
 
         const selectedOptionsText =
@@ -802,8 +834,18 @@ if (error) {
             : "なし";
 
         const selectedOptionsCopyText =
-          selectedOptions.length
-            ? selectedOptions.map(name => `・${name}`).join("\\n")
+          selectedOptionsCopy.length
+            ? selectedOptionsCopy.join("\\n")
+            : "なし";
+
+        const optionTimeText =
+          selectedOptionTimes.length
+            ? selectedOptionTimes.join("<br>")
+            : "なし";
+
+        const optionTimeCopyText =
+          selectedOptionTimesCopy.length
+            ? selectedOptionTimesCopy.join("\\n")
             : "なし";
 
         const totalPrice = basePrice + optionTotal;
@@ -819,6 +861,14 @@ if (error) {
 
         document.getElementById("estimateOptions").innerHTML =
           selectedOptionsText;
+
+        document.getElementById("optionTimeResult").innerHTML =
+          optionTimeText;
+
+        document.getElementById("estimateOptionTime").innerHTML =
+          selectedOptionTimes.length
+            ? `オプション：<br>${optionTimeText}`
+            : "オプション：なし";
 
         document.getElementById("estimateTotal").textContent =
           `${totalPrice.toLocaleString()}円（税込）`;
@@ -839,7 +889,9 @@ ${selectedOptionsCopyText}
 ${totalPrice.toLocaleString()}円（税込）
 
 施工時間：
-${menuData[0].work_time}
+基本：${menuData[0].work_time}
+オプション追加時間：
+${optionTimeCopyText}
 
 この内容で問い合わせ希望です。`;
       }
@@ -871,3 +923,4 @@ ${menuData[0].work_time}
 
 </body>
 </html>
+```
