@@ -116,6 +116,24 @@
   margin-top:12px;
   font-weight:700;
 }
+.total-card-center{
+  text-align:center;
+}
+.total-price-inline{
+  display:flex;
+  justify-content:center;
+  align-items:baseline;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.total-price-inline .info{
+  margin:0;
+}
+.option-time-inline{
+  display:inline;
+  white-space:nowrap;
+}
+
 </style>
 </head>
 
@@ -832,12 +850,14 @@ if (error) {
           <div id="optionTimeResult" class="result-value">なし</div>
         </div>
 
-        <div class="total-card">
+        <div class="total-card total-card-center">
           <div class="result-label">お支払い総額</div>
-          <div id="totalPrice" class="result-price">
-            ${prices[0].price.toLocaleString()}円
+          <div class="total-price-inline">
+            <span id="totalPrice" class="result-price">
+              ${prices[0].price.toLocaleString()}円
+            </span>
+            <span class="info">（税込）</span>
           </div>
-          <div class="info">（税込）</div>
         </div>
 
         <div class="estimate-card">
@@ -929,7 +949,7 @@ if (error) {
 
             selectedOptions.push(
               time
-                ? `${name}<br><span class="option-time">＋${time}</span>`
+                ? `${name}<span class="option-time option-time-inline">／＋${time}</span>`
                 : name
             );
 
