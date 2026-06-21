@@ -11,55 +11,107 @@
 
 <style>
 .reservation-card{
-  margin-top:24px;
-  padding:22px;
-  border:1px solid #e5e0d8;
-  border-radius:18px;
-  background:#fff;
+  margin-top:28px;
+  padding:26px;
+  border:1px solid #e8dfcf;
+  border-radius:24px;
+  background:linear-gradient(180deg,#fff 0%,#fbfaf7 100%);
+  box-shadow:0 18px 45px rgba(20,20,20,.08);
+}
+.reservation-card .estimate-title{
+  letter-spacing:.08em;
 }
 .reservation-calendar-head{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:12px;
-  margin:16px 0 12px;
+  margin:18px 0 12px;
+  padding:12px;
+  border-radius:18px;
+  background:#1f1f1f;
+  color:#fff;
 }
 .calendar-month-title{
+  font-family:'Shippori Mincho', serif;
   font-weight:700;
-  letter-spacing:.08em;
+  letter-spacing:.12em;
+  color:#f3ead8;
 }
-.calendar-nav-button,
-.time-slot-button{
+.calendar-nav-button{
   cursor:pointer;
-  border:1px solid #d8d2c8;
-  background:#fff;
+  border:1px solid rgba(212,175,55,.55);
+  background:rgba(255,255,255,.06);
+  color:#f3ead8;
   border-radius:999px;
-  padding:8px 12px;
-  font-size:13px;
+  padding:8px 13px;
+  font-size:12px;
+  letter-spacing:.08em;
+  transition:.2s;
 }
+.calendar-nav-button:hover{
+  background:rgba(212,175,55,.18);
+}
+.calendar-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 14px;
+  margin:12px 0 14px;
+  color:#5f5548;
+  font-size:12px;
+}
+.calendar-legend span{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+}
+.legend-dot{
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  display:inline-block;
+}
+.legend-open{background:#d4af37;}
+.legend-few{background:#b9822b;}
+.legend-full{background:#bbb;}
+.legend-closed{background:#eee; border:1px solid #ddd;}
 .calendar-grid{
   display:grid;
   grid-template-columns:repeat(7,1fr);
-  gap:6px;
+  gap:7px;
 }
 .calendar-weekday{
   text-align:center;
   font-size:12px;
   color:#8a8176;
-  padding:6px 0;
+  padding:7px 0;
+  letter-spacing:.08em;
 }
 .calendar-day{
-  min-height:42px;
-  border:1px solid #e5e0d8;
-  border-radius:10px;
+  min-height:58px;
+  border:1px solid #e7decf;
+  border-radius:15px;
   background:#fff;
   cursor:pointer;
   font-size:14px;
+  font-family:'Shippori Mincho', serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  transition:.18s;
+}
+.calendar-day:hover:not(:disabled){
+  transform:translateY(-1px);
+  border-color:#d4af37;
+  box-shadow:0 8px 18px rgba(50,40,20,.08);
 }
 .calendar-day.empty{
   border:none;
   background:transparent;
   cursor:default;
+  box-shadow:none;
 }
 .calendar-day.closed,
 .calendar-day.past,
@@ -67,11 +119,34 @@
   color:#aaa;
   background:#f4f2ef;
   cursor:not-allowed;
+  box-shadow:none;
+}
+.calendar-day.available{
+  background:linear-gradient(180deg,#fff 0%,#fffaf0 100%);
+}
+.calendar-day.few{
+  background:linear-gradient(180deg,#fff 0%,#fff5e6 100%);
+  border-color:#d8b16a;
 }
 .calendar-day.selected{
-  border-color:#111;
+  border-color:#d4af37;
   font-weight:700;
-  box-shadow:0 0 0 2px rgba(0,0,0,.08) inset;
+  box-shadow:0 0 0 2px rgba(212,175,55,.38) inset,0 10px 22px rgba(80,60,20,.12);
+}
+.calendar-day-number{
+  font-size:16px;
+  line-height:1;
+}
+.calendar-day-status{
+  font-size:11px;
+  letter-spacing:.04em;
+  color:#7c6a46;
+  white-space:nowrap;
+}
+.calendar-day.unavailable .calendar-day-status,
+.calendar-day.closed .calendar-day-status,
+.calendar-day.past .calendar-day-status{
+  color:#999;
 }
 .time-slot-area{
   margin-top:18px;
@@ -79,13 +154,27 @@
 .time-slot-grid{
   display:flex;
   flex-wrap:wrap;
-  gap:8px;
+  gap:9px;
   margin-top:10px;
 }
+.time-slot-button{
+  cursor:pointer;
+  border:1px solid #d8d2c8;
+  background:#fff;
+  border-radius:999px;
+  padding:10px 14px;
+  font-size:13px;
+  font-family:inherit;
+  transition:.18s;
+}
+.time-slot-button:hover:not(:disabled){
+  border-color:#d4af37;
+  box-shadow:0 7px 15px rgba(40,30,10,.08);
+}
 .time-slot-button.active{
-  background:#111;
-  color:#fff;
-  border-color:#111;
+  background:#1f1f1f;
+  color:#f3ead8;
+  border-color:#d4af37;
 }
 .time-slot-button:disabled{
   color:#aaa;
@@ -102,19 +191,21 @@
 .reservation-form textarea{
   width:100%;
   box-sizing:border-box;
-  padding:12px;
+  padding:13px;
   border:1px solid #ddd;
-  border-radius:10px;
+  border-radius:12px;
   font-size:14px;
   font-family:inherit;
+  background:#fff;
 }
 .reservation-form textarea{
   min-height:88px;
   resize:vertical;
 }
 .reservation-selected-date{
-  margin-top:12px;
+  margin-top:14px;
   font-weight:700;
+  color:#2d2924;
 }
 .total-card-center{
   text-align:center;
@@ -133,7 +224,12 @@
   display:inline;
   white-space:nowrap;
 }
-
+@media (max-width:560px){
+  .reservation-card{padding:20px;}
+  .calendar-grid{gap:5px;}
+  .calendar-day{min-height:52px;border-radius:12px;}
+  .calendar-day-status{font-size:10px;}
+}
 </style>
 </head>
 
@@ -1282,6 +1378,13 @@ ${optionTimeCopyText}
             <button id="nextMonthBtn" class="calendar-nav-button" type="button">次月</button>
           </div>
 
+          <div class="calendar-legend">
+            <span><i class="legend-dot legend-open"></i>○ 空きあり</span>
+            <span><i class="legend-dot legend-few"></i>△ 残りわずか</span>
+            <span><i class="legend-dot legend-full"></i>× 満枠</span>
+            <span><i class="legend-dot legend-closed"></i>定休日</span>
+          </div>
+
           <div id="reservationCalendar" class="calendar-grid"></div>
           <div id="reservationSelectedDate" class="reservation-selected-date"></div>
           <div id="timeSlotArea" class="time-slot-area"></div>
@@ -1340,24 +1443,34 @@ ${optionTimeCopyText}
         calendar.appendChild(empty);
       }
 
+      const dayButtons = [];
+
       for (let day = 1; day <= lastDate.getDate(); day++) {
         const date = new Date(calendarYear, calendarMonth, day);
         const dateString = formatDateString(date);
         const button = document.createElement("button");
         button.type = "button";
         button.className = "calendar-day";
-        button.textContent = day;
         button.dataset.date = dateString;
+        button.innerHTML = `
+          <span class="calendar-day-number">${day}</span>
+          <span class="calendar-day-status">確認中</span>
+        `;
+
+        const statusLabel = button.querySelector(".calendar-day-status");
 
         if (isClosedDay(dateString)) {
           button.classList.add("closed");
           button.disabled = true;
           button.title = "定休日";
-        }
-
-        if (isPastDate(dateString)) {
+          statusLabel.textContent = "定休日";
+        } else if (isPastDate(dateString)) {
           button.classList.add("past");
           button.disabled = true;
+          statusLabel.textContent = "－";
+        } else {
+          button.disabled = true;
+          dayButtons.push({ button, statusLabel, dateString });
         }
 
         button.addEventListener("click", async function() {
@@ -1371,6 +1484,43 @@ ${optionTimeCopyText}
 
         calendar.appendChild(button);
       }
+
+      await Promise.all(dayButtons.map(async item => {
+        const { button, statusLabel, dateString } = item;
+        const bookingLane = menuData.booking_lane || "main";
+
+        if (bookingLane === "sub") {
+          const slots = await getAvailableWashSlots(dateString, menuData);
+          const availableCount = slots.filter(slot => slot.available).length;
+
+          if (availableCount <= 0) {
+            button.classList.add("unavailable");
+            button.disabled = true;
+            statusLabel.textContent = "× 満枠";
+            return;
+          }
+
+          button.classList.add(availableCount <= 1 ? "few" : "available");
+          button.disabled = false;
+          statusLabel.textContent = availableCount <= 1
+            ? "△ 残りわずか"
+            : "○ 空きあり";
+          return;
+        }
+
+        const available = await isMainDateAvailable(dateString, menuData);
+
+        if (!available.ok) {
+          button.classList.add("unavailable");
+          button.disabled = true;
+          statusLabel.textContent = "× 満枠";
+          return;
+        }
+
+        button.classList.add("available");
+        button.disabled = false;
+        statusLabel.textContent = "○ 空きあり";
+      }));
     }
 
     await renderCalendar();
