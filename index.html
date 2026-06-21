@@ -2109,25 +2109,19 @@ ${optionTimeCopyText}
     const workDays = getEffectiveWorkDays(menuData);
     const blockDates = addBusinessDays(startDate, workDays);
     const endDate = blockDates[blockDates.length - 1];
-
-    const { data: reservations, error } = await supabase
-      .from("reservations")
-      .select("*")
-      .lte("start_date", endDate)
-      .gte("end_date", startDate);
+    const { reservations, error } = await getWashBlockingReservations(startDate, endDate);
 
     if (error) {
-      console.error(error);
       return {
         ok:false,
         message:"予約状況の確認中にエラーが発生しました。"
       };
     }
 
-    if (reservations && reservations.length > 0) {
+    if (reservations.length > 0) {
       return {
         ok:false,
-        message:"この日は既存予約と重なるため選択できません。"
+        message:"この日は洗車予約が重なるため選択できません。"
       };
     }
 
@@ -2484,7 +2478,7 @@ ${optionTimeCopyText}
         });
 
         this.classList.add("active");
-        message.textContent = `この時間で仮予約できます。施工終了予定日：${available.endDate}`;
+        message.textContent = `この日程で仮予約できます。作業期間：${dateString}〜${available.endDate}`;
 
         showReservationForm({
           startDate:dateString,
@@ -2523,9 +2517,15 @@ ${optionTimeCopyText}
     if (oldForm) oldForm.remove();
 
     const reservationArea = document.getElementById("reservationArea");
-    const timeText = startTime && endTime
-      ? `<div class="contact-subnote reservation-time-note">開始時間：<span>${startTime}</span><br>作業終了目安：<span>${endTime}</span></div>`
-      : "";
+    let timeText = "";
+
+    if (isPureHandWash(menuData) && startTime && endTime) {
+      timeText = `<div class="contact-subnote reservation-time-note">開始時間：<span>${startTime}</span><br>作業終了目安：<span>${endTime}</span></div>`;
+    } else if ((isThoroughWash(menuData) || isLightWash(menuData)) && startDate && endDate) {
+      timeText = `<div class="contact-subnote reservation-time-note">開始時間：<span>${startTime || FULL_DAY_WASH_START_TIME}</span><br>作業期間：<span>${startDate}〜${endDate}</span></div>`;
+    } else if (startDate && endDate) {
+      timeText = `<div class="contact-subnote reservation-time-note">施工期間：<span>${startDate}〜${endDate}</span></div>`;
+    }
 
     reservationArea.insertAdjacentHTML(
       "beforeend",
@@ -2674,9 +2674,15 @@ ${optionTimeCopyText}
       return;
     }
 
-    const reservationText = startTime && endTime
-      ? `予約希望日：${startDate}\n開始時間：${startTime}\n作業終了目安：${endTime}`
-      : `施工開始日：${startDate}\n施工終了予定日：${endDate}`;
+    let reservationText = "";
+
+    if (isPureHandWash(menuData) && startTime && endTime) {
+      reservationText = `予約希望日：${startDate}\n開始時間：${startTime}\n作業終了目安：${endTime}`;
+    } else if (isThoroughWash(menuData) || isLightWash(menuData)) {
+      reservationText = `予約希望日：${startDate}\n開始時間：${startTime || FULL_DAY_WASH_START_TIME}\n作業期間：${startDate}〜${endDate}`;
+    } else {
+      reservationText = `施工開始日：${startDate}\n施工終了予定日：${endDate}`;
+    }
 
     const reservationCopyText =
 `RACY'SPEED 仮予約内容
