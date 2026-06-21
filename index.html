@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -9,6 +8,115 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+
+<style>
+.reservation-card{
+  margin-top:24px;
+  padding:22px;
+  border:1px solid #e5e0d8;
+  border-radius:18px;
+  background:#fff;
+}
+.reservation-calendar-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:16px 0 12px;
+}
+.calendar-month-title{
+  font-weight:700;
+  letter-spacing:.08em;
+}
+.calendar-nav-button,
+.time-slot-button{
+  cursor:pointer;
+  border:1px solid #d8d2c8;
+  background:#fff;
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:13px;
+}
+.calendar-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+}
+.calendar-weekday{
+  text-align:center;
+  font-size:12px;
+  color:#8a8176;
+  padding:6px 0;
+}
+.calendar-day{
+  min-height:42px;
+  border:1px solid #e5e0d8;
+  border-radius:10px;
+  background:#fff;
+  cursor:pointer;
+  font-size:14px;
+}
+.calendar-day.empty{
+  border:none;
+  background:transparent;
+  cursor:default;
+}
+.calendar-day.closed,
+.calendar-day.past,
+.calendar-day.unavailable{
+  color:#aaa;
+  background:#f4f2ef;
+  cursor:not-allowed;
+}
+.calendar-day.selected{
+  border-color:#111;
+  font-weight:700;
+  box-shadow:0 0 0 2px rgba(0,0,0,.08) inset;
+}
+.time-slot-area{
+  margin-top:18px;
+}
+.time-slot-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+}
+.time-slot-button.active{
+  background:#111;
+  color:#fff;
+  border-color:#111;
+}
+.time-slot-button:disabled{
+  color:#aaa;
+  background:#f4f2ef;
+  cursor:not-allowed;
+}
+.reservation-form{
+  margin-top:20px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.reservation-form input,
+.reservation-form textarea{
+  width:100%;
+  box-sizing:border-box;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:14px;
+  font-family:inherit;
+}
+.reservation-form textarea{
+  min-height:88px;
+  resize:vertical;
+}
+.reservation-selected-date{
+  margin-top:12px;
+  font-weight:700;
+}
+</style>
 </head>
 
 <body>
@@ -103,6 +211,12 @@ const select = document.getElementById("carSelect");
 const result = document.getElementById("result");
 const carSearch = document.getElementById("carSearch");
 const searchResults = document.getElementById("searchResults");
+
+let currentSelectedCar = null;
+let currentQuoteState = null;
+
+const WASH_START_HOURS = [10,11,12,13,14];
+const WASH_DURATION_HOURS = 3;
 
 const JAPANESE_MAKERS = [
   "トヨタ","レクサス","ホンダ","日産","マツダ","スバル","スズキ","ダイハツ","三菱"
@@ -334,6 +448,9 @@ if (error) {
   }
 
   function showCar(car) {
+    currentSelectedCar = car;
+    currentQuoteState = null;
+
     carSearch.value = `${car.maker} ${car.model}`;
     searchResults.innerHTML = "";
     searchResults.style.display = "none";
@@ -512,6 +629,7 @@ if (error) {
       washMenuArea.style.display = "none";
       document.getElementById("optionArea").innerHTML = "";
       document.getElementById("priceResult").innerHTML = "";
+      currentQuoteState = null;
 
       const selectedCategory = this.value;
       const filteredMenus = menus.filter(menu => menu.category === selectedCategory);
@@ -622,143 +740,6 @@ if (error) {
     }
 
     async function showPrice(menuName) {
-          async function renderReservationArea({ carName, selectedSize, menuName, displayMenuName, menuData, totalPrice }) {
-      const priceResult = document.getElementById("priceResult");
-
-      const reservationHtml = `
-        <div class="reservation-card">
-          <div class="estimate-title">予約希望日</div>
-          <p class="contact-subnote">
-            お客様は施工開始日のみお選びください。月曜・火曜は定休日です。
-          </p>
-
-          <input id="reservationDate" type="date">
-
-          <div id="reservationMessage" class="copy-message"></div>
-
-          <button id="checkReservationBtn" class="copy-button" type="button">
-            この日で空きを確認
-          </button>
-        </div>
-      `;
-
-      priceResult.insertAdjacentHTML("beforeend", reservationHtml);
-
-      document
-        .getElementById("checkReservationBtn")
-        .addEventListener("click", async function() {
-          const dateValue = document.getElementById("reservationDate").value;
-          const message = document.getElementById("reservationMessage");
-
-          if (!dateValue) {
-            message.textContent = "予約希望日を選択してください。";
-            return;
-          }
-
-          const available = await checkReservationAvailable(dateValue, menuData);
-
-          if (!available.ok) {
-            message.textContent = available.message;
-            return;
-          }
-
-          message.textContent =
-            "この日程は仮予約可能です。LINEでお問い合わせください。";
-        });
-    }
-
-    function isClosedDay(dateString) {
-      const date = new Date(dateString + "T00:00:00");
-      const day = date.getDay();
-
-      return day === 1 || day === 2;
-    }
-
-    function addBusinessDays(startDateString, workDays) {
-      const dates = [];
-      const date = new Date(startDateString + "T00:00:00");
-
-      while (dates.length < workDays) {
-        const yyyy = date.getFullYear();
-        const mm = String(date.getMonth() + 1).padStart(2, "0");
-        const dd = String(date.getDate()).padStart(2, "0");
-        const dateString = `${yyyy}-${mm}-${dd}`;
-
-        if (!isClosedDay(dateString)) {
-          dates.push(dateString);
-        }
-
-        date.setDate(date.getDate() + 1);
-      }
-
-      return dates;
-    }
-
-    async function checkReservationAvailable(startDate, menuData) {
-      if (isClosedDay(startDate)) {
-        return {
-          ok: false,
-          message: "月曜・火曜は定休日のため選択できません。"
-        };
-      }
-
-      const workDays = Number(menuData.work_days || 1);
-      const bookingLane = menuData.booking_lane || "main";
-      const dailyLimit = Number(menuData.daily_limit || 1);
-
-      if (bookingLane === "sub") {
-        const { data: reservations, error } = await supabase
-          .from("reservations")
-          .select("*")
-          .eq("start_date", startDate)
-          .eq("booking_lane", "sub");
-
-        if (error) {
-          console.error(error);
-          return {
-            ok: false,
-            message: "予約状況の確認中にエラーが発生しました。"
-          };
-        }
-
-        if (reservations.length >= dailyLimit) {
-          return {
-            ok: false,
-            message: "この日は純水手洗い洗車の予約枠が満車です。"
-          };
-        }
-
-        return { ok: true };
-      }
-
-      const blockDates = addBusinessDays(startDate, workDays);
-
-      for (const date of blockDates) {
-        const { data: reservations, error } = await supabase
-          .from("reservations")
-          .select("*")
-          .lte("start_date", date)
-          .gte("end_date", date)
-          .eq("booking_lane", "main");
-
-        if (error) {
-          console.error(error);
-          return {
-            ok: false,
-            message: "予約状況の確認中にエラーが発生しました。"
-          };
-        }
-
-        if (reservations.length > 0) {
-          return {
-            ok: false,
-            message: "この開始日はコーティング予約が重なるため選択できません。"
-          };
-        }
-      }
-
-      return { ok: true };
-    }
       const selectedSize =
         document.querySelector(".car-size")
           .textContent
@@ -794,6 +775,7 @@ if (error) {
         .select("*")
         .eq("size", selectedSize);
 
+      const selectedMenu = menuData[0];
       const optionArea = document.getElementById("optionArea");
 
       optionArea.innerHTML = "<h3>追加オプション</h3>";
@@ -842,7 +824,7 @@ if (error) {
 
         <div class="result-section">
           <div class="result-label">基本施工時間</div>
-          <div class="result-value">${menuData[0].work_time}</div>
+          <div class="result-value">${selectedMenu.work_time}</div>
         </div>
 
         <div class="result-section">
@@ -884,7 +866,7 @@ if (error) {
           <div class="estimate-row">
             <div class="estimate-label">施工時間</div>
             <div class="estimate-value">
-              基本：${menuData[0].work_time}<br>
+              基本：${selectedMenu.work_time}<br>
               <span id="estimateOptionTime">オプション：なし</span>
             </div>
           </div>
@@ -914,12 +896,12 @@ if (error) {
             </button>
 
             <button
-  id="lineContactBtn"
-  class="line-button"
-  type="button"
->
-  この内容でLINE問い合わせ
-</button>
+              id="lineContactBtn"
+              class="line-button"
+              type="button"
+            >
+              この内容でLINE問い合わせ
+            </button>
 
             <div id="copyMessage" class="copy-message"></div>
           </div>
@@ -970,7 +952,7 @@ if (error) {
 
         const selectedOptionsCopyText =
           selectedOptionsCopy.length
-            ? selectedOptionsCopy.join("\\n")
+            ? selectedOptionsCopy.join("\n")
             : "なし";
 
         const optionTimeText =
@@ -980,7 +962,7 @@ if (error) {
 
         const optionTimeCopyText =
           selectedOptionTimesCopy.length
-            ? selectedOptionTimesCopy.join("\\n")
+            ? selectedOptionTimesCopy.join("\n")
             : "なし";
 
         const totalPrice = basePrice + optionTotal;
@@ -1008,6 +990,20 @@ if (error) {
         document.getElementById("estimateTotal").textContent =
           `${totalPrice.toLocaleString()}円（税込）`;
 
+        currentQuoteState = {
+          carName,
+          selectedSize,
+          menuName,
+          displayMenuName,
+          menuData:selectedMenu,
+          basePrice,
+          totalPrice,
+          selectedOptionsText,
+          selectedOptionsCopyText,
+          optionTimeCopyText,
+          optionTimeText
+        };
+
         currentEstimateText =
 `RACY'SPEED お見積り内容
 
@@ -1024,7 +1020,7 @@ ${selectedOptionsCopyText}
 ${totalPrice.toLocaleString()}円（税込）
 
 施工時間：
-基本：${menuData[0].work_time}
+基本：${selectedMenu.work_time}
 オプション追加時間：
 ${optionTimeCopyText}
 
@@ -1032,37 +1028,29 @@ ${optionTimeCopyText}
       }
 
       document.querySelectorAll(".optionCheck").forEach(check => {
-        check.addEventListener("change", updateTotal);
+        check.addEventListener("change", function() {
+          updateTotal();
+          resetReservationSelection();
+        });
       });
-document
-  .getElementById("lineContactBtn")
-  .addEventListener("click", async function() {
 
-    const copyMessage =
-      document.getElementById("copyMessage");
+      document
+        .getElementById("lineContactBtn")
+        .addEventListener("click", async function() {
+          const copyMessage = document.getElementById("copyMessage");
 
-    try {
+          try {
+            await navigator.clipboard.writeText(currentEstimateText);
+            copyMessage.textContent =
+              "お見積り内容をコピーしました。LINEで貼り付けて送信してください。";
+          } catch (error) {
+            copyMessage.textContent =
+              "コピーできませんでした。手動でコピーしてください。";
+          }
 
-      await navigator.clipboard.writeText(
-        currentEstimateText
-      );
+          window.open(lineUrl, "_blank", "noopener");
+        });
 
-      copyMessage.textContent =
-        "お見積り内容をコピーしました。LINEで貼り付けて送信してください。";
-
-    } catch (error) {
-
-      copyMessage.textContent =
-        "コピーできませんでした。手動でコピーしてください。";
-
-    }
-
-    window.open(
-      lineUrl,
-      "_blank",
-      "noopener"
-    );
-  });
       document
         .getElementById("copyEstimateBtn")
         .addEventListener("click", async function() {
@@ -1077,18 +1065,571 @@ document
               "コピーできませんでした。画面のお見積り内容を選択してコピーしてください。";
           }
         });
-      
-      renderReservationArea({
-        carName,
-        selectedSize,
-        menuName,
-        displayMenuName,
-        menuData: menuData[0],
-        totalPrice: basePrice
-      });
-      
+
       updateTotal();
+      renderReservationArea(selectedMenu);
     }
+  }
+
+  function resetReservationSelection() {
+    const form = document.getElementById("reservationForm");
+    const message = document.getElementById("reservationMessage");
+    const selectedDate = document.getElementById("reservationSelectedDate");
+    const timeSlotArea = document.getElementById("timeSlotArea");
+
+    if (form) form.remove();
+    if (message) message.textContent = "";
+    if (selectedDate) selectedDate.textContent = "";
+    if (timeSlotArea) timeSlotArea.innerHTML = "";
+  }
+
+  function isClosedDay(dateString) {
+    const date = new Date(dateString + "T00:00:00");
+    const day = date.getDay();
+    return day === 1 || day === 2;
+  }
+
+  function isPastDate(dateString) {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const date = new Date(dateString + "T00:00:00");
+    return date < today;
+  }
+
+  function formatDateString(date) {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  function addBusinessDays(startDateString, workDays) {
+    const dates = [];
+    const date = new Date(startDateString + "T00:00:00");
+
+    while (dates.length < workDays) {
+      const dateString = formatDateString(date);
+
+      if (!isClosedDay(dateString)) {
+        dates.push(dateString);
+      }
+
+      date.setDate(date.getDate() + 1);
+    }
+
+    return dates;
+  }
+
+  function timeToMinutes(timeString) {
+    const [hour, minute] = String(timeString).slice(0,5).split(":").map(Number);
+    return hour * 60 + minute;
+  }
+
+  function hourToTime(hour) {
+    return `${String(hour).padStart(2,"0")}:00`;
+  }
+
+  function addHours(timeString, hours) {
+    const minutes = timeToMinutes(timeString) + hours * 60;
+    const hour = Math.floor(minutes / 60);
+    const minute = minutes % 60;
+    return `${String(hour).padStart(2,"0")}:${String(minute).padStart(2,"0")}`;
+  }
+
+  function isTimeOverlap(startA, endA, startB, endB) {
+    return timeToMinutes(startA) < timeToMinutes(endB) &&
+      timeToMinutes(endA) > timeToMinutes(startB);
+  }
+
+  async function isMainDateAvailable(startDate, menuData) {
+    if (isClosedDay(startDate)) {
+      return {
+        ok:false,
+        message:"月曜・火曜は定休日のため選択できません。"
+      };
+    }
+
+    if (isPastDate(startDate)) {
+      return {
+        ok:false,
+        message:"過去の日付は選択できません。"
+      };
+    }
+
+    const workDays = Number(menuData.work_days || 1);
+    const blockDates = addBusinessDays(startDate, workDays);
+    const endDate = blockDates[blockDates.length - 1];
+
+    const { data: reservations, error } = await supabase
+      .from("reservations")
+      .select("*")
+      .eq("booking_lane", "main")
+      .lte("start_date", endDate)
+      .gte("end_date", startDate);
+
+    if (error) {
+      console.error(error);
+      return {
+        ok:false,
+        message:"予約状況の確認中にエラーが発生しました。"
+      };
+    }
+
+    if (reservations && reservations.length > 0) {
+      return {
+        ok:false,
+        message:"この開始日はコーティング予約が重なるため選択できません。"
+      };
+    }
+
+    return {
+      ok:true,
+      endDate,
+      blockDates
+    };
+  }
+
+  async function getAvailableWashSlots(dateString, menuData) {
+    if (isClosedDay(dateString)) {
+      return [];
+    }
+
+    if (isPastDate(dateString)) {
+      return [];
+    }
+
+    const dailyLimit = Number(menuData.daily_limit || 2);
+
+    const { data: reservations, error } = await supabase
+      .from("reservations")
+      .select("*")
+      .eq("start_date", dateString)
+      .eq("booking_lane", "sub");
+
+    if (error) {
+      console.error(error);
+      return [];
+    }
+
+    if ((reservations || []).length >= dailyLimit) {
+      return [];
+    }
+
+    return WASH_START_HOURS.map(hour => {
+      const startTime = hourToTime(hour);
+      const endTime = addHours(startTime, WASH_DURATION_HOURS);
+
+      const overlap = (reservations || []).some(reservation => {
+        if (!reservation.start_time || !reservation.end_time) return false;
+        return isTimeOverlap(
+          startTime,
+          endTime,
+          String(reservation.start_time).slice(0,5),
+          String(reservation.end_time).slice(0,5)
+        );
+      });
+
+      return {
+        startTime,
+        endTime,
+        available:!overlap
+      };
+    });
+  }
+
+  async function renderReservationArea(menuData) {
+    const priceResult = document.getElementById("priceResult");
+    const oldReservation = document.getElementById("reservationArea");
+    if (oldReservation) oldReservation.remove();
+
+    const bookingLane = menuData.booking_lane || "main";
+    const isWashTimeBooking = bookingLane === "sub";
+
+    priceResult.insertAdjacentHTML(
+      "beforeend",
+      `
+        <div id="reservationArea" class="reservation-card">
+          <div class="estimate-title">予約希望日</div>
+          <p class="contact-subnote">
+            ${isWashTimeBooking
+              ? "純水手洗い洗車は、日付と開始時間をお選びください。月曜・火曜は定休日です。"
+              : "コーティングは施工開始日のみお選びください。月曜・火曜は定休日です。"}
+          </p>
+
+          <div class="reservation-calendar-head">
+            <button id="prevMonthBtn" class="calendar-nav-button" type="button">前月</button>
+            <div id="calendarMonthTitle" class="calendar-month-title"></div>
+            <button id="nextMonthBtn" class="calendar-nav-button" type="button">次月</button>
+          </div>
+
+          <div id="reservationCalendar" class="calendar-grid"></div>
+          <div id="reservationSelectedDate" class="reservation-selected-date"></div>
+          <div id="timeSlotArea" class="time-slot-area"></div>
+          <div id="reservationMessage" class="copy-message"></div>
+        </div>
+      `
+    );
+
+    const today = new Date();
+    let calendarYear = today.getFullYear();
+    let calendarMonth = today.getMonth();
+
+    document.getElementById("prevMonthBtn").addEventListener("click", function() {
+      const now = new Date();
+      const prevLimit = new Date(now.getFullYear(), now.getMonth(), 1);
+      const nextMonth = new Date(calendarYear, calendarMonth - 1, 1);
+
+      if (nextMonth < prevLimit) return;
+
+      calendarYear = nextMonth.getFullYear();
+      calendarMonth = nextMonth.getMonth();
+      renderCalendar();
+    });
+
+    document.getElementById("nextMonthBtn").addEventListener("click", function() {
+      const nextMonth = new Date(calendarYear, calendarMonth + 1, 1);
+      calendarYear = nextMonth.getFullYear();
+      calendarMonth = nextMonth.getMonth();
+      renderCalendar();
+    });
+
+    async function renderCalendar() {
+      resetReservationSelection();
+
+      const calendar = document.getElementById("reservationCalendar");
+      const title = document.getElementById("calendarMonthTitle");
+      const firstDate = new Date(calendarYear, calendarMonth, 1);
+      const lastDate = new Date(calendarYear, calendarMonth + 1, 0);
+      const weekdays = ["日","月","火","水","木","金","土"];
+
+      title.textContent = `${calendarYear}年${calendarMonth + 1}月`;
+      calendar.innerHTML = "";
+
+      weekdays.forEach(day => {
+        const weekday = document.createElement("div");
+        weekday.className = "calendar-weekday";
+        weekday.textContent = day;
+        calendar.appendChild(weekday);
+      });
+
+      for (let i = 0; i < firstDate.getDay(); i++) {
+        const empty = document.createElement("button");
+        empty.type = "button";
+        empty.className = "calendar-day empty";
+        empty.disabled = true;
+        calendar.appendChild(empty);
+      }
+
+      for (let day = 1; day <= lastDate.getDate(); day++) {
+        const date = new Date(calendarYear, calendarMonth, day);
+        const dateString = formatDateString(date);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "calendar-day";
+        button.textContent = day;
+        button.dataset.date = dateString;
+
+        if (isClosedDay(dateString)) {
+          button.classList.add("closed");
+          button.disabled = true;
+          button.title = "定休日";
+        }
+
+        if (isPastDate(dateString)) {
+          button.classList.add("past");
+          button.disabled = true;
+        }
+
+        button.addEventListener("click", async function() {
+          document.querySelectorAll(".calendar-day").forEach(dayButton => {
+            dayButton.classList.remove("selected");
+          });
+
+          this.classList.add("selected");
+          await handleDateSelected(dateString, menuData);
+        });
+
+        calendar.appendChild(button);
+      }
+    }
+
+    await renderCalendar();
+  }
+
+  async function handleDateSelected(dateString, menuData) {
+    const bookingLane = menuData.booking_lane || "main";
+    const selectedDate = document.getElementById("reservationSelectedDate");
+    const timeSlotArea = document.getElementById("timeSlotArea");
+    const message = document.getElementById("reservationMessage");
+
+    resetReservationSelection();
+    selectedDate.textContent = `選択日：${dateString}`;
+
+    if (bookingLane === "sub") {
+      message.textContent = "空き時間を確認しています。";
+
+      const slots = await getAvailableWashSlots(dateString, menuData);
+      message.textContent = "";
+
+      if (!slots.length || !slots.some(slot => slot.available)) {
+        message.textContent = "この日は純水手洗い洗車の空き枠がありません。";
+        return;
+      }
+
+      timeSlotArea.innerHTML = `
+        <div class="result-label">開始時間を選択</div>
+        <div class="time-slot-grid"></div>
+      `;
+
+      const grid = timeSlotArea.querySelector(".time-slot-grid");
+
+      slots.forEach(slot => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "time-slot-button";
+        button.textContent = `${slot.startTime}〜${slot.endTime}`;
+        button.disabled = !slot.available;
+
+        button.addEventListener("click", function() {
+          document.querySelectorAll(".time-slot-button").forEach(slotButton => {
+            slotButton.classList.remove("active");
+          });
+
+          this.classList.add("active");
+          message.textContent = "この時間で仮予約できます。";
+
+          showReservationForm({
+            startDate:dateString,
+            endDate:dateString,
+            startTime:slot.startTime,
+            endTime:slot.endTime,
+            menuData
+          });
+        });
+
+        grid.appendChild(button);
+      });
+
+      return;
+    }
+
+    message.textContent = "空き状況を確認しています。";
+    const available = await isMainDateAvailable(dateString, menuData);
+
+    if (!available.ok) {
+      message.textContent = available.message;
+      return;
+    }
+
+    message.textContent = `この日程は仮予約可能です。施工終了予定日：${available.endDate}`;
+
+    showReservationForm({
+      startDate:dateString,
+      endDate:available.endDate,
+      startTime:null,
+      endTime:null,
+      menuData
+    });
+  }
+
+  function showReservationForm({ startDate, endDate, startTime, endTime, menuData }) {
+    const oldForm = document.getElementById("reservationForm");
+    if (oldForm) oldForm.remove();
+
+    const reservationArea = document.getElementById("reservationArea");
+    const timeText = startTime && endTime
+      ? `<div class="contact-subnote">予約時間：${startTime}〜${endTime}</div>`
+      : "";
+
+    reservationArea.insertAdjacentHTML(
+      "beforeend",
+      `
+        <div id="reservationForm" class="reservation-form">
+          ${timeText}
+
+          <input
+            id="customerName"
+            type="text"
+            placeholder="お名前"
+          >
+
+          <input
+            id="customerPhone"
+            type="tel"
+            placeholder="電話番号"
+          >
+
+          <textarea
+            id="customerNote"
+            placeholder="ご要望・備考（任意）"
+          ></textarea>
+
+          <button
+            id="saveReservationBtn"
+            class="line-button"
+            type="button"
+          >
+            仮予約する
+          </button>
+
+          <div
+            id="reservationSaveMessage"
+            class="copy-message"
+          ></div>
+        </div>
+      `
+    );
+
+    document
+      .getElementById("saveReservationBtn")
+      .addEventListener("click", () => saveReservation({
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+        menuData
+      }));
+  }
+
+  async function saveReservation({ startDate, endDate, startTime, endTime, menuData }) {
+    const customerName = document.getElementById("customerName").value.trim();
+    const customerPhone = document.getElementById("customerPhone").value.trim();
+    const customerNote = document.getElementById("customerNote").value.trim();
+    const saveMessage = document.getElementById("reservationSaveMessage");
+    const saveButton = document.getElementById("saveReservationBtn");
+
+    if (!customerName) {
+      saveMessage.textContent = "お名前を入力してください。";
+      return;
+    }
+
+    if (!customerPhone) {
+      saveMessage.textContent = "電話番号を入力してください。";
+      return;
+    }
+
+    saveButton.disabled = true;
+    saveMessage.textContent = "予約状況を再確認しています。";
+
+    const bookingLane = menuData.booking_lane || "main";
+
+    if (bookingLane === "sub") {
+      const slots = await getAvailableWashSlots(startDate, menuData);
+      const targetSlot = slots.find(slot =>
+        slot.startTime === startTime &&
+        slot.endTime === endTime &&
+        slot.available
+      );
+
+      if (!targetSlot) {
+        saveButton.disabled = false;
+        saveMessage.textContent = "この時間は先に予約が入ったため選択できません。別の時間をお選びください。";
+        return;
+      }
+    } else {
+      const available = await isMainDateAvailable(startDate, menuData);
+      if (!available.ok) {
+        saveButton.disabled = false;
+        saveMessage.textContent = available.message;
+        return;
+      }
+    }
+
+    const selectedOptions = [];
+    document.querySelectorAll(".optionCheck:checked").forEach(check => {
+      selectedOptions.push(check.dataset.name);
+    });
+
+    const totalPrice = currentQuoteState ? currentQuoteState.totalPrice : Number(
+      document.getElementById("totalPrice").textContent.replace(/[^\d]/g, "")
+    );
+
+    const selectedSize = currentQuoteState ? currentQuoteState.selectedSize : currentSelectedCar.size;
+    const selectedMenuName = currentQuoteState ? currentQuoteState.menuName : menuData.menu_name;
+
+    const { error } = await supabase
+      .from("reservations")
+      .insert([
+        {
+          customer_name:customerName,
+          phone:customerPhone,
+          maker:currentSelectedCar.maker,
+          model:currentSelectedCar.model,
+          size:selectedSize,
+          menu_name:selectedMenuName,
+          options:selectedOptions.join(" / "),
+          total_price:totalPrice,
+          work_time:menuData.work_time,
+          work_days:Number(menuData.work_days || 1),
+          start_date:startDate,
+          end_date:endDate,
+          start_time:startTime,
+          end_time:endTime,
+          status:"仮予約",
+          booking_lane:bookingLane,
+          daily_limit:Number(menuData.daily_limit || 1)
+        }
+      ]);
+
+    if (error) {
+      console.error(error);
+      saveButton.disabled = false;
+      saveMessage.textContent = "保存に失敗しました。Supabaseの列名・RLS設定を確認してください。";
+      return;
+    }
+
+    const reservationText = startTime && endTime
+      ? `予約希望：${startDate} ${startTime}〜${endTime}`
+      : `施工開始日：${startDate}\n施工終了予定日：${endDate}`;
+
+    const reservationCopyText =
+`RACY'SPEED 仮予約内容
+
+お名前：${customerName}
+電話番号：${customerPhone}
+
+お車：${currentSelectedCar.maker} ${currentSelectedCar.model}
+サイズ：${selectedSize}サイズ
+
+施工メニュー：
+${formatMenuName(selectedMenuName)}
+
+選択オプション：
+${selectedOptions.length ? selectedOptions.map(name => `・${name}`).join("\n") : "なし"}
+
+お支払い総額：
+${totalPrice.toLocaleString()}円（税込）
+
+${reservationText}
+
+備考：
+${customerNote || "なし"}`;
+
+    saveMessage.innerHTML = `
+      仮予約を受付しました。<br>
+      ※この時点ではまだ予約確定ではありません。LINEで内容を送信してください。
+    `;
+
+    const existingLineButton = document.getElementById("reservationLineBtn");
+    if (existingLineButton) existingLineButton.remove();
+
+    saveMessage.insertAdjacentHTML(
+      "afterend",
+      `
+        <button id="reservationLineBtn" class="line-button" type="button">
+          仮予約内容をコピーしてLINEを開く
+        </button>
+      `
+    );
+
+    document.getElementById("reservationLineBtn").addEventListener("click", async function() {
+      try {
+        await navigator.clipboard.writeText(reservationCopyText);
+      } catch (error) {
+        console.error(error);
+      }
+      window.open(lineUrl, "_blank", "noopener");
+    });
   }
 }
 </script>
