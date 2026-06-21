@@ -827,6 +827,76 @@
   color:#ffffff !important;
 }
 
+
+/* v4: option-aware wash duration and black/white calendar refinements */
+.calendar-month-title{
+  color:#ffffff !important;
+}
+.calendar-weekday{
+  color:#ffffff !important;
+  line-height:1.35 !important;
+}
+.calendar-weekday-en{
+  display:block;
+  font-size:10px;
+  letter-spacing:.16em;
+  color:#ffffff !important;
+  opacity:.88;
+}
+.legend-few-text{
+  color:#ffffff !important;
+}
+.calendar-day:hover:not(:disabled){
+  border-color:#ffffff !important;
+  box-shadow:inset 0 0 0 1px #ffffff !important;
+}
+.calendar-day.few .calendar-day-status{
+  color:#ffffff !important;
+}
+.calendar-day.closed{
+  color:#ffffff !important;
+}
+.calendar-day.closed .calendar-day-status{
+  color:#d32f2f !important;
+}
+.calendar-day.selected{
+  background:#ffffff !important;
+  color:#000000 !important;
+  border-color:#ffffff !important;
+}
+.calendar-day.selected .calendar-day-status,
+.calendar-day.selected .calendar-day-number{
+  color:#000000 !important;
+}
+.time-slot-area .result-label{
+  color:#ffffff !important;
+}
+.time-slot-button{
+  border-color:#ffffff !important;
+  background:#111111 !important;
+  color:#ffffff !important;
+}
+.time-slot-button:hover:not(:disabled){
+  border-color:#ffffff !important;
+  box-shadow:inset 0 0 0 1px #ffffff !important;
+}
+.time-slot-button.active{
+  background:#ffffff !important;
+  color:#000000 !important;
+  border-color:#ffffff !important;
+}
+#reservationMessage,
+#reservationSaveMessage{
+  color:#ffffff !important;
+}
+.reservation-time-note{
+  color:#ffffff !important;
+  line-height:1.8;
+}
+.reservation-time-note span{
+  color:#ffffff !important;
+}
+
 </style>
 </head>
 
@@ -1714,7 +1784,9 @@ if (error) {
           selectedOptionsText,
           selectedOptionsCopyText,
           optionTimeCopyText,
-          optionTimeText
+          optionTimeText,
+          optionDurationHours:getSelectedOptionDurationHours(),
+          reservationDurationHours:getWashReservationDurationHours(selectedMenu)
         };
 
         currentEstimateText =
@@ -1843,7 +1915,7 @@ ${optionTimeCopyText}
   }
 
   function addHours(timeString, hours) {
-    const minutes = timeToMinutes(timeString) + hours * 60;
+    const minutes = Math.round(timeToMinutes(timeString) + hours * 60);
     const hour = Math.floor(minutes / 60);
     const minute = minutes % 60;
     return `${String(hour).padStart(2,"0")}:${String(minute).padStart(2,"0")}`;
@@ -1902,6 +1974,40 @@ ${optionTimeCopyText}
     };
   }
 
+  function parseWorkTimeToHours(timeText) {
+    const text = String(timeText || "");
+    if (!text || text === "なし") return 0;
+
+    let totalMinutes = 0;
+
+    const hourMatches = [...text.matchAll(/(\d+(?:\.\d+)?)\s*時間/g)];
+    hourMatches.forEach(match => {
+      totalMinutes += Number(match[1]) * 60;
+    });
+
+    const minuteMatches = [...text.matchAll(/(\d+(?:\.\d+)?)\s*分/g)];
+    minuteMatches.forEach(match => {
+      totalMinutes += Number(match[1]);
+    });
+
+    return totalMinutes / 60;
+  }
+
+  function getSelectedOptionDurationHours() {
+    let optionHours = 0;
+
+    document.querySelectorAll(".optionCheck:checked").forEach(check => {
+      optionHours += parseWorkTimeToHours(check.dataset.time);
+    });
+
+    return optionHours;
+  }
+
+  function getWashReservationDurationHours(menuData) {
+    const baseHours = parseWorkTimeToHours(menuData.work_time) || WASH_DURATION_HOURS;
+    return baseHours + getSelectedOptionDurationHours();
+  }
+
   async function getAvailableWashSlots(dateString, menuData) {
     if (isClosedDay(dateString)) {
       return [];
@@ -1934,7 +2040,7 @@ ${optionTimeCopyText}
 
     return WASH_START_HOURS.map(hour => {
       const startTime = hourToTime(hour);
-      const endTime = addHours(startTime, WASH_DURATION_HOURS);
+      const endTime = addHours(startTime, getWashReservationDurationHours(menuData));
 
       const overlap = timedReservations.some(reservation => {
         if (!reservation.start_time || !reservation.end_time) return false;
@@ -2169,7 +2275,8 @@ ${optionTimeCopyText}
         const button = document.createElement("button");
         button.type = "button";
         button.className = "time-slot-button";
-        button.textContent = `${slot.startTime}〜${slot.endTime}`;
+        button.textContent = slot.startTime;
+        button.title = `作業終了目安：${slot.endTime}`;
         button.disabled = !slot.available;
 
         button.addEventListener("click", function() {
@@ -2220,7 +2327,7 @@ ${optionTimeCopyText}
 
     const reservationArea = document.getElementById("reservationArea");
     const timeText = startTime && endTime
-      ? `<div class="contact-subnote">予約時間：${startTime}〜${endTime}</div>`
+      ? `<div class="contact-subnote reservation-time-note">開始時間：<span>${startTime}</span><br>作業終了目安：<span>${endTime}</span></div>`
       : "";
 
     reservationArea.insertAdjacentHTML(
@@ -2361,7 +2468,7 @@ ${optionTimeCopyText}
     }
 
     const reservationText = startTime && endTime
-      ? `予約希望：${startDate} ${startTime}〜${endTime}`
+      ? `予約希望日：${startDate}\n開始時間：${startTime}\n作業終了目安：${endTime}`
       : `施工開始日：${startDate}\n施工終了予定日：${endDate}`;
 
     const reservationCopyText =
