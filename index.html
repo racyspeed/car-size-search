@@ -776,15 +776,13 @@ if (error) {
               お見積り内容をコピー
             </button>
 
-            <a
-              id="lineContactBtn"
-              class="line-button"
-              href="${lineUrl}"
-              target="_blank"
-              rel="noopener"
-            >
-              この内容でLINE問い合わせ
-            </a>
+            <button
+  id="lineContactBtn"
+  class="line-button"
+  type="button"
+>
+  この内容でLINE問い合わせ
+</button>
 
             <div id="copyMessage" class="copy-message"></div>
           </div>
@@ -899,7 +897,35 @@ ${optionTimeCopyText}
       document.querySelectorAll(".optionCheck").forEach(check => {
         check.addEventListener("change", updateTotal);
       });
+document
+  .getElementById("lineContactBtn")
+  .addEventListener("click", async function() {
 
+    const copyMessage =
+      document.getElementById("copyMessage");
+
+    try {
+
+      await navigator.clipboard.writeText(
+        currentEstimateText
+      );
+
+      copyMessage.textContent =
+        "お見積り内容をコピーしました。LINEで貼り付けて送信してください。";
+
+    } catch (error) {
+
+      copyMessage.textContent =
+        "コピーできませんでした。手動でコピーしてください。";
+
+    }
+
+    window.open(
+      lineUrl,
+      "_blank",
+      "noopener"
+    );
+  });
       document
         .getElementById("copyEstimateBtn")
         .addEventListener("click", async function() {
