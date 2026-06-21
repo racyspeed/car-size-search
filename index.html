@@ -1953,6 +1953,39 @@ body{
   }
 }
 
+
+/* v10.4: mobile time-slot immediate tap feedback */
+.time-slot-button{
+  -webkit-tap-highlight-color:transparent !important;
+  touch-action:manipulation !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+}
+
+.time-slot-button.active,
+.time-slot-button:active{
+  background:#ffffff !important;
+  color:#000000 !important;
+  border-color:#ffffff !important;
+}
+
+@media (max-width:560px){
+  .time-slot-button{
+    transition:none !important;
+    transform:none !important;
+  }
+
+  .time-slot-button.active,
+  .time-slot-button.active:hover,
+  .time-slot-button.active:focus,
+  .time-slot-button:active{
+    background:#ffffff !important;
+    color:#000000 !important;
+    border-color:#ffffff !important;
+    box-shadow:none !important;
+  }
+}
+
 </style>
 </head>
 
@@ -3442,6 +3475,15 @@ ${optionTimeCopyText}
           });
 
           this.classList.add("active");
+          this.blur();
+
+          // スマホブラウザの描画遅延対策：タップ直後に強制再描画
+          void this.offsetHeight;
+
+          requestAnimationFrame(() => {
+            this.classList.add("active");
+          });
+
           message.textContent = "この時間で仮予約できます。";
 
           showReservationForm({
