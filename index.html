@@ -2521,7 +2521,9 @@ ${optionTimeCopyText}
 
     if (isPureHandWash(menuData) && startTime && endTime) {
       timeText = `<div class="contact-subnote reservation-time-note">開始時間：<span>${startTime}</span><br>作業終了目安：<span>${endTime}</span></div>`;
-    } else if ((isThoroughWash(menuData) || isLightWash(menuData)) && startDate && endDate) {
+    } else if (isLightWash(menuData) && startDate) {
+      timeText = `<div class="contact-subnote reservation-time-note">開始時間：<span>${startTime || FULL_DAY_WASH_START_TIME}</span><br>作業終了目安：<span>18:00</span></div>`;
+    } else if (isThoroughWash(menuData) && startDate && endDate) {
       timeText = `<div class="contact-subnote reservation-time-note">開始時間：<span>${startTime || FULL_DAY_WASH_START_TIME}</span><br>作業期間：<span>${startDate}〜${endDate}</span></div>`;
     } else if (startDate && endDate) {
       timeText = `<div class="contact-subnote reservation-time-note">施工期間：<span>${startDate}〜${endDate}</span></div>`;
