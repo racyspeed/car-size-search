@@ -165,11 +165,16 @@
   </div>
 
   <script>
-    const SUPABASE_URL = "ここにindex.htmlと同じURL";
-    const SUPABASE_ANON_KEY = "ここにindex.htmlと同じanon key";
+    const SUPABASE_URL = "https://klfijtvnbgdkqcslntsp.supabase.co";
 
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_ANON_KEY =
+"sb_publishable_jm8kPE51RZJitnkw11orxA_au9j3f6Z";
 
+const supabaseClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
     const reservationList = document.getElementById("reservationList");
     const tabButtons = document.querySelectorAll(".tab-btn");
 
