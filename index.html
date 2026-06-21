@@ -929,6 +929,204 @@
   border-color:#ffffff !important;
 }
 
+
+/* v9: header balance + smartphone calendar fix */
+.section-en{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  margin-top:10px;
+  margin-bottom:12px;
+  font-size:11px !important;
+  line-height:1.4 !important;
+  font-weight:600;
+  letter-spacing:.22em !important;
+  color:#8f8f8f !important;
+  text-align:center;
+  white-space:normal;
+}
+
+.section-en::before,
+.section-en::after{
+  content:"";
+  width:42px;
+  height:1px;
+  background:#b8b8b8;
+  opacity:.75;
+}
+
+h2{
+  margin:0 0 10px !important;
+  font-size:clamp(24px, 4.6vw, 34px) !important;
+  line-height:1.35 !important;
+  letter-spacing:.1em !important;
+  text-align:center;
+}
+
+.subtitle{
+  font-size:14px !important;
+  line-height:1.9 !important;
+  letter-spacing:.06em !important;
+  text-align:center;
+}
+
+.reservation-card .estimate-title{
+  font-size:20px !important;
+  line-height:1.5 !important;
+}
+
+.calendar-month-title{
+  font-size:16px !important;
+  letter-spacing:.12em !important;
+}
+
+.calendar-legend{
+  gap:12px 18px !important;
+}
+
+.calendar-legend span{
+  font-size:12px !important;
+  letter-spacing:.04em !important;
+}
+
+@media (max-width:560px){
+  .container{
+    width:100% !important;
+    max-width:none !important;
+    box-sizing:border-box !important;
+  }
+
+  .section-en{
+    gap:10px;
+    font-size:9px !important;
+    letter-spacing:.14em !important;
+    margin-top:6px;
+    margin-bottom:10px;
+  }
+
+  .section-en::before,
+  .section-en::after{
+    width:24px;
+  }
+
+  h2{
+    font-size:24px !important;
+    letter-spacing:.06em !important;
+  }
+
+  .subtitle{
+    font-size:13px !important;
+    line-height:1.75 !important;
+  }
+
+  .reservation-card{
+    padding:18px 10px !important;
+    margin-left:-4px !important;
+    margin-right:-4px !important;
+  }
+
+  .reservation-card .estimate-title{
+    font-size:18px !important;
+  }
+
+  .reservation-card .contact-subnote{
+    font-size:12px !important;
+    line-height:1.8 !important;
+  }
+
+  .reservation-calendar-head{
+    display:grid !important;
+    grid-template-columns:56px 1fr 56px !important;
+    gap:6px !important;
+    padding:10px 6px !important;
+    margin:16px 0 10px !important;
+  }
+
+  .calendar-month-title{
+    font-size:14px !important;
+    letter-spacing:.06em !important;
+    text-align:center;
+    white-space:nowrap;
+  }
+
+  .calendar-nav-button{
+    padding:8px 0 !important;
+    font-size:10px !important;
+    letter-spacing:.04em !important;
+  }
+
+  .calendar-legend{
+    gap:8px 10px !important;
+    margin:12px 0 !important;
+  }
+
+  .calendar-legend span{
+    font-size:10px !important;
+    letter-spacing:0 !important;
+  }
+
+  .calendar-grid{
+    gap:3px !important;
+    padding:6px !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+  }
+
+  .calendar-weekday{
+    font-size:10px !important;
+    padding:5px 0 !important;
+    letter-spacing:0 !important;
+  }
+
+  .calendar-weekday-ja{
+    font-size:10px !important;
+  }
+
+  .calendar-weekday-en{
+    font-size:7px !important;
+    letter-spacing:.05em !important;
+  }
+
+  .calendar-day{
+    min-height:45px !important;
+    padding:3px 1px !important;
+    gap:2px !important;
+    font-size:11px !important;
+  }
+
+  .calendar-day-number{
+    font-size:14px !important;
+  }
+
+  .calendar-day-status{
+    font-size:8px !important;
+    letter-spacing:0 !important;
+    transform:scale(.92);
+    transform-origin:center;
+  }
+
+  .time-slot-area{
+    padding:12px 8px !important;
+  }
+
+  .time-slot-grid{
+    gap:8px !important;
+  }
+
+  .time-slot-button{
+    min-width:68px;
+    padding:10px 8px !important;
+    font-size:12px !important;
+  }
+
+  .reservation-form input,
+  .reservation-form textarea{
+    padding:12px !important;
+    font-size:13px !important;
+  }
+}
+
 </style>
 </head>
 
