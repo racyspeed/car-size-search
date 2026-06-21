@@ -2088,7 +2088,7 @@ body{
 }
 
 
-/* v10.6b: clean duplicate summary without removing required DOM */
+/* v10.7: compact menu/option spacing and hidden calculation fields */
 .wash-menu-area{
   margin-top:12px !important;
 }
@@ -2097,10 +2097,7 @@ body{
   margin-top:12px !important;
 }
 
-/* 追加オプション下の重複表示を非表示。計算用DOMは残す */
-#priceResult > .result-divider,
-#priceResult > .result-section,
-#priceResult > .total-card{
+.calculation-hidden{
   display:none !important;
 }
 
@@ -2806,46 +2803,11 @@ if (error) {
       });
 
       document.getElementById("priceResult").innerHTML = `
-        <div class="result-divider"></div>
-
-        <div class="result-section">
-          <div class="result-label">施工メニュー</div>
-          <div class="result-value">${displayMenuName}</div>
-        </div>
-
-        <div class="result-section">
-          <div class="result-label">施工料金</div>
-          <div class="result-value">${prices[0].price.toLocaleString()}円</div>
-        </div>
-
-        <div class="result-section">
-          <div class="result-label">選択オプション</div>
-          <div id="selectedOptionsResult" class="result-value">なし</div>
-        </div>
-
-        <div class="result-section">
-          <div class="result-label">オプション合計</div>
-          <div id="optionTotalResult" class="result-value">0円</div>
-        </div>
-
-        <div class="result-section">
-          <div class="result-label">基本施工時間</div>
-          <div class="result-value">${selectedMenu.work_time}</div>
-        </div>
-
-        <div class="result-section">
-          <div class="result-label">オプション追加時間</div>
-          <div id="optionTimeResult" class="result-value">なし</div>
-        </div>
-
-        <div class="total-card total-card-center">
-          <div class="result-label">お支払い総額</div>
-          <div class="total-price-inline">
-            <span id="totalPrice" class="result-price">
-              ${prices[0].price.toLocaleString()}円
-            </span>
-            <span class="info">（税込）</span>
-          </div>
+        <div class="calculation-hidden">
+          <div id="selectedOptionsResult">なし</div>
+          <div id="optionTotalResult">0円</div>
+          <div id="optionTimeResult">なし</div>
+          <div id="totalPrice">${prices[0].price.toLocaleString()}円</div>
         </div>
 
         <div class="estimate-card">
