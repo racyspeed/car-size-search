@@ -1607,6 +1607,352 @@ iframe{
   }
 }
 
+
+/* v10.3: smartphone layout reset, compact spacing, calendar symbols */
+html,
+body{
+  margin:0 !important;
+  padding:0 !important;
+  width:100% !important;
+  max-width:100% !important;
+  overflow-x:hidden !important;
+}
+
+body{
+  position:relative !important;
+  left:0 !important;
+}
+
+*,
+*::before,
+*::after{
+  box-sizing:border-box !important;
+}
+
+@media (max-width:560px){
+  html,
+  body{
+    min-width:0 !important;
+    max-width:100vw !important;
+    overflow-x:hidden !important;
+  }
+
+  body{
+    display:block !important;
+    transform:none !important;
+  }
+
+  .container{
+    width:100vw !important;
+    max-width:100vw !important;
+    margin:0 !important;
+    padding:18px 10px 28px !important;
+    transform:none !important;
+    position:relative !important;
+    left:0 !important;
+    right:auto !important;
+    overflow-x:hidden !important;
+  }
+
+  .search-panel,
+  .selected-car-card,
+  .category-area,
+  .wash-menu-area,
+  .coating-area,
+  #optionArea,
+  #priceResult,
+  .result-section,
+  .total-card,
+  .estimate-card,
+  .reservation-card,
+  .reservation-calendar-head,
+  .calendar-grid,
+  .time-slot-area{
+    width:100% !important;
+    max-width:100% !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    transform:none !important;
+    position:relative !important;
+    left:0 !important;
+  }
+
+  .search-panel{
+    padding:14px 10px !important;
+    margin-top:18px !important;
+  }
+
+  .search-layout{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:12px !important;
+  }
+
+  .quick-cars{
+    margin-top:14px !important;
+  }
+
+  .quick-car-buttons{
+    gap:6px !important;
+  }
+
+  .quick-car-button{
+    padding:7px 8px !important;
+    font-size:11px !important;
+  }
+
+  select,
+  input,
+  textarea,
+  button{
+    max-width:100% !important;
+  }
+
+  .selected-car-card{
+    padding:16px 12px !important;
+    margin-top:18px !important;
+  }
+
+  .category-area,
+  .wash-menu-area{
+    margin-top:14px !important;
+    padding:0 !important;
+  }
+
+  #optionArea{
+    margin-top:14px !important;
+    padding:0 !important;
+  }
+
+  #optionArea h3{
+    margin:0 0 8px !important;
+    font-size:15px !important;
+    line-height:1.4 !important;
+  }
+
+  #optionArea label{
+    display:flex !important;
+    align-items:flex-start !important;
+    gap:8px !important;
+    padding:8px 0 !important;
+    margin:0 !important;
+    font-size:12px !important;
+    line-height:1.45 !important;
+  }
+
+  #optionArea input[type="checkbox"]{
+    width:16px !important;
+    min-width:16px !important;
+    height:16px !important;
+    min-height:16px !important;
+    margin-top:2px !important;
+  }
+
+  .option-time,
+  .option-time-inline{
+    white-space:nowrap !important;
+    font-size:11px !important;
+  }
+
+  .result-divider{
+    margin:18px 0 8px !important;
+  }
+
+  .result-section{
+    padding:10px 0 !important;
+  }
+
+  .result-label{
+    font-size:10px !important;
+    letter-spacing:.08em !important;
+  }
+
+  .result-value{
+    font-size:12px !important;
+    line-height:1.45 !important;
+  }
+
+  .total-card{
+    padding:15px 10px !important;
+    margin-top:14px !important;
+  }
+
+  .estimate-card{
+    padding:16px 10px !important;
+    margin-top:16px !important;
+  }
+
+  .estimate-row{
+    padding:10px 0 !important;
+  }
+
+  .estimate-actions{
+    gap:10px !important;
+    margin-top:14px !important;
+  }
+
+  .reservation-card{
+    padding:16px 6px !important;
+    margin-top:18px !important;
+    border-left:1px solid #ffffff !important;
+    border-right:1px solid #ffffff !important;
+  }
+
+  .reservation-card .estimate-title{
+    font-size:17px !important;
+    margin-bottom:6px !important;
+  }
+
+  .reservation-card .contact-subnote{
+    font-size:11px !important;
+    line-height:1.65 !important;
+    margin:6px 0 10px !important;
+  }
+
+  .reservation-calendar-head{
+    display:grid !important;
+    grid-template-columns:46px 1fr 46px !important;
+    gap:4px !important;
+    padding:7px 4px !important;
+    margin:12px 0 8px !important;
+  }
+
+  .calendar-month-title{
+    font-size:12px !important;
+    letter-spacing:.02em !important;
+    white-space:nowrap !important;
+  }
+
+  .calendar-nav-button{
+    font-size:9px !important;
+    padding:7px 0 !important;
+    letter-spacing:0 !important;
+  }
+
+  .calendar-legend{
+    gap:6px 8px !important;
+    margin:9px 0 !important;
+  }
+
+  .calendar-legend span{
+    font-size:10px !important;
+    letter-spacing:0 !important;
+  }
+
+  .calendar-grid{
+    grid-template-columns:repeat(7, minmax(0, 1fr)) !important;
+    gap:2px !important;
+    padding:3px !important;
+    border-left:1px solid #ffffff !important;
+    border-right:1px solid #ffffff !important;
+  }
+
+  .calendar-weekday{
+    padding:4px 0 !important;
+    min-width:0 !important;
+  }
+
+  .calendar-weekday-ja{
+    font-size:9px !important;
+    line-height:1.1 !important;
+  }
+
+  .calendar-weekday-en{
+    font-size:6px !important;
+    line-height:1 !important;
+    letter-spacing:0 !important;
+    margin-top:1px !important;
+  }
+
+  .calendar-day{
+    min-width:0 !important;
+    min-height:42px !important;
+    padding:2px 0 !important;
+    gap:1px !important;
+  }
+
+  .calendar-day-number{
+    font-size:14px !important;
+    line-height:1 !important;
+  }
+
+  .calendar-day-status{
+    font-size:0 !important;
+    line-height:1 !important;
+    letter-spacing:0 !important;
+  }
+
+  .calendar-day.available .calendar-day-status::after{
+    content:"○";
+    font-size:13px !important;
+    color:#ffffff !important;
+  }
+
+  .calendar-day.few .calendar-day-status::after{
+    content:"△";
+    font-size:13px !important;
+    color:#ffffff !important;
+  }
+
+  .calendar-day.unavailable .calendar-day-status::after{
+    content:"✕";
+    font-size:13px !important;
+    color:#ffffff !important;
+  }
+
+  .calendar-day.closed .calendar-day-status::after{
+    content:"休";
+    font-size:11px !important;
+    color:#d32f2f !important;
+  }
+
+  .calendar-day.past .calendar-day-status::after{
+    content:"";
+  }
+
+  .calendar-day.selected .calendar-day-status::after{
+    color:#000000 !important;
+  }
+
+  .reservation-selected-date{
+    font-size:11px !important;
+    margin-top:8px !important;
+  }
+
+  .time-slot-area{
+    margin-top:12px !important;
+    padding:10px 6px !important;
+  }
+
+  .time-slot-grid{
+    gap:6px !important;
+  }
+
+  .time-slot-button{
+    min-width:56px !important;
+    padding:8px 6px !important;
+    font-size:11px !important;
+  }
+
+  .reservation-form{
+    margin-top:14px !important;
+    gap:9px !important;
+  }
+
+  .reservation-form input,
+  .reservation-form textarea{
+    padding:10px !important;
+    font-size:12px !important;
+  }
+
+  #reservationMessage,
+  #reservationSaveMessage,
+  .reservation-time-note{
+    font-size:11px !important;
+    line-height:1.6 !important;
+  }
+}
+
 </style>
 </head>
 
