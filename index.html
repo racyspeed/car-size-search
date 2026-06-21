@@ -551,6 +551,62 @@
   .calendar-day{border-radius:0 !important;}
 }
 
+
+/* Final black / white / gold online reservation adjustments */
+.reservation-card{
+  background:#000000 !important;
+  color:#ffffff !important;
+  border:1px solid #d4af37 !important;
+  border-radius:0 !important;
+}
+.reservation-card *{
+  border-radius:0 !important;
+}
+.reservation-card .estimate-title,
+.reservation-card .contact-subnote,
+.reservation-selected-date,
+.time-slot-area,
+.calendar-legend{
+  color:#ffffff !important;
+}
+.calendar-legend{
+  justify-content:center !important;
+  gap:24px !important;
+  margin:18px 0 !important;
+}
+.calendar-legend span{
+  font-size:13px !important;
+  font-weight:600 !important;
+  letter-spacing:.08em !important;
+}
+.legend-dot{
+  display:none !important;
+}
+.legend-open-text{ color:#ffffff !important; }
+.legend-few-text{ color:#d4af37 !important; }
+.legend-full-text{ color:#777777 !important; }
+.legend-closed-text{ color:#d32f2f !important; }
+.calendar-day.closed,
+.calendar-day.closed .calendar-day-status{
+  color:#d32f2f !important;
+}
+.calendar-day.closed{
+  border-color:#5a1f1f !important;
+}
+.calendar-day-status{
+  font-weight:600 !important;
+}
+.calendar-day.available .calendar-day-status{
+  color:#ffffff !important;
+}
+.calendar-day.few .calendar-day-status{
+  color:#d4af37 !important;
+}
+.calendar-day.unavailable .calendar-day-status,
+.calendar-day.past .calendar-day-status{
+  color:#777777 !important;
+}
+
 </style>
 </head>
 
@@ -1704,11 +1760,11 @@ ${optionTimeCopyText}
           </div>
 
           <div class="calendar-legend">
-  <span class="legend-open-text">空きあり</span>
-  <span class="legend-few-text">残りわずか</span>
-  <span class="legend-full-text">満枠</span>
-  <span class="legend-closed-text">定休日</span>
-</div>
+            <span class="legend-open-text">空きあり</span>
+            <span class="legend-few-text">残りわずか</span>
+            <span class="legend-full-text">満枠</span>
+            <span class="legend-closed-text">定休日</span>
+          </div>
 
           <div id="reservationCalendar" class="calendar-grid"></div>
           <div id="reservationSelectedDate" class="reservation-selected-date"></div>
@@ -1821,15 +1877,15 @@ ${optionTimeCopyText}
           if (availableCount <= 0) {
             button.classList.add("unavailable");
             button.disabled = true;
-            statusLabel.textContent = "× 満枠";
+            statusLabel.textContent = "満枠";
             return;
           }
 
           button.classList.add(availableCount <= 1 ? "few" : "available");
           button.disabled = false;
           statusLabel.textContent = availableCount <= 1
-            ? "△ 残りわずか"
-            : "○ 空きあり";
+            ? "残りわずか"
+            : "空きあり";
           return;
         }
 
@@ -1838,13 +1894,13 @@ ${optionTimeCopyText}
         if (!available.ok) {
           button.classList.add("unavailable");
           button.disabled = true;
-          statusLabel.textContent = "× 満枠";
+          statusLabel.textContent = "満枠";
           return;
         }
 
         button.classList.add("available");
         button.disabled = false;
-        statusLabel.textContent = "○ 空きあり";
+        statusLabel.textContent = "空きあり";
       }));
     }
 
