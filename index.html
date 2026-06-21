@@ -937,12 +937,12 @@
 <div class="container">
 
 <div class="shop-name">RACY'SPEED</div>
-<div class="section-en">PRICE</div>
+<div class="section-en">ONLINE ESTIMATE & RESERVATION</div>
 
-<h2>料金シミュレーター</h2>
+<h2>オンライン見積り・予約</h2>
 
 <p class="subtitle">
-お車に合わせた施工料金をご確認いただけます
+お車に合わせた施工料金の確認と<br>オンライン予約ができます
 </p>
 
 <div class="search-panel">
@@ -1708,11 +1708,6 @@ if (error) {
             <a class="case-button" href="${caseUrl}">
               施工事例を見る
             </a>
-
-            <button id="copyEstimateBtn" class="copy-button" type="button">
-              お見積り内容をコピー
-            </button>
-
             <button
               id="lineContactBtn"
               class="line-button"
@@ -1844,6 +1839,12 @@ ${totalPrice.toLocaleString()}円（税込）
 オプション追加時間：
 ${optionTimeCopyText}
 
+予約希望日：
+未選択
+
+開始時間：
+未選択
+
 この内容で問い合わせ希望です。`;
       }
 
@@ -1869,21 +1870,6 @@ ${optionTimeCopyText}
           }
 
           window.open(lineUrl, "_blank", "noopener");
-        });
-
-      document
-        .getElementById("copyEstimateBtn")
-        .addEventListener("click", async function() {
-          const copyMessage = document.getElementById("copyMessage");
-
-          try {
-            await navigator.clipboard.writeText(currentEstimateText);
-            copyMessage.textContent =
-              "お見積り内容をコピーしました。LINEで貼り付けて送信できます。";
-          } catch (error) {
-            copyMessage.textContent =
-              "コピーできませんでした。画面のお見積り内容を選択してコピーしてください。";
-          }
         });
 
       updateTotal();
@@ -2521,9 +2507,7 @@ ${optionTimeCopyText}
 
     if (isPureHandWash(menuData) && startTime && endTime) {
       timeText = `<div class="contact-subnote reservation-time-note">開始時間：<span>${startTime}</span><br>作業終了目安：<span>${endTime}</span></div>`;
-    } else if (isLightWash(menuData) && startDate) {
-      timeText = `<div class="contact-subnote reservation-time-note">開始時間：<span>${startTime || FULL_DAY_WASH_START_TIME}</span><br>作業終了目安：<span>18:00</span></div>`;
-    } else if (isThoroughWash(menuData) && startDate && endDate) {
+    } else if ((isThoroughWash(menuData) || isLightWash(menuData)) && startDate && endDate) {
       timeText = `<div class="contact-subnote reservation-time-note">開始時間：<span>${startTime || FULL_DAY_WASH_START_TIME}</span><br>作業期間：<span>${startDate}〜${endDate}</span></div>`;
     } else if (startDate && endDate) {
       timeText = `<div class="contact-subnote reservation-time-note">施工期間：<span>${startDate}〜${endDate}</span></div>`;
