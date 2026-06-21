@@ -1986,6 +1986,107 @@ body{
   }
 }
 
+
+/* v10.5: mobile tap fix + option wrapping + compact result spacing */
+.time-slot-button.active{
+  background:#ffffff !important;
+  color:#000000 !important;
+  border-color:#ffffff !important;
+}
+
+.option-item{
+  display:flex !important;
+  align-items:flex-start !important;
+  gap:10px !important;
+}
+
+.option-item input[type="checkbox"]{
+  flex:0 0 auto !important;
+}
+
+.option-text{
+  display:block !important;
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  line-height:1.55 !important;
+}
+
+.option-name{
+  display:inline !important;
+  word-break:keep-all !important;
+  overflow-wrap:anywhere !important;
+}
+
+.option-meta{
+  display:inline !important;
+  white-space:nowrap !important;
+  font-size:.92em !important;
+}
+
+.result-section{
+  padding-top:12px !important;
+  padding-bottom:12px !important;
+}
+
+@media (max-width:560px){
+  #optionArea label.option-item{
+    padding:6px 0 !important;
+    gap:7px !important;
+  }
+
+  .option-text{
+    line-height:1.42 !important;
+  }
+
+  .option-name{
+    font-size:12px !important;
+  }
+
+  .option-meta{
+    font-size:11px !important;
+    white-space:nowrap !important;
+  }
+
+  .result-divider{
+    margin:14px 0 4px !important;
+  }
+
+  .result-section{
+    padding:7px 0 !important;
+    gap:4px !important;
+  }
+
+  .result-label{
+    font-size:10px !important;
+    line-height:1.3 !important;
+  }
+
+  .result-value{
+    font-size:12px !important;
+    line-height:1.35 !important;
+  }
+
+  .total-card{
+    margin-top:10px !important;
+    padding:14px 10px !important;
+  }
+
+  .estimate-card{
+    margin-top:14px !important;
+    padding:14px 10px !important;
+  }
+
+  .estimate-row{
+    padding:8px 0 !important;
+  }
+
+  .time-slot-button.active{
+    background:#ffffff !important;
+    color:#000000 !important;
+    border-color:#ffffff !important;
+  }
+}
+
 </style>
 </head>
 
@@ -2657,7 +2758,7 @@ if (error) {
         const optionTime = option.work_time || "";
 
         optionArea.innerHTML += `
-          <label>
+          <label class="option-item">
             <input
               type="checkbox"
               class="optionCheck"
@@ -2665,9 +2766,10 @@ if (error) {
               data-name="${option.option_name}"
               data-time="${optionTime}"
             >
-            ${option.option_name}
-            （${option.price.toLocaleString()}円）
-            ${optionTime ? `<span class="option-time">／＋${optionTime}</span>` : ""}
+            <span class="option-text">
+              <span class="option-name">${option.option_name}</span>
+              <span class="option-meta">（${option.price.toLocaleString()}円）${optionTime ? `／＋${optionTime}` : ""}</span>
+            </span>
           </label>
         `;
       });
@@ -3472,6 +3574,9 @@ ${optionTimeCopyText}
         button.addEventListener("click", function() {
           document.querySelectorAll(".time-slot-button").forEach(slotButton => {
             slotButton.classList.remove("active");
+            slotButton.style.background = "";
+            slotButton.style.color = "";
+            slotButton.style.borderColor = "";
           });
 
           this.classList.add("active");
