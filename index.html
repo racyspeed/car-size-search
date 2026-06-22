@@ -2132,6 +2132,7 @@ body{
 }
 
 </style>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>  
 </head>
 
 <body>
@@ -2229,9 +2230,40 @@ const searchResults = document.getElementById("searchResults");
 
 let currentSelectedCar = null;
 let currentQuoteState = null;
-  
+
+const LIFF_ID = "2010468940-O8jX6eOF";
+
 const urlParams = new URLSearchParams(window.location.search);
 const reservationSource = urlParams.get("from") === "line" ? "line" : "web";
+
+let customerLineUserId = null;
+
+async function initLiffForReservation() {
+  if (reservationSource !== "line") {
+    return;
+  }
+
+  try {
+    await liff.init({
+      liffId: LIFF_ID
+    });
+
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
+
+    const profile = await liff.getProfile();
+    customerLineUserId = profile.userId;
+
+    console.log("customerLineUserId:", customerLineUserId);
+
+  } catch (error) {
+    console.error("LIFF初期化エラー", error);
+  }
+}
+
+initLiffForReservation();
 const WASH_START_HOURS = [10,11,12,13,14];
 const WASH_DURATION_HOURS = 3;
 const WASH_MENU_NAMES = ["純水手洗い洗車", "徹底洗車", "徹底洗車ライト"];
@@ -3837,7 +3869,7 @@ const reservationPayload = {
   daily_limit: Number(menuData.daily_limit || 1),
 
   reservation_source: reservationSource,
-  customer_line_user_id: null
+  customer_line_user_id: customerLineUserId
 };
 
 const { error } = await supabase
