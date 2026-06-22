@@ -3165,11 +3165,12 @@ ${optionTimeCopyText}
     const endDate = blockDates[blockDates.length - 1];
 
     const { data: reservations, error } = await supabase
-      .from("reservations")
-      .select("*")
-      .eq("booking_lane", "main")
-      .lte("start_date", endDate)
-      .gte("end_date", startDate);
+  .from("reservations")
+  .select("*")
+  .eq("status", "予約確定")
+  .eq("booking_lane", "main")
+  .lte("start_date", endDate)
+  .gte("end_date", startDate);
 
     if (error) {
       console.error(error);
@@ -3235,6 +3236,7 @@ ${optionTimeCopyText}
     const { data: reservations, error } = await supabase
       .from("reservations")
       .select("*")
+      .eq("status", "予約確定")
       .lte("start_date", endDate)
       .gte("end_date", startDate);
 
