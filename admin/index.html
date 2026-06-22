@@ -737,28 +737,24 @@ function renderReservations(reservations){
      <div class="actions">
 
        ${
-       r.status !== "予約確定"
-       ?
-       `<button
-          class="action-btn"
-          onclick="updateStatus(${r.id},'予約確定')">
-          承認
-        </button>`
-       :
-       ""
-       }
+r.status === "仮予約"
+?
+`<button
+   class="action-btn"
+   onclick="updateStatus(${r.id},'予約確定')">
+   承認
+ </button>
 
-       ${
-       r.status !== "却下"
-       ?
-       `<button
-          class="action-btn"
-          onclick="updateStatus(${r.id},'却下')">
-          却下
-        </button>`
-       :
-       ""
-       }
+ <button
+   class="action-btn"
+   onclick="updateStatus(${r.id},'却下')">
+   却下
+ </button>`
+:
+`<div style="color:#aaa;">
+   処理済み
+ </div>`
+}
 
      </div>
 
