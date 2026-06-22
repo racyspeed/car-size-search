@@ -2229,7 +2229,9 @@ const searchResults = document.getElementById("searchResults");
 
 let currentSelectedCar = null;
 let currentQuoteState = null;
-
+  
+const urlParams = new URLSearchParams(window.location.search);
+const reservationSource = urlParams.get("from") === "line" ? "line" : "web";
 const WASH_START_HOURS = [10,11,12,13,14];
 const WASH_DURATION_HOURS = 3;
 const WASH_MENU_NAMES = ["純水手洗い洗車", "徹底洗車", "徹底洗車ライト"];
@@ -3816,23 +3818,26 @@ const selectedSize = currentQuoteState ? currentQuoteState.selectedSize : curren
 const selectedMenuName = currentQuoteState ? currentQuoteState.menuName : menuData.menu_name;
 
 const reservationPayload = {
-  customer_name:customerName,
-  phone:customerPhone,
-  maker:currentSelectedCar.maker,
-  model:currentSelectedCar.model,
-  size:selectedSize,
-  menu_name:selectedMenuName,
-  options:selectedOptions.join(" / "),
-  total_price:totalPrice,
-  work_time:menuData.work_time,
-  work_days:getEffectiveWorkDays(menuData),
-  start_date:startDate,
-  end_date:endDate,
-  start_time:startTime,
-  end_time:endTime,
-  status:"仮予約",
-  booking_lane:bookingLane,
-  daily_limit:Number(menuData.daily_limit || 1)
+  customer_name: customerName,
+  phone: customerPhone,
+  maker: currentSelectedCar.maker,
+  model: currentSelectedCar.model,
+  size: selectedSize,
+  menu_name: selectedMenuName,
+  options: selectedOptions.join(" / "),
+  total_price: totalPrice,
+  work_time: menuData.work_time,
+  work_days: getEffectiveWorkDays(menuData),
+  start_date: startDate,
+  end_date: endDate,
+  start_time: startTime,
+  end_time: endTime,
+  status: "仮予約",
+  booking_lane: bookingLane,
+  daily_limit: Number(menuData.daily_limit || 1),
+
+  reservation_source: reservationSource,
+  customer_line_user_id: null
 };
 
 const { error } = await supabase
