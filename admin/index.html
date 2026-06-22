@@ -871,18 +871,40 @@ function renderReservations(reservations){
 
 }
 
-async function updateStatus(id,status){
+let rejectReason = "";
 
- if(!confirm(status+"に変更しますか？")){
-   return;
- }
+if(status === "却下"){
+
+  rejectReason =
+  prompt(
+`却下理由を入力してください
+
+例
+満枠のため
+営業時間外のため
+施工期間確保不可
+その他`
+  );
+
+  if(rejectReason === null){
+    return;
+  }
+
+}else{
+
+  if(!confirm(status+"に変更しますか？")){
+    return;
+  }
+
+}
 
  const {data,error} =
  await supabaseClient
  .from("reservations")
  .update({
-   status:status
- })
+  status:status,
+  reject_reason:rejectReason || null
+})
  .eq("id",id)
  .select("*")
  .single();
