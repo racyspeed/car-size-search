@@ -186,8 +186,8 @@ supabase.createClient(
       let query = supabaseClient
         .from("reservations")
         .select("*")
-        .order("reservation_date", { ascending: true })
-        .order("start_time", { ascending: true });
+        .order("start_date", { ascending: true })
+.order("start_time", { ascending: true });
 
       if (currentStatus !== "all") {
         query = query.eq("status", currentStatus);
