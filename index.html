@@ -3804,40 +3804,54 @@ ${optionTimeCopyText}
     }
 
     const selectedOptions = [];
-    document.querySelectorAll(".optionCheck:checked").forEach(check => {
-      selectedOptions.push(check.dataset.name);
-    });
+document.querySelectorAll(".optionCheck:checked").forEach(check => {
+  selectedOptions.push(check.dataset.name);
+});
 
-    const totalPrice = currentQuoteState ? currentQuoteState.totalPrice : Number(
-      document.getElementById("totalPrice").textContent.replace(/[^\d]/g, "")
-    );
+const totalPrice = currentQuoteState ? currentQuoteState.totalPrice : Number(
+  document.getElementById("totalPrice").textContent.replace(/[^\d]/g, "")
+);
 
-    const selectedSize = currentQuoteState ? currentQuoteState.selectedSize : currentSelectedCar.size;
-    const selectedMenuName = currentQuoteState ? currentQuoteState.menuName : menuData.menu_name;
+const selectedSize = currentQuoteState ? currentQuoteState.selectedSize : currentSelectedCar.size;
+const selectedMenuName = currentQuoteState ? currentQuoteState.menuName : menuData.menu_name;
 
-    const { error } = await supabase
-      .from("reservations")
-      .insert([
-        {
-          customer_name:customerName,
-          phone:customerPhone,
-          maker:currentSelectedCar.maker,
-          model:currentSelectedCar.model,
-          size:selectedSize,
-          menu_name:selectedMenuName,
-          options:selectedOptions.join(" / "),
-          total_price:totalPrice,
-          work_time:menuData.work_time,
-          work_days:getEffectiveWorkDays(menuData),
-          start_date:startDate,
-          end_date:endDate,
-          start_time:startTime,
-          end_time:endTime,
-          status:"仮予約",
-          booking_lane:bookingLane,
-          daily_limit:Number(menuData.daily_limit || 1)
-        }
-      ]);
+const reservationPayload = {
+  customer_name:customerName,
+  phone:customerPhone,
+  maker:currentSelectedCar.maker,
+  model:currentSelectedCar.model,
+  size:selectedSize,
+  menu_name:selectedMenuName,
+  options:selectedOptions.join(" / "),
+  total_price:totalPrice,
+  work_time:menuData.work_time,
+  work_days:getEffectiveWorkDays(menuData),
+  start_date:startDate,
+  end_date:endDate,
+  start_time:startTime,
+  end_time:endTime,
+  status:"仮予約",
+  booking_lane:bookingLane,
+  daily_limit:Number(menuData.daily_limit || 1)
+};
+
+const { error } = await supabase
+  .from("reservations")
+  .insert([
+    reservationPayload
+  ]);
+
+if (!error) {
+  fetch("https://klfijtvnbgdkqcslntsp.supabase.co/functions/v1/line-webhook", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify(reservationPayload)
+  }).catch(err => {
+    console.error("LINE通知エラー", err);
+  });
+}
 
     if (error) {
       console.error(error);
