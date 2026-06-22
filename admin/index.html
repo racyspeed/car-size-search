@@ -35,6 +35,34 @@ h1{
   margin-bottom:30px;
 }
 
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:28px;
+}
+
+.dashboard-card{
+  border:1px solid #fff;
+  padding:18px;
+  text-align:center;
+}
+
+.dashboard-label{
+  font-size:13px;
+  color:#aaa;
+  margin-bottom:10px;
+}
+
+.dashboard-value{
+  font-size:28px;
+  font-weight:bold;
+}
+
+.dashboard-yen{
+  font-size:24px;
+}
+
 .tabs{
   display:flex;
   gap:10px;
@@ -119,6 +147,26 @@ h1{
   text-align:center;
 }
 
+@media(max-width:800px){
+  .dashboard{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:520px){
+  body{
+    padding:16px;
+  }
+
+  .dashboard{
+    grid-template-columns:1fr;
+  }
+
+  .dashboard-value{
+    font-size:24px;
+  }
+}
+
 </style>
 </head>
 
@@ -131,6 +179,28 @@ RACY'SPEED
 </div>
 
 <h1>予約管理画面</h1>
+
+<div class="dashboard">
+  <div class="dashboard-card">
+    <div class="dashboard-label">仮予約</div>
+    <div class="dashboard-value" id="pendingCount">-</div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="dashboard-label">予約確定</div>
+    <div class="dashboard-value" id="confirmedCount">-</div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="dashboard-label">却下</div>
+    <div class="dashboard-value" id="rejectedCount">-</div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="dashboard-label">今月の確定売上</div>
+    <div class="dashboard-value dashboard-yen" id="monthSales">-</div>
+  </div>
+</div>
 
 <div class="tabs">
   <button class="tab-btn active" data-status="仮予約">仮予約</button>
@@ -163,7 +233,69 @@ document.getElementById("reservationList");
 const tabButtons =
 document.querySelectorAll(".tab-btn");
 
+const pendingCount =
+document.getElementById("pendingCount");
+
+const confirmedCount =
+document.getElementById("confirmedCount");
+
+const rejectedCount =
+document.getElementById("rejectedCount");
+
+const monthSales =
+document.getElementById("monthSales");
+
 let currentStatus = "仮予約";
+
+async function loadDashboard(){
+
+ const {data,error} =
+ await supabaseClient
+ .from("reservations")
+ .select("*");
+
+ if(error){
+   console.error(error);
+   pendingCount.textContent = "-";
+   confirmedCount.textContent = "-";
+   rejectedCount.textContent = "-";
+   monthSales.textContent = "-";
+   return;
+ }
+
+ const reservations = data || [];
+
+ const pending =
+ reservations.filter(r => r.status === "仮予約").length;
+
+ const confirmed =
+ reservations.filter(r => r.status === "予約確定").length;
+
+ const rejected =
+ reservations.filter(r => r.status === "却下").length;
+
+ const today = new Date();
+ const year = today.getFullYear();
+ const month = String(today.getMonth() + 1).padStart(2,"0");
+ const monthPrefix = `${year}-${month}`;
+
+ const sales =
+ reservations
+ .filter(r =>
+   r.status === "予約確定" &&
+   String(r.start_date || "").startsWith(monthPrefix)
+ )
+ .reduce((sum,r) => {
+   return sum + Number(r.total_price || 0);
+ },0);
+
+ pendingCount.textContent = pending;
+ confirmedCount.textContent = confirmed;
+ rejectedCount.textContent = rejected;
+ monthSales.textContent =
+ sales.toLocaleString() + "円";
+
+}
 
 async function loadReservations(){
 
@@ -351,7 +483,8 @@ async function updateStatus(id,status){
 
  alert("更新完了");
 
- loadReservations();
+ await loadDashboard();
+ await loadReservations();
 
 }
 
@@ -397,6 +530,7 @@ tabButtons.forEach(btn=>{
 
 });
 
+loadDashboard();
 loadReservations();
 
 </script>
