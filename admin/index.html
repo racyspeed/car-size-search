@@ -63,6 +63,95 @@ h1{
   font-size:24px;
 }
 
+.admin-calendar{
+  border:1px solid #fff;
+  padding:18px;
+  margin-bottom:28px;
+}
+
+.calendar-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.calendar-title{
+  font-size:20px;
+  font-weight:bold;
+  letter-spacing:.08em;
+}
+
+.calendar-nav{
+  background:#000;
+  color:#fff;
+  border:1px solid #fff;
+  padding:8px 14px;
+  cursor:pointer;
+}
+
+.calendar-nav:hover{
+  background:#fff;
+  color:#000;
+}
+
+.calendar-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+}
+
+.calendar-weekday{
+  text-align:center;
+  color:#aaa;
+  font-size:12px;
+  padding:8px 0;
+  border-bottom:1px solid #333;
+}
+
+.calendar-day{
+  min-height:90px;
+  border:1px solid #333;
+  padding:8px;
+  cursor:pointer;
+  background:#000;
+}
+
+.calendar-day:hover{
+  border-color:#fff;
+}
+
+.calendar-day.empty{
+  border:none;
+  cursor:default;
+}
+
+.calendar-day-number{
+  font-size:14px;
+  margin-bottom:6px;
+}
+
+.calendar-day.has-reservation{
+  border-color:#fff;
+}
+
+.calendar-count{
+  display:inline-block;
+  margin-top:4px;
+  padding:3px 6px;
+  border:1px solid #8dff8d;
+  color:#8dff8d;
+  font-size:11px;
+}
+
+.calendar-menu{
+  margin-top:5px;
+  font-size:11px;
+  color:#ddd;
+  line-height:1.4;
+}
+
 .tabs{
   display:flex;
   gap:10px;
@@ -147,9 +236,24 @@ h1{
   text-align:center;
 }
 
+.section-title{
+  margin:0 0 16px;
+  font-size:18px;
+  letter-spacing:.08em;
+}
+
 @media(max-width:800px){
   .dashboard{
     grid-template-columns:repeat(2,1fr);
+  }
+
+  .calendar-day{
+    min-height:72px;
+    padding:6px;
+  }
+
+  .calendar-menu{
+    display:none;
   }
 }
 
@@ -164,6 +268,32 @@ h1{
 
   .dashboard-value{
     font-size:24px;
+  }
+
+  .admin-calendar{
+    padding:12px;
+  }
+
+  .calendar-title{
+    font-size:16px;
+  }
+
+  .calendar-grid{
+    gap:3px;
+  }
+
+  .calendar-day{
+    min-height:58px;
+    padding:4px;
+  }
+
+  .calendar-day-number{
+    font-size:12px;
+  }
+
+  .calendar-count{
+    font-size:10px;
+    padding:2px 4px;
   }
 }
 
@@ -202,12 +332,24 @@ RACY'SPEED
   </div>
 </div>
 
+<div class="admin-calendar">
+  <div class="calendar-head">
+    <button class="calendar-nav" id="prevMonthBtn">前月</button>
+    <div class="calendar-title" id="calendarTitle">-</div>
+    <button class="calendar-nav" id="nextMonthBtn">翌月</button>
+  </div>
+
+  <div class="calendar-grid" id="calendarGrid"></div>
+</div>
+
 <div class="tabs">
   <button class="tab-btn active" data-status="仮予約">仮予約</button>
   <button class="tab-btn" data-status="予約確定">予約確定</button>
   <button class="tab-btn" data-status="却下">却下</button>
   <button class="tab-btn" data-status="all">すべて</button>
 </div>
+
+<h2 class="section-title" id="listTitle">予約一覧</h2>
 
 <div id="reservationList"></div>
 
@@ -245,7 +387,23 @@ document.getElementById("rejectedCount");
 const monthSales =
 document.getElementById("monthSales");
 
+const calendarGrid =
+document.getElementById("calendarGrid");
+
+const calendarTitle =
+document.getElementById("calendarTitle");
+
+const listTitle =
+document.getElementById("listTitle");
+
+const prevMonthBtn =
+document.getElementById("prevMonthBtn");
+
+const nextMonthBtn =
+document.getElementById("nextMonthBtn");
+
 let currentStatus = "仮予約";
+let calendarDate = new Date();
 
 async function loadDashboard(){
 
@@ -297,7 +455,135 @@ async function loadDashboard(){
 
 }
 
+async function loadAdminCalendar(){
+
+ calendarGrid.innerHTML = "";
+
+ const year = calendarDate.getFullYear();
+ const month = calendarDate.getMonth();
+
+ calendarTitle.textContent =
+ `${year}年${month + 1}月`;
+
+ const monthStart =
+ `${year}-${String(month + 1).padStart(2,"0")}-01`;
+
+ const lastDay =
+ new Date(year, month + 1, 0).getDate();
+
+ const monthEnd =
+ `${year}-${String(month + 1).padStart(2,"0")}-${String(lastDay).padStart(2,"0")}`;
+
+ const {data,error} =
+ await supabaseClient
+ .from("reservations")
+ .select("*")
+ .eq("status","予約確定")
+ .lte("start_date",monthEnd)
+ .gte("end_date",monthStart)
+ .order("start_date",{ascending:true})
+ .order("start_time",{ascending:true});
+
+ if(error){
+   console.error(error);
+   calendarGrid.innerHTML =
+   `<div class="empty">カレンダー取得に失敗しました</div>`;
+   return;
+ }
+
+ const confirmedReservations = data || [];
+
+ const weekdays = ["日","月","火","水","木","金","土"];
+
+ weekdays.forEach(day=>{
+   const div = document.createElement("div");
+   div.className = "calendar-weekday";
+   div.textContent = day;
+   calendarGrid.appendChild(div);
+ });
+
+ const firstWeekday =
+ new Date(year, month, 1).getDay();
+
+ for(let i=0;i<firstWeekday;i++){
+   const empty = document.createElement("div");
+   empty.className = "calendar-day empty";
+   calendarGrid.appendChild(empty);
+ }
+
+ for(let day=1; day<=lastDay; day++){
+
+   const dateText =
+   `${year}-${String(month + 1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+
+   const dayReservations =
+   confirmedReservations.filter(r =>
+     r.start_date <= dateText &&
+     r.end_date >= dateText
+   );
+
+   const div = document.createElement("div");
+   div.className =
+   "calendar-day" +
+   (dayReservations.length ? " has-reservation" : "");
+
+   div.innerHTML =
+   `<div class="calendar-day-number">${day}</div>`;
+
+   if(dayReservations.length){
+     div.innerHTML +=
+     `<div class="calendar-count">${dayReservations.length}件</div>`;
+
+     dayReservations.slice(0,2).forEach(r=>{
+       div.innerHTML +=
+       `<div class="calendar-menu">
+          ${escapeHtml(r.menu_name || "")}
+        </div>`;
+     });
+   }
+
+   div.addEventListener("click",()=>{
+     showReservationsByDate(dateText);
+   });
+
+   calendarGrid.appendChild(div);
+ }
+
+}
+
+async function showReservationsByDate(dateText){
+
+ listTitle.textContent =
+ `${dateText} の予約確定一覧`;
+
+ tabButtons.forEach(b=>b.classList.remove("active"));
+
+ reservationList.innerHTML =
+ `<div class="empty">読み込み中...</div>`;
+
+ const {data,error} =
+ await supabaseClient
+ .from("reservations")
+ .select("*")
+ .eq("status","予約確定")
+ .lte("start_date",dateText)
+ .gte("end_date",dateText)
+ .order("start_time",{ascending:true});
+
+ if(error){
+   console.error(error);
+   reservationList.innerHTML =
+   `<div class="empty">予約取得に失敗しました</div>`;
+   return;
+ }
+
+ renderReservations(data || []);
+
+}
+
 async function loadReservations(){
+
+ listTitle.textContent = "予約一覧";
 
  reservationList.innerHTML =
  `<div class="empty">読み込み中...</div>`;
@@ -484,6 +770,7 @@ async function updateStatus(id,status){
  alert("更新完了");
 
  await loadDashboard();
+ await loadAdminCalendar();
  await loadReservations();
 
 }
@@ -530,7 +817,18 @@ tabButtons.forEach(btn=>{
 
 });
 
+prevMonthBtn.addEventListener("click",()=>{
+ calendarDate.setMonth(calendarDate.getMonth() - 1);
+ loadAdminCalendar();
+});
+
+nextMonthBtn.addEventListener("click",()=>{
+ calendarDate.setMonth(calendarDate.getMonth() + 1);
+ loadAdminCalendar();
+});
+
 loadDashboard();
+loadAdminCalendar();
 loadReservations();
 
 </script>
