@@ -3179,55 +3179,6 @@ ${optionTimeCopyText}
     return WASH_MENU_NAMES.includes(reservation.menu_name);
   }
 
-  async function isMainDateAvailable(startDate, menuData) {
-    if (isClosedDay(startDate)) {
-      return {
-        ok:false,
-        message:"月曜・火曜は定休日のため選択できません。"
-      };
-    }
-
-    if (isPastDate(startDate)) {
-      return {
-        ok:false,
-        message:"過去の日付は選択できません。"
-      };
-    }
-
-    const workDays = getEffectiveWorkDays(menuData);
-    const blockDates = addBusinessDays(startDate, workDays);
-    const endDate = blockDates[blockDates.length - 1];
-
-    const { data: reservations, error } = await supabase
-  .from("reservations")
-  .select("*")
-  .eq("status", "予約確定")
-  .eq("booking_lane", "main")
-  .lte("start_date", endDate)
-  .gte("end_date", startDate);
-
-    if (error) {
-      console.error(error);
-      return {
-        ok:false,
-        message:"予約状況の確認中にエラーが発生しました。"
-      };
-    }
-
-    if (reservations && reservations.length > 0) {
-      return {
-        ok:false,
-        message:"この開始日はコーティング予約が重なるため選択できません。"
-      };
-    }
-
-    return {
-      ok:true,
-      endDate,
-      blockDates
-    };
-  }
-
   function parseWorkTimeToHours(timeText) {
     const text = String(timeText || "");
     if (!text || text === "なし") return 0;
@@ -3266,29 +3217,42 @@ ${optionTimeCopyText}
     return baseHours + getSelectedOptionDurationHours();
   }
 
-
   async function checkGoogleCalendarAvailability(dateString, menuData) {
-  try {
-    const res = await fetch(
-      `${supabaseUrl}/functions/v1/check-availability`,
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "apikey":supabaseKey,
-          "Authorization":`Bearer ${supabaseKey}`
-        },
-        body:JSON.stringify({
-          date:dateString,
-          menu_name:menuData.menu_name
-        })
+    try {
+      const res = await fetch(
+        `${supabaseUrl}/functions/v1/check-availability`,
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json",
+            "apikey":supabaseKey,
+            "Authorization":`Bearer ${supabaseKey}`
+          },
+          body:JSON.stringify({
+            date:dateString,
+            menu_name:menuData.menu_name
+          })
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok || !data.ok) {
+        console.error("check-availability error", data);
+        return {
+          ok:false,
+          available:false,
+          mark:"×",
+          message:"予約状況の確認中にエラーが発生しました。",
+          slots:[]
+        };
       }
-    );
 
-    const data = await res.json();
+      return data;
 
-    if (!res.ok || !data.ok) {
-      console.error("check-availability error", data);
+    } catch (error) {
+      console.error(error);
+
       return {
         ok:false,
         available:false,
@@ -3297,115 +3261,102 @@ ${optionTimeCopyText}
         slots:[]
       };
     }
-
-    return data;
-
-  } catch (error) {
-    console.error(error);
-
-    return {
-      ok:false,
-      available:false,
-      mark:"×",
-      message:"予約状況の確認中にエラーが発生しました。",
-      slots:[]
-    };
   }
-}
 
-async function getWashBlockingReservations(startDate, endDate) {
-  return {
-    error:null,
-    reservations:[]
-  };
-}
-
-async function isWashBlockDateAvailable(startDate, menuData) {
-  if (isClosedDay(startDate)) {
+  async function getWashBlockingReservations(startDate, endDate) {
     return {
-      ok:false,
-      message:"月曜・火曜は定休日のため選択できません。"
+      error:null,
+      reservations:[]
     };
   }
 
-  if (isPastDate(startDate)) {
+  async function isWashBlockDateAvailable(startDate, menuData) {
+    if (isClosedDay(startDate)) {
+      return {
+        ok:false,
+        message:"月曜・火曜は定休日のため選択できません。"
+      };
+    }
+
+    if (isPastDate(startDate)) {
+      return {
+        ok:false,
+        message:"過去の日付は選択できません。"
+      };
+    }
+
+    const result = await checkGoogleCalendarAvailability(startDate, menuData);
+
+    if (!result.ok || !result.available) {
+      return {
+        ok:false,
+        message:result.reason || result.message || "この日は予約済みのため選択できません。"
+      };
+    }
+
     return {
-      ok:false,
-      message:"過去の日付は選択できません。"
+      ok:true,
+      endDate:result.end_date || startDate,
+      blockDates:[],
+      startTime:FULL_DAY_WASH_START_TIME,
+      endTime:FULL_DAY_WASH_END_TIME
     };
   }
 
-  const result = await checkGoogleCalendarAvailability(startDate, menuData);
+  async function isMainDateAvailable(startDate, menuData) {
+    if (isClosedDay(startDate)) {
+      return {
+        ok:false,
+        message:"月曜・火曜は定休日のため選択できません。"
+      };
+    }
 
-  if (!result.ok || !result.available) {
+    if (isPastDate(startDate)) {
+      return {
+        ok:false,
+        message:"過去の日付は選択できません。"
+      };
+    }
+
+    const result = await checkGoogleCalendarAvailability(startDate, menuData);
+
+    if (!result.ok || !result.available) {
+      return {
+        ok:false,
+        message:result.reason || result.message || "この日は予約済みのため選択できません。"
+      };
+    }
+
     return {
-      ok:false,
-      message:result.reason || result.message || "この日は予約済みのため選択できません。"
+      ok:true,
+      endDate:result.end_date || startDate,
+      blockDates:[],
+      message:""
     };
   }
 
-  return {
-    ok:true,
-    endDate:result.end_date || startDate,
-    blockDates:[],
-    startTime:FULL_DAY_WASH_START_TIME,
-    endTime:FULL_DAY_WASH_END_TIME
-  };
-}
+  async function getAvailableWashSlots(dateString, menuData) {
+    if (isClosedDay(dateString)) {
+      return [];
+    }
 
-async function isMainDateAvailable(startDate, menuData) {
-  if (isClosedDay(startDate)) {
-    return {
-      ok:false,
-      message:"月曜・火曜は定休日のため選択できません。"
-    };
+    if (isPastDate(dateString)) {
+      return [];
+    }
+
+    const result = await checkGoogleCalendarAvailability(dateString, menuData);
+
+    if (!result.ok || !result.available || !Array.isArray(result.slots)) {
+      return [];
+    }
+
+    return result.slots.map(slot => ({
+      startTime:String(slot.start_time || slot.time || "").slice(0,5),
+      endTime:String(slot.end_time || "").slice(0,5),
+      available:!!slot.available
+    }));
   }
 
-  if (isPastDate(startDate)) {
-    return {
-      ok:false,
-      message:"過去の日付は選択できません。"
-    };
-  }
-
-  const result = await checkGoogleCalendarAvailability(startDate, menuData);
-
-  if (!result.ok || !result.available) {
-    return {
-      ok:false,
-      message:result.reason || result.message || "この日は予約済みのため選択できません。"
-    };
-  }
-
-  return {
-    ok:true,
-    endDate:result.end_date || startDate,
-    blockDates:[],
-    message:"",
-  };
-}
-
-async function getAvailableWashSlots(dateString, menuData) {
-  if (isClosedDay(dateString)) {
-    return [];
-  }
-
-  if (isPastDate(dateString)) {
-    return [];
-  }
-
-  const result = await checkGoogleCalendarAvailability(dateString, menuData);
-
-  if (!result.ok || !result.available || !Array.isArray(result.slots)) {
-    return [];
-  }
-
-  return result.slots.map(slot => ({
-    startTime:String(slot.start_time || slot.time || "").slice(0,5),
-    endTime:String(slot.end_time || "").slice(0,5),
-    available:!!slot.available
-  }));
-}
   async function renderReservationArea(menuData) {
     const priceResult = document.getElementById("priceResult");
     const oldReservation = document.getElementById("reservationArea");
