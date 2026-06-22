@@ -1,294 +1,405 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RACY'SPEED 管理画面</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      margin: 0;
-      background: #000;
-      color: #fff;
-      font-family: Arial, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-      padding: 24px;
-    }
+<title>RACY'SPEED 管理画面</title>
 
-    .admin-wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    .shop-name {
-      text-align: center;
-      letter-spacing: 0.25em;
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
+<style>
 
-    h1 {
-      text-align: center;
-      font-size: 26px;
-      margin: 0 0 30px;
-    }
+body{
+  margin:0;
+  background:#000;
+  color:#fff;
+  font-family:Arial,Meiryo,sans-serif;
+  padding:24px;
+}
 
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
+.admin-wrap{
+  max-width:1100px;
+  margin:auto;
+}
 
-    .tab-btn {
-      background: #000;
-      color: #fff;
-      border: 1px solid #fff;
-      padding: 10px 16px;
-      cursor: pointer;
-      font-size: 14px;
-    }
+.shop-name{
+  text-align:center;
+  letter-spacing:.25em;
+  font-size:18px;
+  margin-bottom:8px;
+}
 
-    .tab-btn.active {
-      background: #fff;
-      color: #000;
-    }
+h1{
+  text-align:center;
+  margin-bottom:30px;
+}
 
-    .reservation-card {
-      border: 1px solid #fff;
-      padding: 18px;
-      margin-bottom: 16px;
-    }
+.tabs{
+  display:flex;
+  gap:10px;
+  margin-bottom:24px;
+  flex-wrap:wrap;
+}
 
-    .reservation-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
+.tab-btn{
+  background:#000;
+  color:#fff;
+  border:1px solid #fff;
+  padding:10px 16px;
+  cursor:pointer;
+}
 
-    .status {
-      border: 1px solid #fff;
-      padding: 5px 10px;
-      font-size: 13px;
-    }
+.tab-btn.active{
+  background:#fff;
+  color:#000;
+}
 
-    .status.pending {
-      color: #ffd966;
-      border-color: #ffd966;
-    }
+.reservation-card{
+  border:1px solid #fff;
+  padding:20px;
+  margin-bottom:16px;
+}
 
-    .status.confirmed {
-      color: #9cff9c;
-      border-color: #9cff9c;
-    }
+.reservation-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+}
 
-    .status.rejected {
-      color: #ff7777;
-      border-color: #ff7777;
-    }
+.status{
+  padding:5px 10px;
+  border:1px solid #fff;
+}
 
-    .info {
-      line-height: 1.9;
-      font-size: 14px;
-    }
+.pending{
+  color:#ffd966;
+  border-color:#ffd966;
+}
 
-    .actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 16px;
-      flex-wrap: wrap;
-    }
+.confirmed{
+  color:#8dff8d;
+  border-color:#8dff8d;
+}
 
-    .action-btn {
-      background: #000;
-      color: #fff;
-      border: 1px solid #fff;
-      padding: 10px 16px;
-      cursor: pointer;
-      font-size: 14px;
-    }
+.rejected{
+  color:#ff6b6b;
+  border-color:#ff6b6b;
+}
 
-    .approve-btn:hover {
-      background: #fff;
-      color: #000;
-    }
+.info{
+  line-height:1.9;
+}
 
-    .reject-btn:hover {
-      background: #fff;
-      color: #000;
-    }
+.actions{
+  margin-top:16px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
 
-    .empty {
-      border: 1px solid #fff;
-      padding: 30px;
-      text-align: center;
-      color: #aaa;
-    }
+.action-btn{
+  background:#000;
+  color:#fff;
+  border:1px solid #fff;
+  padding:10px 16px;
+  cursor:pointer;
+}
 
-    @media (max-width: 600px) {
-      body {
-        padding: 16px;
-      }
+.action-btn:hover{
+  background:#fff;
+  color:#000;
+}
 
-      h1 {
-        font-size: 22px;
-      }
+.empty{
+  border:1px solid #fff;
+  padding:30px;
+  text-align:center;
+}
 
-      .reservation-head {
-        display: block;
-      }
-
-      .status {
-        display: inline-block;
-        margin-top: 10px;
-      }
-    }
-  </style>
+</style>
 </head>
 
 <body>
-  <div class="admin-wrap">
-    <div class="shop-name">RACY'SPEED</div>
-    <h1>予約管理画面</h1>
 
-    <div class="tabs">
-      <button class="tab-btn active" data-status="仮予約">仮予約</button>
-      <button class="tab-btn" data-status="予約確定">予約確定</button>
-      <button class="tab-btn" data-status="却下">却下</button>
-      <button class="tab-btn" data-status="all">すべて</button>
-    </div>
+<div class="admin-wrap">
 
-    <div id="reservationList"></div>
-  </div>
+<div class="shop-name">
+RACY'SPEED
+</div>
 
-  <script>
-    const SUPABASE_URL = "https://klfijtvnbgdkqcslntsp.supabase.co";
+<h1>予約管理画面</h1>
+
+<div class="tabs">
+  <button class="tab-btn active" data-status="仮予約">仮予約</button>
+  <button class="tab-btn" data-status="予約確定">予約確定</button>
+  <button class="tab-btn" data-status="却下">却下</button>
+  <button class="tab-btn" data-status="all">すべて</button>
+</div>
+
+<div id="reservationList"></div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://klfijtvnbgdkqcslntsp.supabase.co";
 
 const SUPABASE_ANON_KEY =
 "sb_publishable_jm8kPE51RZJitnkw11orxA_au9j3f6Z";
 
 const supabaseClient =
 supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
+SUPABASE_URL,
+SUPABASE_ANON_KEY
 );
-    const reservationList = document.getElementById("reservationList");
-    const tabButtons = document.querySelectorAll(".tab-btn");
 
-    let currentStatus = "仮予約";
+const reservationList =
+document.getElementById("reservationList");
 
-    async function loadReservations() {
-      reservationList.innerHTML = `<div class="empty">読み込み中...</div>`;
+const tabButtons =
+document.querySelectorAll(".tab-btn");
 
-      let query = supabaseClient
-        .from("reservations")
-        .select("*")
-        .order("start_date", { ascending: true })
-.order("start_time", { ascending: true });
+let currentStatus = "仮予約";
 
-      if (currentStatus !== "all") {
-        query = query.eq("status", currentStatus);
-      }
+async function loadReservations(){
 
-      const { data, error } = await query;
+ reservationList.innerHTML =
+ `<div class="empty">読み込み中...</div>`;
 
-      if (error) {
-        console.error(error);
-        reservationList.innerHTML = `<div class="empty">予約一覧の取得に失敗しました</div>`;
-        return;
-      }
+ let query =
+ supabaseClient
+ .from("reservations")
+ .select("*")
+ .order("start_date",{ascending:true})
+ .order("start_time",{ascending:true});
 
-      renderReservations(data || []);
-    }
+ if(currentStatus !== "all"){
+   query =
+   query.eq("status",currentStatus);
+ }
 
-    function renderReservations(reservations) {
-      if (!reservations.length) {
-        reservationList.innerHTML = `<div class="empty">該当する予約はありません</div>`;
-        return;
-      }
+ const {data,error} =
+ await query;
 
-      reservationList.innerHTML = reservations.map(r => {
-        const statusClass =
-          r.status === "予約確定" ? "confirmed" :
-          r.status === "却下" ? "rejected" :
-          "pending";
+ if(error){
+   console.error(error);
 
-        return `
-          <div class="reservation-card">
-            <div class="reservation-head">
-              <strong>${escapeHtml(r.customer_name || "お名前未入力")}</strong>
-              <span class="status ${statusClass}">${escapeHtml(r.status || "仮予約")}</span>
-            </div>
+   reservationList.innerHTML =
+   `<div class="empty">
+      予約一覧の取得に失敗しました
+    </div>`;
 
-            <div class="info">
-              <div>予約日：${escapeHtml(r.reservation_date || "-")}</div>
-              <div>開始時間：${escapeHtml(r.start_time || "10:00")}</div>
-              <div>終了目安：${escapeHtml(r.end_time || "-")}</div>
-              <div>車種：${escapeHtml(r.maker || "")} ${escapeHtml(r.car_model || "")}</div>
-              <div>サイズ：${escapeHtml(r.size || "-")}</div>
-              <div>メニュー：${escapeHtml(r.menu_name || "-")}</div>
-              <div>オプション：${escapeHtml(r.options_text || "なし")}</div>
-              <div>金額：${formatPrice(r.total_price)}</div>
-              <div>電話番号：${escapeHtml(r.phone || "-")}</div>
-              <div>メール：${escapeHtml(r.email || "-")}</div>
-              <div>備考：${escapeHtml(r.note || "-")}</div>
-            </div>
+   return;
+ }
 
-            <div class="actions">
-              ${r.status !== "予約確定" ? `<button class="action-btn approve-btn" onclick="updateStatus('${r.id}', '予約確定')">承認</button>` : ""}
-              ${r.status !== "却下" ? `<button class="action-btn reject-btn" onclick="updateStatus('${r.id}', '却下')">却下</button>` : ""}
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
+ renderReservations(data);
 
-    async function updateStatus(id, status) {
-      const ok = confirm(`この予約を「${status}」に変更しますか？`);
-      if (!ok) return;
+}
 
-      const { error } = await supabaseClient
-        .from("reservations")
-        .update({ status })
-        .eq("id", id);
+function renderReservations(reservations){
 
-      if (error) {
-        console.error(error);
-        alert("更新に失敗しました");
-        return;
-      }
+ if(!reservations || reservations.length===0){
 
-      alert(`予約を「${status}」に変更しました`);
-      loadReservations();
-    }
+   reservationList.innerHTML =
+   `<div class="empty">
+      該当する予約はありません
+    </div>`;
 
-    function formatPrice(price) {
-      if (price === null || price === undefined || price === "") return "-";
-      return Number(price).toLocaleString() + "円";
-    }
+   return;
+ }
 
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+ reservationList.innerHTML =
+ reservations.map(r=>{
 
-    tabButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        tabButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentStatus = btn.dataset.status;
-        loadReservations();
-      });
-    });
+   const statusClass =
+   r.status === "予約確定"
+   ? "confirmed"
+   : r.status === "却下"
+   ? "rejected"
+   : "pending";
 
-    loadReservations();
-  </script>
+   return `
+
+   <div class="reservation-card">
+
+     <div class="reservation-head">
+
+       <strong>
+         ${escapeHtml(r.customer_name || "名前なし")}
+       </strong>
+
+       <span class="status ${statusClass}">
+         ${escapeHtml(r.status || "仮予約")}
+       </span>
+
+     </div>
+
+     <div class="info">
+
+       <div>
+         車種：
+         ${escapeHtml(r.maker || "")}
+         ${escapeHtml(r.model || "")}
+       </div>
+
+       <div>
+         サイズ：
+         ${escapeHtml(r.size || "-")}
+       </div>
+
+       <div>
+         メニュー：
+         ${escapeHtml(r.menu_name || "-")}
+       </div>
+
+       <div>
+         オプション：
+         ${escapeHtml(r.options || "なし")}
+       </div>
+
+       <div>
+         電話：
+         ${escapeHtml(r.phone || "-")}
+       </div>
+
+       <div>
+         開始日：
+         ${escapeHtml(r.start_date || "-")}
+       </div>
+
+       <div>
+         終了日：
+         ${escapeHtml(r.end_date || "-")}
+       </div>
+
+       <div>
+         開始時間：
+         ${escapeHtml(r.start_time || "-")}
+       </div>
+
+       <div>
+         終了時間：
+         ${escapeHtml(r.end_time || "-")}
+       </div>
+
+       <div>
+         金額：
+         ${formatPrice(r.total_price)}
+       </div>
+
+     </div>
+
+     <div class="actions">
+
+       ${
+       r.status !== "予約確定"
+       ?
+       `<button
+          class="action-btn"
+          onclick="updateStatus(${r.id},'予約確定')">
+          承認
+        </button>`
+       :
+       ""
+       }
+
+       ${
+       r.status !== "却下"
+       ?
+       `<button
+          class="action-btn"
+          onclick="updateStatus(${r.id},'却下')">
+          却下
+        </button>`
+       :
+       ""
+       }
+
+     </div>
+
+   </div>
+
+   `;
+
+ }).join("");
+
+}
+
+async function updateStatus(id,status){
+
+ if(!confirm(status+"に変更しますか？")){
+   return;
+ }
+
+ const {error} =
+ await supabaseClient
+ .from("reservations")
+ .update({
+   status:status
+ })
+ .eq("id",id);
+
+ if(error){
+   console.error(error);
+   alert("更新失敗");
+   return;
+ }
+
+ alert("更新完了");
+
+ loadReservations();
+
+}
+
+function formatPrice(price){
+
+ if(!price){
+   return "-";
+ }
+
+ return Number(price)
+ .toLocaleString()
+ +"円";
+
+}
+
+function escapeHtml(text){
+
+ return String(text ?? "")
+ .replaceAll("&","&amp;")
+ .replaceAll("<","&lt;")
+ .replaceAll(">","&gt;")
+ .replaceAll('"',"&quot;")
+ .replaceAll("'","&#039;");
+
+}
+
+tabButtons.forEach(btn=>{
+
+ btn.addEventListener("click",()=>{
+
+   tabButtons.forEach(
+   b=>b.classList.remove("active")
+   );
+
+   btn.classList.add("active");
+
+   currentStatus =
+   btn.dataset.status;
+
+   loadReservations();
+
+ });
+
+});
+
+loadReservations();
+
+</script>
+
 </body>
 </html>
