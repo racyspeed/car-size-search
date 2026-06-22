@@ -919,6 +919,19 @@ async function updateStatus(id,status){
 
  let message = "更新完了";
 
+ if(status === "予約確定"){
+
+   const calendarResult =
+   await createGoogleCalendarEvent(data);
+
+   if(calendarResult === "created"){
+     message += "\nGoogleカレンダーに登録しました";
+   }else{
+     message += "\nGoogleカレンダー登録に失敗しました";
+   }
+
+ }
+
  if(status === "予約確定" || status === "却下"){
 
    const notifyResult =
@@ -949,7 +962,41 @@ async function updateStatus(id,status){
  await loadReservations();
 
 }
+async function createGoogleCalendarEvent(reservation){
 
+ try{
+
+   const res =
+   await fetch(
+     "https://klfijtvnbgdkqcslntsp.supabase.co/functions/v1/create-google-calendar-event",
+     {
+       method:"POST",
+       headers:{
+         "Content-Type":"application/json"
+       },
+       body:JSON.stringify(reservation)
+     }
+   );
+
+   const result =
+   await res.json();
+
+   console.log("Googleカレンダー登録結果", result);
+
+   if(result && result.ok){
+     return "created";
+   }
+
+   return "failed";
+
+ }catch(error){
+
+   console.error("Googleカレンダー登録エラー", error);
+   return "failed";
+
+ }
+
+}
 async function sendCustomerLineNotification(reservation){
 
  if(!reservation || !reservation.customer_line_user_id){
