@@ -3266,124 +3266,146 @@ ${optionTimeCopyText}
     return baseHours + getSelectedOptionDurationHours();
   }
 
-  async function getWashBlockingReservations(startDate, endDate) {
-    const { data: reservations, error } = await supabase
-      .from("reservations")
-      .select("*")
-      .eq("status", "予約確定")
-      .lte("start_date", endDate)
-      .gte("end_date", startDate);
 
-    if (error) {
-      console.error(error);
-      return { error, reservations:[] };
+  async function checkGoogleCalendarAvailability(dateString, menuData) {
+  try {
+    const res = await fetch(
+      `${supabaseUrl}/functions/v1/check-availability`,
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "apikey":supabaseKey,
+          "Authorization":`Bearer ${supabaseKey}`
+        },
+        body:JSON.stringify({
+          date:dateString,
+          menu_name:menuData.menu_name
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok || !data.ok) {
+      console.error("check-availability error", data);
+      return {
+        ok:false,
+        available:false,
+        mark:"×",
+        message:"予約状況の確認中にエラーが発生しました。",
+        slots:[]
+      };
     }
 
+    return data;
+
+  } catch (error) {
+    console.error(error);
+
     return {
-      error:null,
-      reservations:(reservations || []).filter(isWashReservation)
+      ok:false,
+      available:false,
+      mark:"×",
+      message:"予約状況の確認中にエラーが発生しました。",
+      slots:[]
+    };
+  }
+}
+
+async function getWashBlockingReservations(startDate, endDate) {
+  return {
+    error:null,
+    reservations:[]
+  };
+}
+
+async function isWashBlockDateAvailable(startDate, menuData) {
+  if (isClosedDay(startDate)) {
+    return {
+      ok:false,
+      message:"月曜・火曜は定休日のため選択できません。"
     };
   }
 
-  async function isWashBlockDateAvailable(startDate, menuData) {
-    if (isClosedDay(startDate)) {
-      return {
-        ok:false,
-        message:"月曜・火曜は定休日のため選択できません。"
-      };
-    }
-
-    if (isPastDate(startDate)) {
-      return {
-        ok:false,
-        message:"過去の日付は選択できません。"
-      };
-    }
-
-    const workDays = getEffectiveWorkDays(menuData);
-    const blockDates = addBusinessDays(startDate, workDays);
-    const endDate = blockDates[blockDates.length - 1];
-    const { reservations, error } = await getWashBlockingReservations(startDate, endDate);
-
-    if (error) {
-      return {
-        ok:false,
-        message:"予約状況の確認中にエラーが発生しました。"
-      };
-    }
-
-    if (reservations.length > 0) {
-      return {
-        ok:false,
-        message:"この日は洗車予約が重なるため選択できません。"
-      };
-    }
-
+  if (isPastDate(startDate)) {
     return {
-      ok:true,
-      endDate,
-      blockDates,
-      startTime:FULL_DAY_WASH_START_TIME,
-      endTime:FULL_DAY_WASH_END_TIME
+      ok:false,
+      message:"過去の日付は選択できません。"
     };
   }
 
-  async function getAvailableWashSlots(dateString, menuData) {
-    if (isClosedDay(dateString)) {
-      return [];
-    }
+  const result = await checkGoogleCalendarAvailability(startDate, menuData);
 
-    if (isPastDate(dateString)) {
-      return [];
-    }
-
-    const { reservations, error } = await getWashBlockingReservations(dateString, dateString);
-
-    if (error) {
-      return [];
-    }
-
-    const fullDayWashReservation = reservations.some(reservation =>
-      reservation.menu_name === "徹底洗車" || reservation.menu_name === "徹底洗車ライト"
-    );
-
-    if (fullDayWashReservation) {
-      return [];
-    }
-
-    const timedReservations = reservations.filter(reservation =>
-      reservation.menu_name === "純水手洗い洗車" &&
-      reservation.start_time &&
-      reservation.end_time
-    );
-
-    const dailyLimit = Number(menuData.daily_limit || 2);
-
-    if (timedReservations.length >= dailyLimit) {
-      return [];
-    }
-
-    return WASH_START_HOURS.map(hour => {
-      const startTime = hourToTime(hour);
-      const endTime = addHours(startTime, getWashReservationDurationHours(menuData));
-
-      const overlap = timedReservations.some(reservation => {
-        return isTimeOverlap(
-          startTime,
-          endTime,
-          String(reservation.start_time).slice(0,5),
-          String(reservation.end_time).slice(0,5)
-        );
-      });
-
-      return {
-        startTime,
-        endTime,
-        available:!overlap
-      };
-    });
+  if (!result.ok || !result.available) {
+    return {
+      ok:false,
+      message:result.reason || result.message || "この日は予約済みのため選択できません。"
+    };
   }
 
+  return {
+    ok:true,
+    endDate:result.end_date || startDate,
+    blockDates:[],
+    startTime:FULL_DAY_WASH_START_TIME,
+    endTime:FULL_DAY_WASH_END_TIME
+  };
+}
+
+async function isMainDateAvailable(startDate, menuData) {
+  if (isClosedDay(startDate)) {
+    return {
+      ok:false,
+      message:"月曜・火曜は定休日のため選択できません。"
+    };
+  }
+
+  if (isPastDate(startDate)) {
+    return {
+      ok:false,
+      message:"過去の日付は選択できません。"
+    };
+  }
+
+  const result = await checkGoogleCalendarAvailability(startDate, menuData);
+
+  if (!result.ok || !result.available) {
+    return {
+      ok:false,
+      message:result.reason || result.message || "この日は予約済みのため選択できません。"
+    };
+  }
+
+  return {
+    ok:true,
+    endDate:result.end_date || startDate,
+    blockDates:[],
+    message:"",
+  };
+}
+
+async function getAvailableWashSlots(dateString, menuData) {
+  if (isClosedDay(dateString)) {
+    return [];
+  }
+
+  if (isPastDate(dateString)) {
+    return [];
+  }
+
+  const result = await checkGoogleCalendarAvailability(dateString, menuData);
+
+  if (!result.ok || !result.available || !Array.isArray(result.slots)) {
+    return [];
+  }
+
+  return result.slots.map(slot => ({
+    startTime:String(slot.start_time || slot.time || "").slice(0,5),
+    endTime:String(slot.end_time || "").slice(0,5),
+    available:!!slot.available
+  }));
+}
   async function renderReservationArea(menuData) {
     const priceResult = document.getElementById("priceResult");
     const oldReservation = document.getElementById("reservationArea");
