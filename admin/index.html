@@ -242,6 +242,14 @@ h1{
   letter-spacing:.08em;
 }
 
+.line-ok{
+  color:#8dff8d;
+}
+
+.line-ng{
+  color:#aaa;
+}
+
 @media(max-width:800px){
   .dashboard{
     grid-template-columns:repeat(2,1fr);
@@ -640,6 +648,11 @@ function renderReservations(reservations){
    ? "rejected"
    : "pending";
 
+   const lineStatus =
+   r.customer_line_user_id
+   ? `<span class="line-ok">LINE通知可</span>`
+   : `<span class="line-ng">LINE通知不可</span>`;
+
    return `
 
    <div class="reservation-card">
@@ -709,6 +722,16 @@ function renderReservations(reservations){
          ${formatPrice(r.total_price)}
        </div>
 
+       <div>
+         予約経路：
+         ${escapeHtml(r.reservation_source || "web")}
+       </div>
+
+       <div>
+         お客様LINE：
+         ${lineStatus}
+       </div>
+
      </div>
 
      <div class="actions">
@@ -753,13 +776,15 @@ async function updateStatus(id,status){
    return;
  }
 
- const {error} =
+ const {data,error} =
  await supabaseClient
  .from("reservations")
  .update({
    status:status
  })
- .eq("id",id);
+ .eq("id",id)
+ .select("*")
+ .single();
 
  if(error){
    console.error(error);
@@ -767,11 +792,68 @@ async function updateStatus(id,status){
    return;
  }
 
- alert("更新完了");
+ let message = "更新完了";
+
+ if(status === "予約確定"){
+
+   const notifyResult =
+   await sendCustomerLineNotification(data);
+
+   if(notifyResult === "sent"){
+     message += "\nお客様へLINE確定通知を送信しました";
+   }
+
+   if(notifyResult === "no_line"){
+     message += "\nこの予約はLINE通知不可です";
+   }
+
+   if(notifyResult === "failed"){
+     message += "\nお客様LINE通知に失敗しました";
+   }
+
+ }
+
+ alert(message);
 
  await loadDashboard();
  await loadAdminCalendar();
  await loadReservations();
+
+}
+
+async function sendCustomerLineNotification(reservation){
+
+ if(!reservation || !reservation.customer_line_user_id){
+   return "no_line";
+ }
+
+ try{
+
+   const res =
+   await fetch(
+     "https://klfijtvnbgdkqcslntsp.supabase.co/functions/v1/send-customer-line",
+     {
+       method:"POST",
+       headers:{
+         "Content-Type":"application/json"
+       },
+       body:JSON.stringify(reservation)
+     }
+   );
+
+   if(!res.ok){
+     console.error("お客様LINE通知失敗", await res.text());
+     return "failed";
+   }
+
+   return "sent";
+
+ }catch(error){
+
+   console.error("お客様LINE通知エラー", error);
+   return "failed";
+
+ }
 
 }
 
