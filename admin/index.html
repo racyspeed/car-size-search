@@ -794,13 +794,17 @@ async function updateStatus(id,status){
 
  let message = "更新完了";
 
- if(status === "予約確定"){
+ if(status === "予約確定" || status === "却下"){
 
    const notifyResult =
    await sendCustomerLineNotification(data);
 
    if(notifyResult === "sent"){
-     message += "\nお客様へLINE確定通知を送信しました";
+     if(status === "予約確定"){
+       message += "\nお客様へ予約確定LINEを送信しました";
+     }else{
+       message += "\nお客様へ却下LINEを送信しました";
+     }
    }
 
    if(notifyResult === "no_line"){
