@@ -305,12 +305,65 @@ h1{
   }
 }
 
+
+.login-screen{
+  max-width:420px;
+  margin:80px auto;
+  border:1px solid #fff;
+  padding:28px;
+  text-align:center;
+}
+
+.login-screen input{
+  width:100%;
+  padding:12px;
+  margin:16px 0;
+  background:#000;
+  color:#fff;
+  border:1px solid #fff;
+  box-sizing:border-box;
+}
+
+.login-screen button{
+  background:#000;
+  color:#fff;
+  border:1px solid #fff;
+  padding:10px 18px;
+  cursor:pointer;
+}
+
+.login-screen button:hover{
+  background:#fff;
+  color:#000;
+}
+
+.login-error{
+  color:#ff6b6b;
+  margin-top:12px;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="admin-wrap">
+<div class="login-screen" id="loginScreen">
+  <div class="shop-name">RACY'SPEED</div>
+  <h1>管理画面ログイン</h1>
+
+  <input
+    type="password"
+    id="adminPasswordInput"
+    placeholder="パスワードを入力"
+    autocomplete="current-password"
+  >
+
+  <button onclick="checkAdminPassword()">ログイン</button>
+
+  <div class="login-error" id="loginError"></div>
+</div>
+
+<div class="admin-wrap" id="adminApp" style="display:none;">
 
 <div class="shop-name">
 RACY'SPEED
@@ -412,6 +465,58 @@ document.getElementById("nextMonthBtn");
 
 let currentStatus = "仮予約";
 let calendarDate = new Date();
+
+const ADMIN_PASSWORD = "RACYSPEED2026";
+
+function checkAdminPassword(){
+
+ const input =
+ document.getElementById("adminPasswordInput");
+
+ const error =
+ document.getElementById("loginError");
+
+ if(input.value === ADMIN_PASSWORD){
+
+   sessionStorage.setItem("racyspeed_admin_login","ok");
+
+   document.getElementById("loginScreen").style.display = "none";
+   document.getElementById("adminApp").style.display = "block";
+
+   loadDashboard();
+   loadAdminCalendar();
+   loadReservations();
+
+ }else{
+   error.textContent = "パスワードが違います。";
+ }
+
+}
+
+const adminPasswordInput =
+document.getElementById("adminPasswordInput");
+
+if(adminPasswordInput){
+ adminPasswordInput.addEventListener("keydown", function(e){
+   if(e.key === "Enter"){
+     checkAdminPassword();
+   }
+ });
+}
+
+function startAdminAppIfLoggedIn(){
+
+ if(sessionStorage.getItem("racyspeed_admin_login") === "ok"){
+   document.getElementById("loginScreen").style.display = "none";
+   document.getElementById("adminApp").style.display = "block";
+
+   loadDashboard();
+   loadAdminCalendar();
+   loadReservations();
+ }
+
+}
+
 
 async function loadDashboard(){
 
@@ -909,9 +1014,7 @@ nextMonthBtn.addEventListener("click",()=>{
  loadAdminCalendar();
 });
 
-loadDashboard();
-loadAdminCalendar();
-loadReservations();
+startAdminAppIfLoggedIn();
 
 </script>
 
