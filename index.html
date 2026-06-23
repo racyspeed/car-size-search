@@ -3243,6 +3243,7 @@ ${optionTimeCopyText}
           ok:false,
           available:false,
           mark:"×",
+          reason:"予約状況の確認中にエラーが発生しました。",
           message:"予約状況の確認中にエラーが発生しました。",
           slots:[]
         };
@@ -3257,10 +3258,82 @@ ${optionTimeCopyText}
         ok:false,
         available:false,
         mark:"×",
+        reason:"予約状況の確認中にエラーが発生しました。",
         message:"予約状況の確認中にエラーが発生しました。",
         slots:[]
       };
     }
+  }
+
+  function isReceptionClosedResult(result) {
+    const text = `${result.reason || ""}${result.message || ""}`;
+    return text.includes("2日前") || text.includes("受付");
+  }
+
+  function isClosedResult(result) {
+    const text = `${result.mark || ""}${result.reason || ""}${result.message || ""}`;
+    return (
+      result.mark === "休" ||
+      text.includes("臨時休業") ||
+      text.includes("定休日") ||
+      text.includes("店休日") ||
+      text.includes("休業")
+    );
+  }
+
+  function getUnavailableMessage(result) {
+    return result.reason || result.message || "この日は予約できません。";
+  }
+
+  function applyCalendarButtonStatus(button, statusLabel, result, fallbackUnavailableText = "✕満枠") {
+    button.classList.remove("available", "few", "unavailable", "closed", "past");
+
+    if (!result || result.ok === false) {
+      button.classList.add("unavailable");
+      button.disabled = true;
+      statusLabel.textContent = "✕確認不可";
+      button.title = "予約状況を確認できませんでした";
+      return;
+    }
+
+    if (isClosedResult(result)) {
+      button.classList.add("closed");
+      button.disabled = true;
+      statusLabel.textContent = "休";
+      button.title = getUnavailableMessage(result);
+      return;
+    }
+
+    if (isReceptionClosedResult(result)) {
+      button.classList.add("unavailable");
+      button.disabled = true;
+      statusLabel.textContent = "✕受付終了";
+      button.title = getUnavailableMessage(result);
+      return;
+    }
+
+    if (!result.available) {
+      button.classList.add("unavailable");
+      button.disabled = true;
+      statusLabel.textContent = fallbackUnavailableText;
+      button.title = getUnavailableMessage(result);
+      return;
+    }
+
+    const mark = result.mark || "〇";
+
+    if (mark === "△") {
+      button.classList.add("few");
+      button.disabled = false;
+      statusLabel.textContent = "△残りわずか";
+      button.title = "残りわずか";
+      return;
+    }
+
+    button.classList.add("available");
+    button.disabled = false;
+    statusLabel.textContent = "○空きあり";
+    button.title = "空きあり";
   }
 
   async function getWashBlockingReservations(startDate, endDate) {
@@ -3290,7 +3363,7 @@ ${optionTimeCopyText}
     if (!result.ok || !result.available) {
       return {
         ok:false,
-        message:result.reason || result.message || "この日は予約済みのため選択できません。"
+        message:getUnavailableMessage(result)
       };
     }
 
@@ -3323,7 +3396,7 @@ ${optionTimeCopyText}
     if (!result.ok || !result.available) {
       return {
         ok:false,
-        message:result.reason || result.message || "この日は予約済みのため選択できません。"
+        message:getUnavailableMessage(result)
       };
     }
 
@@ -3373,10 +3446,10 @@ ${optionTimeCopyText}
           <div class="estimate-title">オンライン予約</div>
           <p class="contact-subnote">
             ${isPureWashTimeBooking
-              ? "純水手洗い洗車は、日付と開始時間をお選びください。月曜・火曜は定休日です。"
+              ? "純水手洗い洗車は、日付と開始時間をお選びください。月曜・火曜は定休日です。予約は2日前まで受付です。"
               : isWashBlockBooking
                 ? `${formatMenuName(menuData.menu_name)}は、施工開始日と開始時間をお選びください。月曜・火曜は定休日です。`
-                : "コーティングは施工開始日のみお選びください。月曜・火曜は定休日です。"}
+                : "コーティングは施工開始日のみお選びください。月曜・火曜は定休日です。予約は2日前まで受付です。"}
           </p>
 
           <div class="reservation-calendar-head">
@@ -3505,54 +3578,8 @@ ${optionTimeCopyText}
 
       await Promise.all(dayButtons.map(async item => {
         const { button, statusLabel, dateString } = item;
-
-        if (isPureHandWash(menuData)) {
-          const slots = await getAvailableWashSlots(dateString, menuData);
-          const availableCount = slots.filter(slot => slot.available).length;
-
-          if (availableCount <= 0) {
-            button.classList.add("unavailable");
-            button.disabled = true;
-            statusLabel.textContent = "✕満枠";
-            return;
-          }
-
-          button.classList.add(availableCount <= 1 ? "few" : "available");
-          button.disabled = false;
-          statusLabel.textContent = availableCount <= 1
-            ? "△残りわずか"
-            : "○空きあり";
-          return;
-        }
-
-        if (isThoroughWash(menuData) || isLightWash(menuData)) {
-          const available = await isWashBlockDateAvailable(dateString, menuData);
-
-          if (!available.ok) {
-            button.classList.add("unavailable");
-            button.disabled = true;
-            statusLabel.textContent = "✕満枠";
-            return;
-          }
-
-          button.classList.add("available");
-          button.disabled = false;
-          statusLabel.textContent = "○空きあり";
-          return;
-        }
-
-        const available = await isMainDateAvailable(dateString, menuData);
-
-        if (!available.ok) {
-          button.classList.add("unavailable");
-          button.disabled = true;
-          statusLabel.textContent = "✕満枠";
-          return;
-        }
-
-        button.classList.add("available");
-        button.disabled = false;
-        statusLabel.textContent = "○空きあり";
+        const result = await checkGoogleCalendarAvailability(dateString, menuData);
+        applyCalendarButtonStatus(button, statusLabel, result, "✕満枠");
       }));
     }
 
@@ -3570,8 +3597,21 @@ ${optionTimeCopyText}
     if (isPureHandWash(menuData)) {
       message.textContent = "空き時間を確認しています。";
 
-      const slots = await getAvailableWashSlots(dateString, menuData);
+      const availability = await checkGoogleCalendarAvailability(dateString, menuData);
       message.textContent = "";
+
+      if (!availability.ok || !availability.available) {
+        message.textContent = getUnavailableMessage(availability);
+        return;
+      }
+
+      const slots = Array.isArray(availability.slots)
+        ? availability.slots.map(slot => ({
+            startTime:String(slot.start_time || slot.time || "").slice(0,5),
+            endTime:String(slot.end_time || "").slice(0,5),
+            available:!!slot.available
+          }))
+        : [];
 
       if (!slots.length || !slots.some(slot => slot.available)) {
         message.textContent = "この日は純水手洗い洗車の空き枠がありません。";
