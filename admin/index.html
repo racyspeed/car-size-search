@@ -840,28 +840,8 @@ function renderReservations(reservations){
      </div>
 
      <div class="actions">
-
-  ${
-  r.status === "仮予約"
-  ?
-  `<button
-     class="action-btn"
-     onclick="updateStatus(${r.id},'予約確定')">
-     承認
-   </button>
-
-   <button
-     class="action-btn"
-     onclick="updateStatus(${r.id},'却下')">
-     却下
-   </button>`
-  :
-  `<div style="color:#aaa;">
-     処理済み
-   </div>`
-  }
-
-</div>
+       ${renderActionButtons(r)}
+     </div>
 
    </div>
 
@@ -871,11 +851,58 @@ function renderReservations(reservations){
 
 }
 
+function renderActionButtons(r){
+
+ if(r.status === "仮予約"){
+
+   return `
+   <button
+     class="action-btn"
+     onclick="updateStatus(${r.id},'予約確定')">
+     承認
+   </button>
+
+   <button
+     class="action-btn"
+     onclick="updateStatus(${r.id},'却下')">
+     却下
+   </button>`;
+
+ }
+
+ if(r.status === "予約確定"){
+
+   return `
+   <button
+     class="action-btn"
+     onclick="updateStatus(${r.id},'却下')">
+     確定済み予約を却下
+   </button>
+
+   <div style="color:#aaa; line-height:40px;">
+     ※Googleカレンダーの予定削除連携は次の工程で追加
+   </div>`;
+
+ }
+
+ return `
+ <div style="color:#aaa;">
+   処理済み
+ </div>`;
+
+}
+
 async function updateStatus(id,status){
 
  let rejectReason = "";
 
  if(status === "却下"){
+
+   if(!confirm("この予約を却下に変更しますか？
+
+確定済み予約の場合も、予約ステータスを却下に変更します。")){
+     return;
+   }
 
    rejectReason =
    prompt(
@@ -953,6 +980,10 @@ async function updateStatus(id,status){
      message += "\nお客様LINE通知に失敗しました";
    }
 
+ }
+
+ if(status === "却下"){
+   message += "\n確定済み予約を却下した場合は、Googleカレンダーの予定を手動で確認してください";
  }
 
  alert(message);
