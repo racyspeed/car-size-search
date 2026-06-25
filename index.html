@@ -3408,6 +3408,77 @@ ${optionTimeCopyText}
     };
   }
 
+  async function getPureHandWashReservationCount(dateString) {
+    const { data, error } = await supabase
+      .from("reservations")
+      .select("id,status,menu_name,booking_lane,start_date,end_date")
+      .lte("start_date", dateString)
+      .gte("end_date", dateString)
+      .in("status", ["仮予約", "予約確定"]);
+
+    if (error) {
+      console.error("純水手洗い洗車の予約件数確認エラー", error);
+      return {
+        ok:false,
+        count:0
+      };
+    }
+
+    const reservations = data || [];
+
+    const count = reservations.filter(r =>
+      r.menu_name === "純水手洗い洗車" || r.booking_lane === "sub"
+    ).length;
+
+    return {
+      ok:true,
+      count
+    };
+  }
+
+  function getPureHandWashDailyLimit(menuData) {
+    return Number(menuData.daily_limit || 2);
+  }
+
+  async function getPureHandWashDayStatus(dateString, menuData) {
+    const limit = getPureHandWashDailyLimit(menuData);
+    const countResult = await getPureHandWashReservationCount(dateString);
+
+    if (!countResult.ok) {
+      return {
+        ok:false,
+        available:false,
+        mark:"×",
+        reason:"予約件数の確認中にエラーが発生しました。",
+        message:"予約件数の確認中にエラーが発生しました。",
+        count:0,
+        limit
+      };
+    }
+
+    if (countResult.count >= limit) {
+      return {
+        ok:true,
+        available:false,
+        mark:"×",
+        reason:`純水手洗い洗車は1日${limit}台までのため満枠です。`,
+        message:`純水手洗い洗車は1日${limit}台までのため満枠です。`,
+        count:countResult.count,
+        limit
+      };
+    }
+
+    return {
+      ok:true,
+      available:true,
+      mark:countResult.count >= limit - 1 ? "△" : "〇",
+      reason:"",
+      message:"",
+      count:countResult.count,
+      limit
+    };
+  }
+
   async function getAvailableWashSlots(dateString, menuData) {
     if (isClosedDay(dateString)) {
       return [];
@@ -3415,6 +3486,13 @@ ${optionTimeCopyText}
 
     if (isPastDate(dateString)) {
       return [];
+    }
+
+    if (isPureHandWash(menuData)) {
+      const dayStatus = await getPureHandWashDayStatus(dateString, menuData);
+      if (!dayStatus.ok || !dayStatus.available) {
+        return [];
+      }
     }
 
     const result = await checkGoogleCalendarAvailability(dateString, menuData);
@@ -3446,7 +3524,7 @@ ${optionTimeCopyText}
           <div class="estimate-title">オンライン予約</div>
           <p class="contact-subnote">
             ${isPureWashTimeBooking
-              ? "純水手洗い洗車は、日付と開始時間をお選びください。月曜・火曜は定休日です。予約は2日前まで受付です。"
+              ? "純水手洗い洗車は、日付と開始時間をお選びください。1日2台まで受付です。月曜・火曜は定休日です。予約は2日前まで受付です。"
               : isWashBlockBooking
                 ? `${formatMenuName(menuData.menu_name)}は、施工開始日と開始時間をお選びください。月曜・火曜は定休日です。`
                 : "コーティングは施工開始日のみお選びください。月曜・火曜は定休日です。予約は2日前まで受付です。"}
@@ -3579,6 +3657,29 @@ ${optionTimeCopyText}
       await Promise.all(dayButtons.map(async item => {
         const { button, statusLabel, dateString } = item;
         const result = await checkGoogleCalendarAvailability(dateString, menuData);
+
+        if (isPureHandWash(menuData)) {
+          const dayStatus = await getPureHandWashDayStatus(dateString, menuData);
+
+          if (!dayStatus.ok || !dayStatus.available) {
+            applyCalendarButtonStatus(button, statusLabel, dayStatus, "✕満枠");
+            return;
+          }
+
+          if (!result.ok || !result.available) {
+            applyCalendarButtonStatus(button, statusLabel, result, "✕満枠");
+            return;
+          }
+
+          const mergedResult = {
+            ...result,
+            mark:dayStatus.mark === "△" ? "△" : (result.mark || "〇")
+          };
+
+          applyCalendarButtonStatus(button, statusLabel, mergedResult, "✕満枠");
+          return;
+        }
+
         applyCalendarButtonStatus(button, statusLabel, result, "✕満枠");
       }));
     }
@@ -3602,6 +3703,13 @@ ${optionTimeCopyText}
 
       if (!availability.ok || !availability.available) {
         message.textContent = getUnavailableMessage(availability);
+        return;
+      }
+
+      const dayStatus = await getPureHandWashDayStatus(dateString, menuData);
+
+      if (!dayStatus.ok || !dayStatus.available) {
+        message.textContent = getUnavailableMessage(dayStatus);
         return;
       }
 
@@ -3841,6 +3949,15 @@ ${optionTimeCopyText}
 
     if (isPureHandWash(menuData)) {
       bookingLane = "sub";
+
+      const dayStatus = await getPureHandWashDayStatus(startDate, menuData);
+
+      if (!dayStatus.ok || !dayStatus.available) {
+        saveButton.disabled = false;
+        saveMessage.textContent = getUnavailableMessage(dayStatus);
+        return;
+      }
+
       const slots = await getAvailableWashSlots(startDate, menuData);
       const targetSlot = slots.find(slot =>
         slot.startTime === startTime &&
