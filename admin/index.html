@@ -880,7 +880,7 @@ function renderActionButtons(r){
    </button>
 
    <div style="color:#aaa; line-height:40px;">
-     ※Googleカレンダーの予定削除連携は次の工程で追加
+     ※却下するとGoogleカレンダー予定も自動削除します
    </div>`;
 
  }
@@ -894,18 +894,34 @@ function renderActionButtons(r){
 
 async function updateStatus(id,status){
 
+ const {data:beforeData,error:beforeError} =
+ await supabaseClient
+ .from("reservations")
+ .select("*")
+ .eq("id",id)
+ .single();
+
+ if(beforeError || !beforeData){
+   console.error(beforeError);
+   alert("予約情報の取得に失敗しました");
+   return;
+ }
+
+ const beforeStatus = beforeData.status || "仮予約";
  let rejectReason = "";
 
  if(status === "却下"){
 
-   if(!confirm(`この予約を却下に変更しますか？
+   const confirmMessage =
+   beforeStatus === "予約確定"
+   ? `この確定済み予約を却下しますか？\n\nGoogleカレンダーの予定も自動削除します。`
+   : `この予約を却下しますか？`;
 
-確定済み予約の場合は、Googleカレンダーの予定も自動削除します。`)){
+   if(!confirm(confirmMessage)){
      return;
    }
 
-   rejectReason =
-   prompt(
+   rejectReason = prompt(
 `却下理由を入力してください
 
 例
@@ -921,10 +937,25 @@ async function updateStatus(id,status){
 
  }else{
 
-   if(!confirm(status+"に変更しますか？")){
+   if(!confirm(status + "に変更しますか？")){
      return;
    }
 
+ }
+
+ let calendarDeleteResult = "skip";
+ const messages = [];
+
+ if(status === "却下" && beforeStatus === "予約確定"){
+   calendarDeleteResult = await deleteGoogleCalendarEvent(beforeData);
+
+   if(calendarDeleteResult === "deleted"){
+     messages.push("Googleカレンダーの予定を削除しました");
+   }else if(calendarDeleteResult === "not_found"){
+     messages.push("Googleカレンダーに削除対象の予定は見つかりませんでした");
+   }else{
+     messages.push("Googleカレンダー予定削除に失敗しました");
+   }
  }
 
  const {data,error} =
@@ -944,64 +975,43 @@ async function updateStatus(id,status){
    return;
  }
 
- let message = "更新完了";
+ messages.push("更新完了");
 
  if(status === "予約確定"){
 
-   const calendarResult =
-   await createGoogleCalendarEvent(data);
+   const calendarResult = await createGoogleCalendarEvent(data);
 
    if(calendarResult === "created"){
-     message += "\nGoogleカレンダーに登録しました";
+     messages.push("Googleカレンダーに登録しました");
    }else{
-     message += "\nGoogleカレンダー登録に失敗しました";
+     messages.push("Googleカレンダー登録に失敗しました");
    }
 
  }
 
  if(status === "予約確定" || status === "却下"){
 
-   const notifyResult =
-   await sendCustomerLineNotification(data);
+   const notifyResult = await sendCustomerLineNotification(data);
 
    if(notifyResult === "sent"){
      if(status === "予約確定"){
-       message += "\nお客様へ予約確定LINEを送信しました";
+       messages.push("お客様へ予約確定LINEを送信しました");
      }else{
-       message += "\nお客様へ却下LINEを送信しました";
+       messages.push("お客様へ却下LINEを送信しました");
      }
    }
 
    if(notifyResult === "no_line"){
-     message += "\nこの予約はLINE通知不可です";
+     messages.push("この予約はLINE通知不可です");
    }
 
    if(notifyResult === "failed"){
-     message += "\nお客様LINE通知に失敗しました";
+     messages.push("お客様LINE通知に失敗しました");
    }
 
  }
 
- if(status === "却下"){
-
-   const deleteResult =
-   await deleteGoogleCalendarEvent(data);
-
-   if(deleteResult === "deleted"){
-     message += "\nGoogleカレンダーの予定を削除しました";
-   }
-
-   if(deleteResult === "not_found"){
-     message += "\nGoogleカレンダーに削除対象の予定は見つかりませんでした";
-   }
-
-   if(deleteResult === "failed"){
-     message += "\nGoogleカレンダー予定削除に失敗しました";
-   }
-
- }
-
- alert(message);
+ alert(messages.join("\n"));
 
  await loadDashboard();
  await loadAdminCalendar();
@@ -1047,22 +1057,37 @@ async function deleteGoogleCalendarEvent(reservation){
 
  try{
 
-   const res =
-   await fetch(
+   console.log("Googleカレンダー削除リクエスト", reservation);
+
+   const res = await fetch(
      "https://klfijtvnbgdkqcslntsp.supabase.co/functions/v1/delete-google-calendar-event",
      {
        method:"POST",
        headers:{
-         "Content-Type":"application/json"
+         "Content-Type":"application/json",
+         "apikey":SUPABASE_ANON_KEY,
+         "Authorization":`Bearer ${SUPABASE_ANON_KEY}`
        },
        body:JSON.stringify(reservation)
      }
    );
 
-   const result =
-   await res.json();
+   const rawText = await res.text();
+   let result = null;
 
+   try{
+     result = rawText ? JSON.parse(rawText) : null;
+   }catch(parseError){
+     console.error("Googleカレンダー削除JSON変換エラー", parseError, rawText);
+     return "failed";
+   }
+
+   console.log("Googleカレンダー削除HTTP", res.status, rawText);
    console.log("Googleカレンダー削除結果", result);
+
+   if(!res.ok){
+     return "failed";
+   }
 
    if(result && result.ok && result.deleted){
      return "deleted";
