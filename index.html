@@ -3910,64 +3910,15 @@ if (!error) {
       return;
     }
 
-    let reservationText = "";
-
-    if (isPureHandWash(menuData) && startTime && endTime) {
-      reservationText = `予約希望日：${startDate}\n開始時間：${startTime}\n作業終了目安：${endTime}`;
-    } else if (isThoroughWash(menuData) || isLightWash(menuData)) {
-      reservationText = `予約希望日：${startDate}\n開始時間：${startTime || FULL_DAY_WASH_START_TIME}\n作業期間：${startDate}〜${endDate}`;
-    } else {
-      reservationText = `施工開始日：${startDate}\n施工終了予定日：${endDate}`;
-    }
-
-    const reservationCopyText =
-`RACY'SPEED 仮予約内容
-
-お名前：${customerName}
-電話番号：${customerPhone}
-
-お車：${currentSelectedCar.maker} ${currentSelectedCar.model}
-サイズ：${selectedSize}サイズ
-
-施工メニュー：
-${formatMenuName(selectedMenuName)}
-
-選択オプション：
-${selectedOptions.length ? selectedOptions.map(name => `・${name}`).join("\n") : "なし"}
-
-お支払い総額：
-${totalPrice.toLocaleString()}円（税込）
-
-${reservationText}
-
-備考：
-${customerNote || "なし"}`;
-
-    saveMessage.innerHTML = `
-      仮予約を受付しました。<br>
-      ※この時点ではまだ予約確定ではありません。LINEで内容を送信してください。
-    `;
-
     const existingLineButton = document.getElementById("reservationLineBtn");
     if (existingLineButton) existingLineButton.remove();
 
-    saveMessage.insertAdjacentHTML(
-      "afterend",
-      `
-        <button id="reservationLineBtn" class="line-button" type="button">
-          仮予約内容をコピーしてLINEを開く
-        </button>
-      `
-    );
-
-    document.getElementById("reservationLineBtn").addEventListener("click", async function() {
-      try {
-        await navigator.clipboard.writeText(reservationCopyText);
-      } catch (error) {
-        console.error(error);
-      }
-      window.open(lineUrl, "_blank", "noopener");
-    });
+    saveMessage.innerHTML = `
+      仮予約を受付しました。<br><br>
+      現在は仮予約の状態です。<br>
+      管理者が内容を確認後、予約確定となります。<br><br>
+      予約確定後、LINEまたはお電話にてご連絡いたします。
+    `;
   }
 }
 
