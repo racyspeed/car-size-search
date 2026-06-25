@@ -6,6 +6,11 @@
 
 <title>RACY'SPEED 管理画面</title>
 
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -340,6 +345,177 @@ h1{
 .login-error{
   color:#ff6b6b;
   margin-top:12px;
+}
+
+
+
+/* RACY'SPEED admin luxury mincho theme */
+body{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho','Hiragino Mincho ProN','HGS明朝E',serif !important;
+  letter-spacing:.03em;
+  background:#000000;
+}
+
+.shop-name{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho',serif !important;
+  letter-spacing:.32em;
+  font-weight:600;
+  color:#ffffff;
+}
+
+h1{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho',serif !important;
+  letter-spacing:.16em;
+  font-weight:600;
+  position:relative;
+  padding-bottom:18px;
+}
+
+h1::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:0;
+  width:120px;
+  height:1px;
+  transform:translateX(-50%);
+  background:linear-gradient(90deg,transparent,#d4af37,transparent);
+}
+
+.dashboard-card,
+.admin-calendar,
+.reservation-card,
+.empty,
+.login-screen{
+  border-color:rgba(255,255,255,.86) !important;
+  background:linear-gradient(180deg,#050505 0%,#0d0d0d 100%);
+}
+
+.dashboard-card{
+  padding:22px 18px;
+}
+
+.dashboard-label{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho',serif !important;
+  letter-spacing:.12em;
+  color:#bfbfbf;
+}
+
+.dashboard-value,
+.dashboard-yen{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho',serif !important;
+  font-weight:700;
+  color:#ffffff;
+}
+
+.admin-calendar{
+  padding:22px;
+}
+
+.calendar-title{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho',serif !important;
+  letter-spacing:.16em;
+  color:#ffffff;
+}
+
+.calendar-weekday{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho',serif !important;
+  color:#d4af37;
+  letter-spacing:.12em;
+}
+
+.calendar-day{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho',serif !important;
+  border-color:#333;
+  background:#000;
+}
+
+.calendar-day.has-reservation{
+  border-color:#d4af37;
+}
+
+.calendar-count{
+  border-color:#d4af37;
+  color:#d4af37;
+}
+
+.calendar-menu{
+  color:#f0f0f0;
+}
+
+.section-title{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho',serif !important;
+  letter-spacing:.14em;
+  font-weight:600;
+  color:#ffffff;
+}
+
+.reservation-card{
+  padding:24px;
+}
+
+.reservation-head strong{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho',serif !important;
+  letter-spacing:.12em;
+  font-size:18px;
+}
+
+.info{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho',serif !important;
+  letter-spacing:.04em;
+}
+
+.status{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho',serif !important;
+  letter-spacing:.08em;
+}
+
+.tab-btn,
+.action-btn,
+.calendar-nav,
+.login-screen button{
+  font-family:Arial,Meiryo,sans-serif !important;
+  letter-spacing:.08em;
+}
+
+.tab-btn.active,
+.action-btn:hover,
+.calendar-nav:hover,
+.login-screen button:hover{
+  background:#ffffff;
+  color:#000000;
+}
+
+.pending{
+  color:#d4af37;
+  border-color:#d4af37;
+}
+
+.confirmed{
+  color:#8dff8d;
+  border-color:#8dff8d;
+}
+
+.rejected{
+  color:#ff6b6b;
+  border-color:#ff6b6b;
+}
+
+.line-ok{
+  color:#8dff8d;
+}
+
+.line-ng{
+  color:#aaa;
+}
+
+.login-screen h1{
+  margin-bottom:24px;
+}
+
+.login-screen input{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho',serif !important;
+  letter-spacing:.08em;
 }
 
 </style>
