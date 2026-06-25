@@ -3761,7 +3761,13 @@ ${optionTimeCopyText}
           <input
             id="customerPhone"
             type="tel"
-            placeholder="電話番号"
+            placeholder="電話番号（必須）"
+          >
+
+          <input
+            id="customerEmail"
+            type="email"
+            placeholder="メールアドレス（必須）"
           >
 
           <textarea
@@ -3796,9 +3802,14 @@ ${optionTimeCopyText}
       }));
   }
 
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || ""));
+  }
+
   async function saveReservation({ startDate, endDate, startTime, endTime, menuData }) {
     const customerName = document.getElementById("customerName").value.trim();
     const customerPhone = document.getElementById("customerPhone").value.trim();
+    const customerEmail = document.getElementById("customerEmail").value.trim();
     const customerNote = document.getElementById("customerNote").value.trim();
     const saveMessage = document.getElementById("reservationSaveMessage");
     const saveButton = document.getElementById("saveReservationBtn");
@@ -3810,6 +3821,16 @@ ${optionTimeCopyText}
 
     if (!customerPhone) {
       saveMessage.textContent = "電話番号を入力してください。";
+      return;
+    }
+
+    if (!customerEmail) {
+      saveMessage.textContent = "メールアドレスを入力してください。";
+      return;
+    }
+
+    if (!isValidEmail(customerEmail)) {
+      saveMessage.textContent = "正しいメールアドレスを入力してください。";
       return;
     }
 
@@ -3865,6 +3886,7 @@ const selectedMenuName = currentQuoteState ? currentQuoteState.menuName : menuDa
 const reservationPayload = {
   customer_name: customerName,
   phone: customerPhone,
+  email: customerEmail,
   maker: currentSelectedCar.maker,
   model: currentSelectedCar.model,
   size: selectedSize,
@@ -3917,7 +3939,7 @@ if (!error) {
       仮予約を受付しました。<br><br>
       現在は仮予約の状態です。<br>
       管理者が内容を確認後、予約確定となります。<br><br>
-      予約確定後、LINEまたはお電話にてご連絡いたします。
+      予約確定後、メール・LINEまたはお電話にてご連絡いたします。
     `;
   }
 }
@@ -3997,8 +4019,9 @@ function centerNextReservationStep(type) {
     ],
     timeSelected: [
       ".reservation-form",
-      "#reservationName",
       "#customerName",
+      "#customerPhone",
+      "#customerEmail",
       "#reservationMessage"
     ],
     formSelected: [
