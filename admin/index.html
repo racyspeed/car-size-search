@@ -877,11 +877,7 @@ function renderActionButtons(r){
      class="action-btn"
      onclick="updateStatus(${r.id},'却下')">
      確定済み予約を却下
-   </button>
-
-   <div style="color:#aaa; line-height:40px;">
-     ※Googleカレンダーの予定削除連携は次の工程で追加
-   </div>`;
+   </button>`;
 
  }
 
@@ -894,13 +890,31 @@ function renderActionButtons(r){
 
 async function updateStatus(id,status){
 
+ const {data:beforeData,error:beforeError} =
+ await supabaseClient
+ .from("reservations")
+ .select("*")
+ .eq("id",id)
+ .single();
+
+ if(beforeError || !beforeData){
+   console.error(beforeError);
+   alert("予約情報の取得に失敗しました");
+   return;
+ }
+
+ const beforeStatus = beforeData.status || "";
+
  let rejectReason = "";
 
  if(status === "却下"){
 
-   if(!confirm("この予約を却下に変更しますか？
+   const confirmMessage =
+   beforeStatus === "予約確定"
+   ? "この確定済み予約を却下しますか？\n\nGoogleカレンダーの予定も削除します。"
+   : "この予約を却下に変更しますか？";
 
-確定済み予約の場合も、予約ステータスを却下に変更します。")){
+   if(!confirm(confirmMessage)){
      return;
    }
 
@@ -952,9 +966,33 @@ async function updateStatus(id,status){
    await createGoogleCalendarEvent(data);
 
    if(calendarResult === "created"){
-     message += "\nGoogleカレンダーに登録しました";
+     message += "
+Googleカレンダーに登録しました";
    }else{
-     message += "\nGoogleカレンダー登録に失敗しました";
+     message += "
+Googleカレンダー登録に失敗しました";
+   }
+
+ }
+
+ if(status === "却下" && beforeStatus === "予約確定"){
+
+   const deleteCalendarResult =
+   await deleteGoogleCalendarEvent(beforeData);
+
+   if(deleteCalendarResult === "deleted"){
+     message += "
+Googleカレンダーの予定を削除しました";
+   }
+
+   if(deleteCalendarResult === "not_found"){
+     message += "
+Googleカレンダーの削除対象予定が見つかりませんでした";
+   }
+
+   if(deleteCalendarResult === "failed"){
+     message += "
+Googleカレンダー予定削除に失敗しました";
    }
 
  }
@@ -966,24 +1004,24 @@ async function updateStatus(id,status){
 
    if(notifyResult === "sent"){
      if(status === "予約確定"){
-       message += "\nお客様へ予約確定LINEを送信しました";
+       message += "
+お客様へ予約確定LINEを送信しました";
      }else{
-       message += "\nお客様へ却下LINEを送信しました";
+       message += "
+お客様へ却下LINEを送信しました";
      }
    }
 
    if(notifyResult === "no_line"){
-     message += "\nこの予約はLINE通知不可です";
+     message += "
+この予約はLINE通知不可です";
    }
 
    if(notifyResult === "failed"){
-     message += "\nお客様LINE通知に失敗しました";
+     message += "
+お客様LINE通知に失敗しました";
    }
 
- }
-
- if(status === "却下"){
-   message += "\n確定済み予約を却下した場合は、Googleカレンダーの予定を手動で確認してください";
  }
 
  alert(message);
@@ -1028,6 +1066,47 @@ async function createGoogleCalendarEvent(reservation){
  }
 
 }
+
+async function deleteGoogleCalendarEvent(reservation){
+
+ try{
+
+   const res =
+   await fetch(
+     "https://klfijtvnbgdkqcslntsp.supabase.co/functions/v1/delete-google-calendar-event",
+     {
+       method:"POST",
+       headers:{
+         "Content-Type":"application/json"
+       },
+       body:JSON.stringify(reservation)
+     }
+   );
+
+   const result =
+   await res.json();
+
+   console.log("Googleカレンダー削除結果", result);
+
+   if(result && result.ok && result.deleted){
+     return "deleted";
+   }
+
+   if(result && result.ok && result.deleted === false){
+     return "not_found";
+   }
+
+   return "failed";
+
+ }catch(error){
+
+   console.error("Googleカレンダー削除エラー", error);
+   return "failed";
+
+ }
+
+}
+
 async function sendCustomerLineNotification(reservation){
 
  if(!reservation || !reservation.customer_line_user_id){
