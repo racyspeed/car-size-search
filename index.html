@@ -4332,3 +4332,83 @@ document.addEventListener("focusin", (event) => {
 
 </body>
 </html>
+
+<!-- v11: option checkbox layout stability fix -->
+<style>
+/* 追加オプションのチェック時に行がズレたり下に落ちるのを防ぐ */
+#optionArea .option-item{
+  display:grid !important;
+  grid-template-columns:20px minmax(0, 1fr) !important;
+  align-items:start !important;
+  column-gap:10px !important;
+  row-gap:0 !important;
+  min-height:28px !important;
+  padding:7px 0 !important;
+  margin:0 !important;
+}
+
+#optionArea .optionCheck{
+  width:16px !important;
+  height:16px !important;
+  min-width:16px !important;
+  min-height:16px !important;
+  max-width:16px !important;
+  max-height:16px !important;
+  padding:0 !important;
+  margin:3px 0 0 0 !important;
+  flex:none !important;
+  transform:none !important;
+  appearance:auto !important;
+  -webkit-appearance:checkbox !important;
+}
+
+#optionArea .optionCheck:checked,
+#optionArea .optionCheck:active,
+#optionArea .optionCheck:focus{
+  width:16px !important;
+  height:16px !important;
+  min-width:16px !important;
+  min-height:16px !important;
+  margin:3px 0 0 0 !important;
+  transform:none !important;
+}
+
+#optionArea .option-text{
+  display:block !important;
+  min-width:0 !important;
+  line-height:1.45 !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+
+#optionArea .option-name,
+#optionArea .option-meta{
+  vertical-align:baseline !important;
+}
+
+@media (max-width:560px){
+  #optionArea .option-item{
+    grid-template-columns:18px minmax(0, 1fr) !important;
+    column-gap:7px !important;
+    min-height:24px !important;
+    padding:5px 0 !important;
+  }
+
+  #optionArea .optionCheck,
+  #optionArea .optionCheck:checked,
+  #optionArea .optionCheck:active,
+  #optionArea .optionCheck:focus{
+    width:15px !important;
+    height:15px !important;
+    min-width:15px !important;
+    min-height:15px !important;
+    max-width:15px !important;
+    max-height:15px !important;
+    margin-top:2px !important;
+  }
+
+  #optionArea .option-text{
+    line-height:1.38 !important;
+  }
+}
+</style>
