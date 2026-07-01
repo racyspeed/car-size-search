@@ -1116,6 +1116,85 @@ textarea{
   margin-top:12px;
 }
 
+
+
+.follow-filter{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.follow-filter-btn{
+  background:#000;
+  color:#fff;
+  border:1px solid rgba(212,175,55,.72);
+  padding:10px 16px;
+  cursor:pointer;
+  letter-spacing:.12em;
+}
+
+.follow-filter-btn.active,
+.follow-filter-btn:hover{
+  background:#fff;
+  color:#000;
+  border-color:#fff;
+}
+
+.follow-list-card{
+  border:1px solid rgba(212,175,55,.46);
+  padding:20px;
+  margin-bottom:14px;
+  background:linear-gradient(180deg,#050505 0%,#0d0d0d 100%);
+}
+
+.follow-list-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+.follow-customer-name{
+  font-size:19px;
+  font-weight:700;
+  letter-spacing:.12em;
+}
+
+.follow-title-main{
+  color:#d4af37;
+  font-size:17px;
+  margin-top:6px;
+}
+
+.follow-list-info{
+  line-height:1.9;
+  color:#ddd;
+}
+
+.follow-days{
+  border:1px solid #fff;
+  padding:5px 10px;
+  font-size:13px;
+  height:max-content;
+}
+
+.follow-days.today{
+  color:#d4af37;
+  border-color:#d4af37;
+}
+
+.follow-days.over{
+  color:#ff6b6b;
+  border-color:#ff6b6b;
+}
+
+.follow-days.done{
+  color:#8dff8d;
+  border-color:#8dff8d;
+}
+
 </style>
 </head>
 
@@ -1183,6 +1262,7 @@ RACY'SPEED
   <button class="tab-btn" data-status="却下">却下</button>
   <button class="tab-btn" data-status="all">すべて</button>
   <button class="tab-btn" data-status="customers">顧客一覧</button>
+  <button class="tab-btn" data-status="followups">フォロー一覧</button>
 </div>
 
 <h2 class="section-title" id="listTitle">予約一覧</h2>
@@ -1241,6 +1321,8 @@ document.getElementById("nextMonthBtn");
 let currentStatus = "仮予約";
 let calendarDate = new Date();
 let customersCache = [];
+let followupsCache = [];
+let currentFollowFilter = 'today';
 
 const ADMIN_PASSWORD = "RACYSPEED2026";
 
@@ -2529,6 +2611,307 @@ function filterCustomers(){
 }
 
 
+
+async function loadFollowups(filterType = "today"){
+
+ currentFollowFilter = filterType;
+
+ listTitle.textContent = "フォロー一覧";
+
+ reservationList.innerHTML =
+ `<div class="empty">フォロー予定を読み込み中...</div>`;
+
+ const {data,error} =
+ await supabaseClient
+ .from("customer_followups")
+ .select(`
+   *,
+   customers (
+     id,
+     customer_name,
+     phone,
+     allow_line_follow
+   ),
+   customer_cars (
+     maker,
+     model,
+     size
+   )
+ `)
+ .order("follow_date",{ascending:true});
+
+ if(error){
+   console.error(error);
+   reservationList.innerHTML =
+   `<div class="empty">
+      フォロー一覧の取得に失敗しました
+    </div>`;
+   return;
+ }
+
+ followupsCache = data || [];
+
+ renderFollowups();
+
+}
+
+function renderFollowups(){
+
+ const filtered =
+ getFilteredFollowups(followupsCache, currentFollowFilter);
+
+ reservationList.innerHTML =
+ `
+ <div class="follow-filter">
+   <button class="follow-filter-btn ${currentFollowFilter === "today" ? "active" : ""}" onclick="changeFollowFilter('today')">
+     今日送る
+   </button>
+
+   <button class="follow-filter-btn ${currentFollowFilter === "week" ? "active" : ""}" onclick="changeFollowFilter('week')">
+     今週
+   </button>
+
+   <button class="follow-filter-btn ${currentFollowFilter === "month" ? "active" : ""}" onclick="changeFollowFilter('month')">
+     今月
+   </button>
+
+   <button class="follow-filter-btn ${currentFollowFilter === "all" ? "active" : ""}" onclick="changeFollowFilter('all')">
+     すべて
+   </button>
+
+   <button class="follow-filter-btn ${currentFollowFilter === "done" ? "active" : ""}" onclick="changeFollowFilter('done')">
+     送信済み
+   </button>
+ </div>
+
+ <div class="edit-note">
+   未対応のフォロー予定を表示します。LINE文面コピー後、送信したら「送信済みにする」を押してください。
+ </div>
+
+ <div id="followupListArea">
+   ${
+     filtered.length
+     ? filtered.map(f => renderFollowupListCard(f)).join("")
+     : `<div class="empty">該当するフォロー予定はありません</div>`
+   }
+ </div>
+ `;
+
+}
+
+function changeFollowFilter(filterType){
+
+ currentFollowFilter = filterType;
+ renderFollowups();
+
+}
+
+function getFilteredFollowups(followups, filterType){
+
+ const today = new Date();
+ today.setHours(0,0,0,0);
+
+ return (followups || []).filter(f => {
+
+   const status = f.status || "未対応";
+
+   if(filterType === "done"){
+     return status === "送信済み";
+   }
+
+   if(status === "送信済み"){
+     return false;
+   }
+
+   if(filterType === "all"){
+     return true;
+   }
+
+   const followDate =
+   new Date(String(f.follow_date || "") + "T00:00:00");
+
+   if(Number.isNaN(followDate.getTime())){
+     return false;
+   }
+
+   const diffDays =
+   Math.ceil((followDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+   if(filterType === "today"){
+     return diffDays <= 0;
+   }
+
+   if(filterType === "week"){
+     return diffDays <= 7;
+   }
+
+   if(filterType === "month"){
+     return diffDays <= 30;
+   }
+
+   return true;
+
+ });
+
+}
+
+function renderFollowupListCard(f){
+
+ const customer =
+ f.customers || {};
+
+ const car =
+ f.customer_cars || {};
+
+ const customerName =
+ customer.customer_name || "名前未登録";
+
+ const phone =
+ customer.phone || "-";
+
+ const carText =
+ `${car.maker || ""} ${car.model || ""} ${car.size ? " / " + car.size : ""}`.trim() || "-";
+
+ const daysInfo =
+ getFollowupDaysInfo(f);
+
+ return `
+ <div class="follow-list-card">
+
+   <div class="follow-list-head">
+     <div>
+       <div class="follow-customer-name">
+         ${escapeHtml(customerName)}
+       </div>
+
+       <div class="follow-title-main">
+         ${escapeHtml(f.follow_title || "-")}
+       </div>
+     </div>
+
+     <div class="follow-days ${daysInfo.className}">
+       ${escapeHtml(daysInfo.text)}
+     </div>
+   </div>
+
+   <div class="follow-list-info">
+     <div>TEL：${escapeHtml(phone)}</div>
+     <div>車両：${escapeHtml(carText)}</div>
+     <div>案内予定日：${escapeHtml(f.follow_date || "-")}</div>
+     <div>状態：${escapeHtml(f.status || "未対応")}</div>
+     <div>内容：${escapeHtml(f.follow_message || "-")}</div>
+   </div>
+
+   <div class="actions">
+     <button
+       class="action-btn"
+       onclick="copyFollowupMessage('${f.id}')">
+       LINE文面コピー
+     </button>
+
+     <button
+       class="action-btn"
+       onclick="markFollowupSentFromList('${f.id}')">
+       送信済みにする
+     </button>
+
+     <button
+       class="action-btn"
+       onclick="openCustomerDetailFromFollowup('${customer.id || ""}')">
+       顧客詳細へ
+     </button>
+   </div>
+
+ </div>
+ `;
+
+}
+
+function getFollowupDaysInfo(f){
+
+ if((f.status || "") === "送信済み"){
+   return {
+     text:"送信済み",
+     className:"done"
+   };
+ }
+
+ const today = new Date();
+ today.setHours(0,0,0,0);
+
+ const followDate =
+ new Date(String(f.follow_date || "") + "T00:00:00");
+
+ if(Number.isNaN(followDate.getTime())){
+   return {
+     text:"日付未設定",
+     className:""
+   };
+ }
+
+ const diffDays =
+ Math.ceil((followDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+ if(diffDays < 0){
+   return {
+     text:`${Math.abs(diffDays)}日過ぎています`,
+     className:"over"
+   };
+ }
+
+ if(diffDays === 0){
+   return {
+     text:"今日",
+     className:"today"
+   };
+ }
+
+ return {
+   text:`あと${diffDays}日`,
+   className:""
+ };
+
+}
+
+async function markFollowupSentFromList(followupId){
+
+ if(!confirm("このフォローを送信済みにしますか？")){
+   return;
+ }
+
+ const {error} =
+ await supabaseClient
+ .from("customer_followups")
+ .update({
+   status:"送信済み",
+   line_sent_at:new Date().toISOString()
+ })
+ .eq("id",followupId);
+
+ if(error){
+   console.error(error);
+   alert("送信済みへの更新に失敗しました");
+   return;
+ }
+
+ alert("送信済みにしました");
+ loadFollowups(currentFollowFilter);
+
+}
+
+function openCustomerDetailFromFollowup(customerId){
+
+ if(!customerId){
+   alert("顧客情報が見つかりません");
+   return;
+ }
+
+ tabButtons.forEach(b=>b.classList.remove("active"));
+ loadCustomerDetail(customerId);
+
+}
+
+
 async function loadReservations(){
 
  listTitle.textContent = "予約一覧";
@@ -3021,6 +3404,11 @@ tabButtons.forEach(btn=>{
 
    if(currentStatus === "customers"){
      loadCustomers();
+     return;
+   }
+
+   if(currentStatus === "followups"){
+     loadFollowups("today");
      return;
    }
 
