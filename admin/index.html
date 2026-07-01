@@ -708,6 +708,78 @@ h1::after{
   }
 }
 
+
+
+.followup-list{
+  margin-top:18px;
+}
+
+.followup-card{
+  border:1px solid #333;
+  padding:18px;
+  margin-bottom:12px;
+  background:#000;
+}
+
+.followup-card.due-soon{
+  border-color:#d4af37;
+}
+
+.followup-card.overdue{
+  border-color:#ff6b6b;
+}
+
+.followup-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+.followup-title{
+  font-size:18px;
+  font-weight:700;
+  letter-spacing:.08em;
+}
+
+.followup-badge{
+  border:1px solid #fff;
+  padding:4px 8px;
+  font-size:12px;
+}
+
+.followup-badge.ok{
+  color:#8dff8d;
+  border-color:#8dff8d;
+}
+
+.followup-badge.warn{
+  color:#d4af37;
+  border-color:#d4af37;
+}
+
+.followup-badge.over{
+  color:#ff6b6b;
+  border-color:#ff6b6b;
+}
+
+.followup-info{
+  color:#ddd;
+  line-height:1.8;
+  margin-bottom:12px;
+}
+
+.followup-message-box{
+  border:1px solid #333;
+  padding:12px;
+  margin:12px 0;
+  white-space:pre-wrap;
+  color:#ddd;
+  background:#050505;
+  line-height:1.7;
+}
+
 </style>
 </head>
 
@@ -1237,15 +1309,27 @@ async function loadCustomerDetail(customerId){
    console.error(historyError);
  }
 
+ const {data:followups,error:followupsError} =
+ await supabaseClient
+ .from("customer_followups")
+ .select("*")
+ .eq("customer_id",customerId)
+ .order("follow_date",{ascending:true});
+
+ if(followupsError){
+   console.error(followupsError);
+ }
+
  renderCustomerDetail(
    customer,
    cars || [],
-   history || []
+   history || [],
+   followups || []
  );
 
 }
 
-function renderCustomerDetail(customer,cars,history){
+function renderCustomerDetail(customer,cars,history,followups){
 
  const totalSpent =
  Number(customer.total_spent || 0).toLocaleString() + "円";
@@ -1311,9 +1395,207 @@ function renderCustomerDetail(customer,cars,history){
 
  <h2 class="section-title">施工履歴</h2>
  ${renderCustomerHistory(history)}
+
+ <h2 class="section-title">次回おすすめ</h2>
+ ${renderCustomerFollowups(customer, followups)}
  `;
 
 }
+
+
+function renderCustomerFollowups(customer, followups){
+
+ if(!followups || followups.length === 0){
+   return `
+   <div class="empty">
+     次回おすすめはまだありません
+   </div>`;
+ }
+
+ return `
+ <div class="followup-list">
+   ${followups.map(f => renderFollowupCard(customer, f)).join("")}
+ </div>
+ `;
+
+}
+
+function renderFollowupCard(customer, f){
+
+ const today = new Date();
+ today.setHours(0,0,0,0);
+
+ const followDate = new Date(f.follow_date + "T00:00:00");
+ const diffMs = followDate.getTime() - today.getTime();
+ const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+ let badgeText = "";
+ let badgeClass = "ok";
+ let cardClass = "";
+
+ if(f.status === "送信済み"){
+   badgeText = "送信済み";
+   badgeClass = "ok";
+ }else if(diffDays < 0){
+   badgeText = `${Math.abs(diffDays)}日過ぎています`;
+   badgeClass = "over";
+   cardClass = "overdue";
+ }else if(diffDays === 0){
+   badgeText = "今日が案内日";
+   badgeClass = "warn";
+   cardClass = "due-soon";
+ }else if(diffDays <= 14){
+   badgeText = `あと${diffDays}日`;
+   badgeClass = "warn";
+   cardClass = "due-soon";
+ }else{
+   badgeText = `あと${diffDays}日`;
+   badgeClass = "ok";
+ }
+
+ const message =
+ buildFollowupLineMessage(customer, f);
+
+ return `
+ <div class="followup-card ${cardClass}">
+
+   <div class="followup-head">
+     <div class="followup-title">
+       ${escapeHtml(f.follow_title || "-")}
+     </div>
+
+     <div class="followup-badge ${badgeClass}">
+       ${escapeHtml(badgeText)}
+     </div>
+   </div>
+
+   <div class="followup-info">
+     <div>案内予定日：${escapeHtml(f.follow_date || "-")}</div>
+     <div>状態：${escapeHtml(f.status || "未対応")}</div>
+     <div>種類：${escapeHtml(f.follow_type || "-")}</div>
+   </div>
+
+   <div class="followup-message-box">${escapeHtml(message)}</div>
+
+   <div class="actions">
+     <button
+       class="action-btn"
+       onclick="copyFollowupMessage('${f.id}')">
+       LINE文面コピー
+     </button>
+
+     <button
+       class="action-btn"
+       onclick="markFollowupSent('${f.id}')">
+       送信済みにする
+     </button>
+   </div>
+
+ </div>
+ `;
+
+}
+
+function buildFollowupLineMessage(customer, followup){
+
+ const customerName =
+ customer.customer_name || "お客様";
+
+ const title =
+ followup.follow_title || "メンテナンスのご案内";
+
+ const message =
+ followup.follow_message ||
+ "お車のメンテナンス時期となりました。";
+
+ return `RACY'SPEEDです。
+
+${customerName}様
+
+${message}
+
+おすすめ内容：
+${title}
+
+ご都合の良いタイミングでご予約ください。
+
+ご予約・お問い合わせはこちら
+https://www.racyspeed.com/`;
+
+}
+
+async function copyFollowupMessage(followupId){
+
+ const {data:followup,error:followupError} =
+ await supabaseClient
+ .from("customer_followups")
+ .select("*")
+ .eq("id",followupId)
+ .single();
+
+ if(followupError || !followup){
+   console.error(followupError);
+   alert("フォロー情報の取得に失敗しました");
+   return;
+ }
+
+ const {data:customer,error:customerError} =
+ await supabaseClient
+ .from("customers")
+ .select("*")
+ .eq("id",followup.customer_id)
+ .single();
+
+ if(customerError || !customer){
+   console.error(customerError);
+   alert("顧客情報の取得に失敗しました");
+   return;
+ }
+
+ const message =
+ buildFollowupLineMessage(customer, followup);
+
+ try{
+   await navigator.clipboard.writeText(message);
+   alert("LINE文面をコピーしました");
+ }catch(error){
+   console.error(error);
+   alert(message);
+ }
+
+}
+
+async function markFollowupSent(followupId){
+
+ if(!confirm("このフォローを送信済みにしますか？")){
+   return;
+ }
+
+ const {data,error} =
+ await supabaseClient
+ .from("customer_followups")
+ .update({
+   status:"送信済み",
+   line_sent_at:new Date().toISOString()
+ })
+ .eq("id",followupId)
+ .select("*")
+ .single();
+
+ if(error){
+   console.error(error);
+   alert("更新に失敗しました");
+   return;
+ }
+
+ alert("送信済みにしました");
+
+ if(data && data.customer_id){
+   loadCustomerDetail(data.customer_id);
+ }
+
+}
+
 
 function renderCustomerCars(cars){
 
