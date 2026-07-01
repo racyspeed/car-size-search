@@ -1195,6 +1195,98 @@ textarea{
   border-color:#8dff8d;
 }
 
+
+
+.crm-dashboard{
+  margin-bottom:28px;
+}
+
+.crm-main-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:22px;
+}
+
+.crm-main-card{
+  border:1px solid rgba(212,175,55,.46);
+  padding:20px 16px;
+  text-align:center;
+  background:linear-gradient(180deg,#050505 0%,#0d0d0d 100%);
+}
+
+.crm-main-label{
+  color:#bfa866;
+  font-size:13px;
+  letter-spacing:.14em;
+  margin-bottom:10px;
+}
+
+.crm-main-value{
+  font-size:27px;
+  font-weight:700;
+  letter-spacing:.08em;
+}
+
+.crm-today-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.crm-panel{
+  border:1px solid rgba(212,175,55,.46);
+  padding:20px;
+  background:linear-gradient(180deg,#050505 0%,#0d0d0d 100%);
+}
+
+.crm-panel-title{
+  color:#fff;
+  font-size:18px;
+  letter-spacing:.16em;
+  margin-bottom:16px;
+  padding-left:12px;
+  border-left:1px solid #d4af37;
+}
+
+.crm-mini-card{
+  border:1px solid #333;
+  padding:14px;
+  margin-bottom:10px;
+  background:#000;
+  line-height:1.8;
+}
+
+.crm-mini-name{
+  font-weight:700;
+  font-size:16px;
+  letter-spacing:.1em;
+}
+
+.crm-mini-sub{
+  color:#ddd;
+}
+
+.crm-mini-gold{
+  color:#d4af37;
+}
+
+@media(max-width:900px){
+  .crm-main-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .crm-today-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:520px){
+  .crm-main-grid{
+    grid-template-columns:1fr;
+  }
+}
+
 </style>
 </head>
 
@@ -1257,7 +1349,8 @@ RACY'SPEED
 </div>
 
 <div class="tabs">
-  <button class="tab-btn active" data-status="仮予約">仮予約</button>
+  <button class="tab-btn active" data-status="dashboard">ダッシュボード</button>
+  <button class="tab-btn" data-status="仮予約">仮予約</button>
   <button class="tab-btn" data-status="予約確定">予約確定</button>
   <button class="tab-btn" data-status="却下">却下</button>
   <button class="tab-btn" data-status="all">すべて</button>
@@ -1318,7 +1411,7 @@ document.getElementById("prevMonthBtn");
 const nextMonthBtn =
 document.getElementById("nextMonthBtn");
 
-let currentStatus = "仮予約";
+let currentStatus = "dashboard";
 let calendarDate = new Date();
 let customersCache = [];
 let followupsCache = [];
@@ -1343,7 +1436,7 @@ function checkAdminPassword(){
 
    loadDashboard();
    loadAdminCalendar();
-   loadReservations();
+   loadCrmDashboard();
 
  }else{
    error.textContent = "パスワードが違います。";
@@ -1370,7 +1463,7 @@ function startAdminAppIfLoggedIn(){
 
    loadDashboard();
    loadAdminCalendar();
-   loadReservations();
+   loadCrmDashboard();
  }
 
 }
@@ -2612,6 +2705,348 @@ function filterCustomers(){
 
 
 
+
+async function loadCrmDashboard(){
+
+ listTitle.textContent = "経営ダッシュボード";
+
+ reservationList.innerHTML =
+ `<div class="empty">ダッシュボードを読み込み中...</div>`;
+
+ const today = new Date();
+ today.setHours(0,0,0,0);
+
+ const todayText =
+ formatDateForQuery(today);
+
+ const monthPrefix =
+ `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2,"0")}`;
+
+ const {data:reservations,error:reservationError} =
+ await supabaseClient
+ .from("reservations")
+ .select("*");
+
+ if(reservationError){
+   console.error(reservationError);
+   reservationList.innerHTML =
+   `<div class="empty">予約データの取得に失敗しました</div>`;
+   return;
+ }
+
+ const {data:customers,error:customerError} =
+ await supabaseClient
+ .from("customers")
+ .select("*");
+
+ if(customerError){
+   console.error(customerError);
+ }
+
+ const {data:followups,error:followupError} =
+ await supabaseClient
+ .from("customer_followups")
+ .select(`
+   *,
+   customers (
+     id,
+     customer_name,
+     phone
+   ),
+   customer_cars (
+     maker,
+     model,
+     size
+   )
+ `)
+ .order("follow_date",{ascending:true});
+
+ if(followupError){
+   console.error(followupError);
+ }
+
+ const allReservations =
+ reservations || [];
+
+ const allCustomers =
+ customers || [];
+
+ const allFollowups =
+ followups || [];
+
+ const confirmedReservations =
+ allReservations.filter(r => r.status === "予約確定");
+
+ const todayReservations =
+ confirmedReservations
+ .filter(r =>
+   String(r.start_date || "") <= todayText &&
+   String(r.end_date || r.start_date || "") >= todayText
+ )
+ .sort((a,b) => String(a.start_time || "").localeCompare(String(b.start_time || "")));
+
+ const todayFollowups =
+ allFollowups
+ .filter(f => {
+   if((f.status || "未対応") === "送信済み"){
+     return false;
+   }
+
+   const followDate =
+   new Date(String(f.follow_date || "") + "T00:00:00");
+
+   if(Number.isNaN(followDate.getTime())){
+     return false;
+   }
+
+   return followDate.getTime() <= today.getTime();
+ })
+ .sort((a,b) => String(a.follow_date || "").localeCompare(String(b.follow_date || "")));
+
+ const monthConfirmed =
+ confirmedReservations.filter(r =>
+   String(r.start_date || "").startsWith(monthPrefix)
+ );
+
+ const monthSales =
+ monthConfirmed.reduce((sum,r) => {
+   return sum + Number(r.total_price || 0);
+ },0);
+
+ const newCustomersThisMonth =
+ allCustomers.filter(c =>
+   String(c.first_visit_date || "").startsWith(monthPrefix)
+ ).length;
+
+ const repeatCustomersThisMonthPhones =
+ new Set(
+   monthConfirmed
+   .filter(r => {
+     const customer =
+     allCustomers.find(c => c.phone === r.phone);
+
+     return customer && Number(customer.total_visit_count || 0) >= 2;
+   })
+   .map(r => r.phone)
+   .filter(Boolean)
+ );
+
+ const repeatCustomersThisMonth =
+ repeatCustomersThisMonthPhones.size;
+
+ const uniqueCustomerPhonesThisMonth =
+ new Set(
+   monthConfirmed
+   .map(r => r.phone)
+   .filter(Boolean)
+ ).size;
+
+ const repeatRate =
+ uniqueCustomerPhonesThisMonth
+ ? Math.round((repeatCustomersThisMonth / uniqueCustomerPhonesThisMonth) * 1000) / 10
+ : 0;
+
+ renderCrmDashboard({
+   todayReservations,
+   todayFollowups,
+   monthSales,
+   monthConfirmedCount:monthConfirmed.length,
+   newCustomersThisMonth,
+   repeatCustomersThisMonth,
+   repeatRate
+ });
+
+}
+
+function renderCrmDashboard(stats){
+
+ reservationList.innerHTML =
+ `
+ <div class="crm-dashboard">
+
+   <div class="crm-main-grid">
+
+     <div class="crm-main-card">
+       <div class="crm-main-label">今日の予約</div>
+       <div class="crm-main-value">${stats.todayReservations.length}件</div>
+     </div>
+
+     <div class="crm-main-card">
+       <div class="crm-main-label">今日送るLINE</div>
+       <div class="crm-main-value">${stats.todayFollowups.length}件</div>
+     </div>
+
+     <div class="crm-main-card">
+       <div class="crm-main-label">今月売上</div>
+       <div class="crm-main-value">${Number(stats.monthSales || 0).toLocaleString()}円</div>
+     </div>
+
+     <div class="crm-main-card">
+       <div class="crm-main-label">今月確定予約</div>
+       <div class="crm-main-value">${stats.monthConfirmedCount}件</div>
+     </div>
+
+     <div class="crm-main-card">
+       <div class="crm-main-label">今月新規顧客</div>
+       <div class="crm-main-value">${stats.newCustomersThisMonth}人</div>
+     </div>
+
+     <div class="crm-main-card">
+       <div class="crm-main-label">今月リピーター</div>
+       <div class="crm-main-value">${stats.repeatCustomersThisMonth}人</div>
+     </div>
+
+     <div class="crm-main-card">
+       <div class="crm-main-label">リピート率</div>
+       <div class="crm-main-value">${stats.repeatRate}%</div>
+     </div>
+
+     <div class="crm-main-card">
+       <div class="crm-main-label">CRM状態</div>
+       <div class="crm-main-value">稼働中</div>
+     </div>
+
+   </div>
+
+   <div class="crm-today-grid">
+
+     <div class="crm-panel">
+       <div class="crm-panel-title">今日の予約</div>
+       ${renderTodayReservationMiniList(stats.todayReservations)}
+     </div>
+
+     <div class="crm-panel">
+       <div class="crm-panel-title">今日送るLINE</div>
+       ${renderTodayFollowupMiniList(stats.todayFollowups)}
+     </div>
+
+   </div>
+
+ </div>
+ `;
+
+}
+
+function renderTodayReservationMiniList(reservations){
+
+ if(!reservations || reservations.length === 0){
+   return `<div class="empty">今日の予約はありません</div>`;
+ }
+
+ return reservations.map(r => `
+   <div class="crm-mini-card">
+     <div class="crm-mini-name">
+       ${escapeHtml(r.customer_name || "名前なし")}
+     </div>
+
+     <div class="crm-mini-sub">
+       ${escapeHtml(r.start_time || "-")}
+       ${r.end_time ? " 〜 " + escapeHtml(r.end_time) : ""}
+     </div>
+
+     <div class="crm-mini-gold">
+       ${escapeHtml(r.menu_name || "-")}
+     </div>
+
+     <div class="crm-mini-sub">
+       ${escapeHtml(r.maker || "")}
+       ${escapeHtml(r.model || "")}
+     </div>
+   </div>
+ `).join("");
+
+}
+
+function renderTodayFollowupMiniList(followups){
+
+ if(!followups || followups.length === 0){
+   return `<div class="empty">今日送るLINEはありません</div>`;
+ }
+
+ return followups.slice(0,5).map(f => {
+
+   const customer =
+   f.customers || {};
+
+   const car =
+   f.customer_cars || {};
+
+   return `
+   <div class="crm-mini-card">
+     <div class="crm-mini-name">
+       ${escapeHtml(customer.customer_name || "名前未登録")}
+     </div>
+
+     <div class="crm-mini-gold">
+       ${escapeHtml(f.follow_title || "-")}
+     </div>
+
+     <div class="crm-mini-sub">
+       ${escapeHtml(car.maker || "")}
+       ${escapeHtml(car.model || "")}
+     </div>
+
+     <div class="inline-actions">
+       <button
+         class="action-btn small-action"
+         onclick="copyFollowupMessage('${f.id}')">
+         LINE文面コピー
+       </button>
+
+       <button
+         class="action-btn small-action"
+         onclick="markFollowupSentFromDashboard('${f.id}')">
+         送信済み
+       </button>
+     </div>
+   </div>
+   `;
+ }).join("") +
+ (
+   followups.length > 5
+   ? `<div class="edit-note">ほか ${followups.length - 5}件あります。フォロー一覧で確認してください。</div>`
+   : ""
+ );
+
+}
+
+async function markFollowupSentFromDashboard(followupId){
+
+ if(!confirm("このフォローを送信済みにしますか？")){
+   return;
+ }
+
+ const {error} =
+ await supabaseClient
+ .from("customer_followups")
+ .update({
+   status:"送信済み",
+   line_sent_at:new Date().toISOString()
+ })
+ .eq("id",followupId);
+
+ if(error){
+   console.error(error);
+   alert("送信済みへの更新に失敗しました");
+   return;
+ }
+
+ alert("送信済みにしました");
+ loadCrmDashboard();
+
+}
+
+function formatDateForQuery(date){
+
+ return (
+   date.getFullYear() + "-" +
+   String(date.getMonth() + 1).padStart(2,"0") + "-" +
+   String(date.getDate()).padStart(2,"0")
+ );
+
+}
+
+
 async function loadFollowups(filterType = "today"){
 
  currentFollowFilter = filterType;
@@ -3401,6 +3836,11 @@ tabButtons.forEach(btn=>{
 
    currentStatus =
    btn.dataset.status;
+
+   if(currentStatus === "dashboard"){
+     loadCrmDashboard();
+     return;
+   }
 
    if(currentStatus === "customers"){
      loadCustomers();
