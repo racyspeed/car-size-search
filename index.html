@@ -2569,6 +2569,422 @@ button{
   }
 }
 
+
+
+/* =========================================================
+   RACY'SPEED オンライン予約 レイアウト復旧 最終版
+   目的：
+   - 管理画面用CSS/JS分割の影響を受けない
+   - PC/スマホで中央配置
+   - 横ズレ・右はみ出し防止
+   - カレンダー、時間選択、オプション欄の崩れ防止
+========================================================= */
+
+html,
+body{
+  margin:0 !important;
+  padding:0 !important;
+  width:100% !important;
+  max-width:100% !important;
+  overflow-x:hidden !important;
+}
+
+*,
+*::before,
+*::after{
+  box-sizing:border-box !important;
+}
+
+body{
+  background:#f3f3f3 !important;
+}
+
+.container{
+  width:100% !important;
+  max-width:980px !important;
+  margin:0 auto !important;
+  padding:34px 18px 44px !important;
+}
+
+.search-panel,
+.selected-car-card,
+.category-area,
+.wash-menu-area,
+.coating-area,
+#optionArea,
+#priceResult,
+.total-card,
+.estimate-card,
+.reservation-card{
+  width:100% !important;
+  max-width:100% !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+
+.search-layout{
+  display:grid !important;
+  grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr) !important;
+  gap:22px !important;
+  align-items:start !important;
+}
+
+.search-left{
+  min-width:0 !important;
+}
+
+input,
+select,
+textarea,
+button{
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+
+.quick-car-buttons,
+.plan-grid,
+.size-guide-grid,
+.time-slot-grid{
+  max-width:100% !important;
+}
+
+.reservation-card{
+  background:#000 !important;
+  color:#fff !important;
+  border:1px solid #fff !important;
+  border-radius:0 !important;
+  overflow:hidden !important;
+  padding:28px !important;
+}
+
+.reservation-card::before{
+  display:none !important;
+}
+
+.reservation-card *,
+.reservation-calendar-head,
+.calendar-grid,
+.calendar-day,
+.time-slot-area,
+.time-slot-button,
+.reservation-form input,
+.reservation-form textarea,
+.calendar-nav-button{
+  border-radius:0 !important;
+}
+
+.reservation-card .estimate-title,
+.reservation-card .contact-subnote,
+.reservation-selected-date,
+#reservationMessage,
+#reservationSaveMessage,
+.reservation-time-note{
+  color:#fff !important;
+}
+
+.reservation-calendar-head{
+  display:grid !important;
+  grid-template-columns:72px minmax(0,1fr) 72px !important;
+  gap:10px !important;
+  align-items:center !important;
+  width:100% !important;
+  border:1px solid #fff !important;
+  background:#000 !important;
+  color:#fff !important;
+  padding:12px !important;
+}
+
+.calendar-month-title{
+  color:#fff !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+.calendar-nav-button{
+  width:100% !important;
+  border:1px solid #fff !important;
+  background:#000 !important;
+  color:#fff !important;
+  box-shadow:none !important;
+}
+
+.calendar-legend{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  justify-content:center !important;
+  gap:10px 18px !important;
+  width:100% !important;
+  color:#fff !important;
+}
+
+.calendar-grid{
+  display:grid !important;
+  grid-template-columns:repeat(7,minmax(0,1fr)) !important;
+  gap:6px !important;
+  width:100% !important;
+  max-width:100% !important;
+  padding:10px !important;
+  border:1px solid #fff !important;
+  background:#000 !important;
+  overflow:hidden !important;
+}
+
+.calendar-weekday,
+.calendar-day{
+  min-width:0 !important;
+  max-width:100% !important;
+}
+
+.calendar-weekday{
+  color:#fff !important;
+  text-align:center !important;
+}
+
+.calendar-day{
+  width:100% !important;
+  min-height:58px !important;
+  border:1px solid #fff !important;
+  background:#000 !important;
+  color:#fff !important;
+  box-shadow:none !important;
+  overflow:hidden !important;
+}
+
+.calendar-day.empty{
+  border:none !important;
+  background:transparent !important;
+}
+
+.calendar-day:hover:not(:disabled){
+  transform:none !important;
+  border-color:#fff !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.65) !important;
+}
+
+.calendar-day-number,
+.calendar-day-status{
+  color:#fff !important;
+}
+
+.calendar-day.closed .calendar-day-status{
+  color:#d32f2f !important;
+}
+
+.calendar-day.selected{
+  background:#fff !important;
+  color:#000 !important;
+  border-color:#fff !important;
+}
+
+.calendar-day.selected .calendar-day-number,
+.calendar-day.selected .calendar-day-status{
+  color:#000 !important;
+}
+
+.time-slot-area{
+  width:100% !important;
+  border:1px solid #fff !important;
+  background:#000 !important;
+  color:#fff !important;
+  overflow:hidden !important;
+}
+
+.time-slot-grid{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:10px !important;
+}
+
+.time-slot-button{
+  border:1px solid #fff !important;
+  background:#111 !important;
+  color:#fff !important;
+  box-shadow:none !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+
+.time-slot-button.active,
+.time-slot-button:active{
+  background:#fff !important;
+  color:#000 !important;
+  border-color:#fff !important;
+}
+
+.reservation-form input,
+.reservation-form textarea{
+  width:100% !important;
+  border:1px solid #fff !important;
+  background:#000 !important;
+  color:#fff !important;
+}
+
+#optionArea .option-item{
+  display:grid !important;
+  grid-template-columns:20px minmax(0,1fr) !important;
+  align-items:start !important;
+  column-gap:10px !important;
+  min-height:28px !important;
+  padding:7px 0 !important;
+  margin:0 !important;
+}
+
+#optionArea .optionCheck{
+  width:16px !important;
+  height:16px !important;
+  min-width:16px !important;
+  min-height:16px !important;
+  max-width:16px !important;
+  max-height:16px !important;
+  margin:3px 0 0 0 !important;
+  padding:0 !important;
+  transform:none !important;
+  appearance:auto !important;
+  -webkit-appearance:checkbox !important;
+}
+
+#optionArea .option-text{
+  min-width:0 !important;
+  line-height:1.45 !important;
+}
+
+@media (max-width:700px){
+  .container{
+    width:100% !important;
+    max-width:100% !important;
+    margin:0 !important;
+    padding:18px 10px 30px !important;
+  }
+
+  .search-layout{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:14px !important;
+  }
+
+  .reservation-card{
+    padding:14px 6px !important;
+    margin-top:18px !important;
+  }
+
+  .reservation-calendar-head{
+    grid-template-columns:48px minmax(0,1fr) 48px !important;
+    gap:4px !important;
+    padding:7px 4px !important;
+  }
+
+  .calendar-month-title{
+    font-size:12px !important;
+    letter-spacing:.02em !important;
+  }
+
+  .calendar-nav-button{
+    font-size:9px !important;
+    padding:7px 0 !important;
+  }
+
+  .calendar-legend{
+    gap:6px 8px !important;
+    margin:9px 0 !important;
+  }
+
+  .calendar-legend span{
+    font-size:9px !important;
+    letter-spacing:0 !important;
+  }
+
+  .calendar-grid{
+    gap:2px !important;
+    padding:3px !important;
+  }
+
+  .calendar-weekday{
+    padding:4px 0 !important;
+  }
+
+  .calendar-weekday-ja{
+    font-size:9px !important;
+  }
+
+  .calendar-weekday-en{
+    font-size:6px !important;
+    letter-spacing:0 !important;
+  }
+
+  .calendar-day{
+    min-height:42px !important;
+    padding:2px 0 !important;
+  }
+
+  .calendar-day-number{
+    font-size:13px !important;
+  }
+
+  .calendar-day-status{
+    font-size:0 !important;
+  }
+
+  .calendar-day.available .calendar-day-status::after{
+    content:"○";
+    font-size:12px !important;
+    color:#fff !important;
+  }
+
+  .calendar-day.few .calendar-day-status::after{
+    content:"△";
+    font-size:12px !important;
+    color:#fff !important;
+  }
+
+  .calendar-day.unavailable .calendar-day-status::after{
+    content:"✕";
+    font-size:12px !important;
+    color:#fff !important;
+  }
+
+  .calendar-day.closed .calendar-day-status::after{
+    content:"休";
+    font-size:10px !important;
+    color:#d32f2f !important;
+  }
+
+  .calendar-day.selected .calendar-day-status::after{
+    color:#000 !important;
+  }
+
+  .time-slot-area{
+    padding:10px 6px !important;
+  }
+
+  .time-slot-button{
+    min-width:56px !important;
+    padding:8px 6px !important;
+    font-size:11px !important;
+  }
+
+  #optionArea .option-item{
+    grid-template-columns:18px minmax(0,1fr) !important;
+    column-gap:7px !important;
+    padding:5px 0 !important;
+  }
+
+  #optionArea .optionCheck{
+    width:15px !important;
+    height:15px !important;
+    min-width:15px !important;
+    min-height:15px !important;
+    max-width:15px !important;
+    max-height:15px !important;
+    margin-top:2px !important;
+  }
+
+  #optionArea .option-text{
+    line-height:1.38 !important;
+  }
+}
+
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>  
 </head>
@@ -4770,83 +5186,3 @@ document.addEventListener("focusin", (event) => {
 
 </body>
 </html>
-
-<!-- v11: option checkbox layout stability fix -->
-<style>
-/* 追加オプションのチェック時に行がズレたり下に落ちるのを防ぐ */
-#optionArea .option-item{
-  display:grid !important;
-  grid-template-columns:20px minmax(0, 1fr) !important;
-  align-items:start !important;
-  column-gap:10px !important;
-  row-gap:0 !important;
-  min-height:28px !important;
-  padding:7px 0 !important;
-  margin:0 !important;
-}
-
-#optionArea .optionCheck{
-  width:16px !important;
-  height:16px !important;
-  min-width:16px !important;
-  min-height:16px !important;
-  max-width:16px !important;
-  max-height:16px !important;
-  padding:0 !important;
-  margin:3px 0 0 0 !important;
-  flex:none !important;
-  transform:none !important;
-  appearance:auto !important;
-  -webkit-appearance:checkbox !important;
-}
-
-#optionArea .optionCheck:checked,
-#optionArea .optionCheck:active,
-#optionArea .optionCheck:focus{
-  width:16px !important;
-  height:16px !important;
-  min-width:16px !important;
-  min-height:16px !important;
-  margin:3px 0 0 0 !important;
-  transform:none !important;
-}
-
-#optionArea .option-text{
-  display:block !important;
-  min-width:0 !important;
-  line-height:1.45 !important;
-  padding:0 !important;
-  margin:0 !important;
-}
-
-#optionArea .option-name,
-#optionArea .option-meta{
-  vertical-align:baseline !important;
-}
-
-@media (max-width:560px){
-  #optionArea .option-item{
-    grid-template-columns:18px minmax(0, 1fr) !important;
-    column-gap:7px !important;
-    min-height:24px !important;
-    padding:5px 0 !important;
-  }
-
-  #optionArea .optionCheck,
-  #optionArea .optionCheck:checked,
-  #optionArea .optionCheck:active,
-  #optionArea .optionCheck:focus{
-    width:15px !important;
-    height:15px !important;
-    min-width:15px !important;
-    min-height:15px !important;
-    max-width:15px !important;
-    max-height:15px !important;
-    margin-top:2px !important;
-  }
-
-  #optionArea .option-text{
-    line-height:1.38 !important;
-  }
-}
-</style>
