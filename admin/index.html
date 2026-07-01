@@ -518,6 +518,89 @@ h1::after{
   letter-spacing:.08em;
 }
 
+
+
+.customer-toolbar{
+  display:flex;
+  gap:10px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+.customer-search{
+  flex:1;
+  min-width:220px;
+  background:#000;
+  color:#fff;
+  border:1px solid #fff;
+  padding:12px;
+  box-sizing:border-box;
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho',serif !important;
+}
+
+.customer-card{
+  border:1px solid #fff;
+  padding:22px;
+  margin-bottom:16px;
+  background:linear-gradient(180deg,#050505 0%,#0d0d0d 100%);
+}
+
+.customer-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+
+.customer-name{
+  font-size:20px;
+  letter-spacing:.12em;
+  font-weight:700;
+}
+
+.customer-phone{
+  color:#ccc;
+  margin-top:6px;
+}
+
+.customer-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:14px;
+}
+
+.customer-stat{
+  border:1px solid #333;
+  padding:14px;
+  text-align:center;
+}
+
+.customer-stat-label{
+  color:#aaa;
+  font-size:12px;
+  margin-bottom:8px;
+}
+
+.customer-stat-value{
+  font-size:18px;
+  font-weight:700;
+}
+
+.customer-car{
+  margin-top:14px;
+  color:#ddd;
+  line-height:1.8;
+}
+
+@media(max-width:700px){
+  .customer-stats{
+    grid-template-columns:1fr;
+  }
+}
+
 </style>
 </head>
 
@@ -584,6 +667,7 @@ RACY'SPEED
   <button class="tab-btn" data-status="予約確定">予約確定</button>
   <button class="tab-btn" data-status="却下">却下</button>
   <button class="tab-btn" data-status="all">すべて</button>
+  <button class="tab-btn" data-status="customers">顧客一覧</button>
 </div>
 
 <h2 class="section-title" id="listTitle">予約一覧</h2>
@@ -641,6 +725,7 @@ document.getElementById("nextMonthBtn");
 
 let currentStatus = "仮予約";
 let calendarDate = new Date();
+let customersCache = [];
 
 const ADMIN_PASSWORD = "RACYSPEED2026";
 
@@ -869,6 +954,177 @@ async function showReservationsByDate(dateText){
  renderReservations(data || []);
 
 }
+
+
+async function loadCustomers(){
+
+ listTitle.textContent = "顧客一覧";
+
+ reservationList.innerHTML =
+ `<div class="empty">顧客情報を読み込み中...</div>`;
+
+ const {data,error} =
+ await supabaseClient
+ .from("customers")
+ .select("*")
+ .order("last_visit_date",{ascending:false, nullsFirst:false})
+ .order("created_at",{ascending:false});
+
+ if(error){
+   console.error(error);
+
+   reservationList.innerHTML =
+   `<div class="empty">
+      顧客一覧の取得に失敗しました
+    </div>`;
+
+   return;
+ }
+
+ customersCache = data || [];
+
+ renderCustomers(customersCache);
+
+}
+
+function renderCustomers(customers){
+
+ if(!customers || customers.length === 0){
+
+   reservationList.innerHTML =
+   `<div class="empty">
+      顧客はまだ登録されていません
+    </div>`;
+
+   return;
+ }
+
+ reservationList.innerHTML =
+ `
+ <div class="customer-toolbar">
+   <input
+     class="customer-search"
+     id="customerSearchInput"
+     type="text"
+     placeholder="名前・電話番号で検索"
+     oninput="filterCustomers()"
+   >
+ </div>
+
+ <div id="customerCards">
+   ${customers.map(c => renderCustomerCard(c)).join("")}
+ </div>
+ `;
+
+}
+
+function renderCustomerCard(c){
+
+ const name =
+ escapeHtml(c.customer_name || "名前未登録");
+
+ const phone =
+ escapeHtml(c.phone || "-");
+
+ const visitCount =
+ Number(c.total_visit_count || 0);
+
+ const totalSpent =
+ Number(c.total_spent || 0).toLocaleString() + "円";
+
+ const lastVisit =
+ c.last_visit_date
+ ? escapeHtml(c.last_visit_date)
+ : "-";
+
+ const firstVisit =
+ c.first_visit_date
+ ? escapeHtml(c.first_visit_date)
+ : "-";
+
+ return `
+ <div class="customer-card">
+
+   <div class="customer-head">
+     <div>
+       <div class="customer-name">${name}</div>
+       <div class="customer-phone">TEL：${phone}</div>
+     </div>
+
+     <button
+       class="action-btn"
+       onclick="alert('顧客詳細はStep3-2で追加します')">
+       詳細を見る
+     </button>
+   </div>
+
+   <div class="customer-stats">
+     <div class="customer-stat">
+       <div class="customer-stat-label">来店回数</div>
+       <div class="customer-stat-value">${visitCount}回</div>
+     </div>
+
+     <div class="customer-stat">
+       <div class="customer-stat-label">累計金額</div>
+       <div class="customer-stat-value">${totalSpent}</div>
+     </div>
+
+     <div class="customer-stat">
+       <div class="customer-stat-label">最終来店</div>
+       <div class="customer-stat-value">${lastVisit}</div>
+     </div>
+   </div>
+
+   <div class="customer-car">
+     初回来店：${firstVisit}
+   </div>
+
+ </div>
+ `;
+
+}
+
+function filterCustomers(){
+
+ const input =
+ document.getElementById("customerSearchInput");
+
+ if(!input){
+   return;
+ }
+
+ const keyword =
+ input.value.trim().toLowerCase();
+
+ const filtered =
+ customersCache.filter(c => {
+   const name = String(c.customer_name || "").toLowerCase();
+   const phone = String(c.phone || "").toLowerCase();
+
+   return (
+     name.includes(keyword) ||
+     phone.includes(keyword)
+   );
+ });
+
+ const cardArea =
+ document.getElementById("customerCards");
+
+ if(!cardArea){
+   return;
+ }
+
+ if(filtered.length === 0){
+   cardArea.innerHTML =
+   `<div class="empty">該当する顧客はいません</div>`;
+   return;
+ }
+
+ cardArea.innerHTML =
+ filtered.map(c => renderCustomerCard(c)).join("");
+
+}
+
 
 async function loadReservations(){
 
@@ -1359,6 +1615,11 @@ tabButtons.forEach(btn=>{
 
    currentStatus =
    btn.dataset.status;
+
+   if(currentStatus === "customers"){
+     loadCustomers();
+     return;
+   }
 
    loadReservations();
 
