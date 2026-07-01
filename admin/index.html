@@ -601,6 +601,113 @@ h1::after{
   }
 }
 
+
+
+.customer-detail{
+  border:1px solid #fff;
+  padding:24px;
+  margin-bottom:18px;
+  background:linear-gradient(180deg,#050505 0%,#0d0d0d 100%);
+}
+
+.customer-detail-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+.customer-detail-name{
+  font-size:24px;
+  letter-spacing:.14em;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.customer-detail-info{
+  line-height:1.9;
+  color:#ddd;
+}
+
+.detail-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin:18px 0;
+}
+
+.detail-box{
+  border:1px solid #333;
+  padding:16px;
+  text-align:center;
+}
+
+.detail-box-label{
+  color:#aaa;
+  font-size:12px;
+  margin-bottom:8px;
+}
+
+.detail-box-value{
+  font-size:20px;
+  font-weight:700;
+}
+
+.history-card{
+  border:1px solid #333;
+  padding:16px;
+  margin-bottom:12px;
+  background:#000;
+}
+
+.history-date{
+  color:#d4af37;
+  font-size:14px;
+  margin-bottom:8px;
+}
+
+.history-menu{
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.history-info{
+  color:#ddd;
+  line-height:1.8;
+}
+
+.car-list{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.car-card{
+  border:1px solid #333;
+  padding:16px;
+  background:#000;
+  line-height:1.8;
+}
+
+.back-area{
+  margin-bottom:18px;
+}
+
+@media(max-width:700px){
+  .detail-grid,
+  .car-list{
+    grid-template-columns:1fr;
+  }
+
+  .customer-detail-name{
+    font-size:20px;
+  }
+}
+
 </style>
 </head>
 
@@ -1053,7 +1160,7 @@ function renderCustomerCard(c){
 
      <button
        class="action-btn"
-       onclick="alert('顧客詳細はStep3-2で追加します')">
+       onclick="loadCustomerDetail('${c.id}')">
        詳細を見る
      </button>
    </div>
@@ -1083,6 +1190,219 @@ function renderCustomerCard(c){
  `;
 
 }
+
+
+async function loadCustomerDetail(customerId){
+
+ listTitle.textContent = "顧客詳細";
+
+ reservationList.innerHTML =
+ `<div class="empty">顧客詳細を読み込み中...</div>`;
+
+ const {data:customer,error:customerError} =
+ await supabaseClient
+ .from("customers")
+ .select("*")
+ .eq("id",customerId)
+ .single();
+
+ if(customerError || !customer){
+   console.error(customerError);
+   reservationList.innerHTML =
+   `<div class="empty">顧客情報の取得に失敗しました</div>`;
+   return;
+ }
+
+ const {data:cars,error:carsError} =
+ await supabaseClient
+ .from("customer_cars")
+ .select("*")
+ .eq("customer_id",customerId)
+ .order("created_at",{ascending:true});
+
+ if(carsError){
+   console.error(carsError);
+ }
+
+ const {data:history,error:historyError} =
+ await supabaseClient
+ .from("reservations")
+ .select("*")
+ .eq("phone",customer.phone)
+ .eq("status","予約確定")
+ .order("start_date",{ascending:false})
+ .order("start_time",{ascending:false});
+
+ if(historyError){
+   console.error(historyError);
+ }
+
+ renderCustomerDetail(
+   customer,
+   cars || [],
+   history || []
+ );
+
+}
+
+function renderCustomerDetail(customer,cars,history){
+
+ const totalSpent =
+ Number(customer.total_spent || 0).toLocaleString() + "円";
+
+ const visitCount =
+ Number(customer.total_visit_count || 0) + "回";
+
+ const firstVisit =
+ customer.first_visit_date || "-";
+
+ const lastVisit =
+ customer.last_visit_date || "-";
+
+ reservationList.innerHTML =
+ `
+ <div class="back-area">
+   <button class="action-btn" onclick="loadCustomers()">
+     顧客一覧へ戻る
+   </button>
+ </div>
+
+ <div class="customer-detail">
+
+   <div class="customer-detail-top">
+     <div>
+       <div class="customer-detail-name">
+         ${escapeHtml(customer.customer_name || "名前未登録")}
+       </div>
+
+       <div class="customer-detail-info">
+         <div>TEL：${escapeHtml(customer.phone || "-")}</div>
+         <div>メール：${escapeHtml(customer.email || "-")}</div>
+         <div>LINEフォロー：${customer.allow_line_follow ? "許可" : "停止"}</div>
+       </div>
+     </div>
+   </div>
+
+   <div class="detail-grid">
+     <div class="detail-box">
+       <div class="detail-box-label">累計来店</div>
+       <div class="detail-box-value">${visitCount}</div>
+     </div>
+
+     <div class="detail-box">
+       <div class="detail-box-label">累計売上</div>
+       <div class="detail-box-value">${totalSpent}</div>
+     </div>
+
+     <div class="detail-box">
+       <div class="detail-box-label">最終来店</div>
+       <div class="detail-box-value">${escapeHtml(lastVisit)}</div>
+     </div>
+   </div>
+
+   <div class="customer-detail-info">
+     初回来店：${escapeHtml(firstVisit)}
+   </div>
+
+ </div>
+
+ <h2 class="section-title">車両情報</h2>
+ ${renderCustomerCars(cars)}
+
+ <h2 class="section-title">施工履歴</h2>
+ ${renderCustomerHistory(history)}
+ `;
+
+}
+
+function renderCustomerCars(cars){
+
+ if(!cars || cars.length === 0){
+   return `
+   <div class="empty">
+     車両情報はまだ登録されていません
+   </div>`;
+ }
+
+ return `
+ <div class="car-list">
+   ${cars.map(car => `
+     <div class="car-card">
+       <div>
+         車種：
+         ${escapeHtml(car.maker || "")}
+         ${escapeHtml(car.model || "")}
+       </div>
+       <div>サイズ：${escapeHtml(car.size || "-")}</div>
+       <div>ナンバー：${escapeHtml(car.plate_number || "-")}</div>
+       <div>カラー：${escapeHtml(car.color || "-")}</div>
+       <div>メモ：${escapeHtml(car.memo || "-")}</div>
+     </div>
+   `).join("")}
+ </div>
+ `;
+
+}
+
+function renderCustomerHistory(history){
+
+ if(!history || history.length === 0){
+   return `
+   <div class="empty">
+     施工履歴はまだありません
+   </div>`;
+ }
+
+ return history.map(r => `
+   <div class="history-card">
+
+     <div class="history-date">
+       ${escapeHtml(r.start_date || "-")}
+       ${r.end_date && r.end_date !== r.start_date ? " 〜 " + escapeHtml(r.end_date) : ""}
+     </div>
+
+     <div class="history-menu">
+       ${escapeHtml(r.menu_name || "-")}
+     </div>
+
+     <div class="history-info">
+       <div>
+         車種：
+         ${escapeHtml(r.maker || "")}
+         ${escapeHtml(r.model || "")}
+       </div>
+
+       <div>
+         サイズ：
+         ${escapeHtml(r.size || "-")}
+       </div>
+
+       <div>
+         オプション：
+         ${escapeHtml(r.options || "なし")}
+       </div>
+
+       <div>
+         金額：
+         ${formatPrice(r.total_price)}
+       </div>
+
+       <div>
+         開始時間：
+         ${escapeHtml(r.start_time || "-")}
+       </div>
+
+       <div>
+         終了時間：
+         ${escapeHtml(r.end_time || "-")}
+       </div>
+     </div>
+
+   </div>
+ `).join("");
+
+}
+
 
 function filterCustomers(){
 
