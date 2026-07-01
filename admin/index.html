@@ -780,6 +780,280 @@ h1::after{
   line-height:1.7;
 }
 
+
+
+/* =========================================================
+   RACY'SPEED 管理画面 デザイン統一・高級CRM仕上げ
+   機能には触らず、見た目だけを統一
+========================================================= */
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea,
+div,
+span,
+p,
+h1,
+h2,
+h3,
+strong,
+table,
+th,
+td{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho','Hiragino Mincho ProN','HGS明朝E',serif !important;
+}
+
+body{
+  background:
+    radial-gradient(circle at top,#111 0%,#000 42%,#000 100%) !important;
+  color:#fff !important;
+  letter-spacing:.05em;
+}
+
+.admin-wrap{
+  max-width:1180px;
+}
+
+.shop-name{
+  letter-spacing:.38em !important;
+  font-weight:700 !important;
+  color:#fff !important;
+  text-shadow:0 0 18px rgba(212,175,55,.16);
+}
+
+h1{
+  letter-spacing:.22em !important;
+  font-weight:700 !important;
+  margin-bottom:34px !important;
+}
+
+h1::after{
+  width:160px !important;
+  background:linear-gradient(90deg,transparent,#d4af37,transparent) !important;
+}
+
+.section-title{
+  margin-top:28px !important;
+  padding-left:14px;
+  border-left:1px solid #d4af37;
+  letter-spacing:.18em !important;
+}
+
+.dashboard{
+  gap:14px !important;
+}
+
+.dashboard-card,
+.admin-calendar,
+.reservation-card,
+.customer-card,
+.customer-detail,
+.history-card,
+.car-card,
+.followup-card,
+.empty,
+.login-screen{
+  border:1px solid rgba(212,175,55,.46) !important;
+  background:
+    linear-gradient(180deg,rgba(18,18,18,.98) 0%,rgba(3,3,3,.98) 100%) !important;
+  box-shadow:0 0 24px rgba(0,0,0,.55);
+}
+
+.dashboard-card{
+  padding:24px 18px !important;
+}
+
+.dashboard-label,
+.customer-stat-label,
+.detail-box-label{
+  color:#bfa866 !important;
+  letter-spacing:.16em !important;
+}
+
+.dashboard-value,
+.dashboard-yen,
+.customer-stat-value,
+.detail-box-value{
+  color:#fff !important;
+  font-weight:700 !important;
+  letter-spacing:.08em;
+}
+
+.calendar-title{
+  letter-spacing:.2em !important;
+}
+
+.calendar-weekday{
+  color:#d4af37 !important;
+  letter-spacing:.14em !important;
+}
+
+.calendar-day{
+  background:#020202 !important;
+  border-color:#292929 !important;
+}
+
+.calendar-day:hover{
+  border-color:#d4af37 !important;
+}
+
+.calendar-day.has-reservation{
+  border-color:#d4af37 !important;
+  box-shadow:inset 0 0 0 1px rgba(212,175,55,.2);
+}
+
+.calendar-count{
+  border-color:#d4af37 !important;
+  color:#d4af37 !important;
+  background:rgba(212,175,55,.06);
+}
+
+.tabs{
+  gap:12px !important;
+}
+
+.tab-btn,
+.action-btn,
+.calendar-nav,
+.login-screen button{
+  min-height:42px;
+  background:#000 !important;
+  color:#fff !important;
+  border:1px solid rgba(212,175,55,.72) !important;
+  padding:10px 18px !important;
+  letter-spacing:.14em !important;
+  transition:.18s ease;
+}
+
+.tab-btn:hover,
+.action-btn:hover,
+.calendar-nav:hover,
+.login-screen button:hover,
+.tab-btn.active{
+  background:#fff !important;
+  color:#000 !important;
+  border-color:#fff !important;
+}
+
+.reservation-head strong,
+.customer-name,
+.customer-detail-name,
+.history-menu,
+.followup-title{
+  letter-spacing:.14em !important;
+  font-weight:700 !important;
+}
+
+.status,
+.followup-badge{
+  letter-spacing:.12em !important;
+  background:#000;
+}
+
+.pending{
+  color:#d4af37 !important;
+  border-color:#d4af37 !important;
+}
+
+.confirmed{
+  color:#8dff8d !important;
+  border-color:#8dff8d !important;
+}
+
+.rejected{
+  color:#ff6b6b !important;
+  border-color:#ff6b6b !important;
+}
+
+.info,
+.customer-detail-info,
+.history-info,
+.followup-info,
+.customer-car,
+.car-card{
+  color:#e8e8e8 !important;
+  line-height:2 !important;
+}
+
+.customer-search,
+.login-screen input{
+  background:#030303 !important;
+  color:#fff !important;
+  border:1px solid rgba(212,175,55,.6) !important;
+  letter-spacing:.1em !important;
+}
+
+.customer-search::placeholder,
+.login-screen input::placeholder{
+  color:#888;
+}
+
+.customer-stat,
+.detail-box{
+  border-color:#2f2f2f !important;
+  background:#020202;
+}
+
+.history-date{
+  color:#d4af37 !important;
+  letter-spacing:.1em;
+}
+
+.followup-message-box{
+  border-color:#2f2f2f !important;
+  background:#030303 !important;
+}
+
+.followup-card.due-soon{
+  border-color:#d4af37 !important;
+}
+
+.followup-card.overdue{
+  border-color:#ff6b6b !important;
+}
+
+.line-ok{
+  color:#8dff8d !important;
+}
+
+.line-ng{
+  color:#aaa !important;
+}
+
+.login-screen{
+  margin-top:90px !important;
+}
+
+.login-error{
+  color:#ff6b6b !important;
+}
+
+@media(max-width:520px){
+  .tab-btn,
+  .action-btn,
+  .calendar-nav{
+    width:auto;
+    padding:10px 14px !important;
+    font-size:13px;
+  }
+
+  h1{
+    font-size:24px;
+  }
+
+  .shop-name{
+    letter-spacing:.24em !important;
+  }
+}
+
+
 </style>
 </head>
 
