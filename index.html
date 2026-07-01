@@ -2569,16 +2569,18 @@ button{
   }
 }
 
+</style>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>  
+<style>
 
 /* =========================================================
-   RACY'SPEED ONLINE RESERVATION
-   FINAL EMERGENCY LAYOUT FIX
+   RACY'SPEED ONLINE ESTIMATE & RESERVATION
+   COMPLETE DESIGN RESTORE FINAL
    目的：
-   ・横ズレ完全防止
-   ・カレンダー崩れ防止
-   ・スマホ右寄り防止
-   ・予約カード幅はみ出し防止
-   ・既存JSには一切触らない
+   ・デフォルトHTML表示を完全に止める
+   ・車種検索、人気車種、メーカー選択、サイズ目安を整える
+   ・選択後のメニュー、見積り、予約カレンダーまで統一
+   ・既存JSには触らない
 ========================================================= */
 
 html,
@@ -2589,7 +2591,9 @@ body{
   max-width:100% !important;
   min-width:0 !important;
   overflow-x:hidden !important;
-  background:#f3f3f3 !important;
+  background:#f4f4f4 !important;
+  color:#111 !important;
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho','Hiragino Mincho ProN',serif !important;
 }
 
 *,
@@ -2598,150 +2602,491 @@ body{
   box-sizing:border-box !important;
 }
 
-body{
-  position:static !important;
-  left:auto !important;
-  right:auto !important;
-  transform:none !important;
+button,
+input,
+select,
+textarea{
+  font-family:'Shippori Mincho','Yu Mincho','YuMincho','Hiragino Mincho ProN',serif !important;
 }
 
-img,
-video,
-iframe{
-  max-width:100% !important;
-}
-
-/* ページ全体の中央固定 */
+/* 全体幅 */
 .container{
   width:100% !important;
   max-width:980px !important;
   margin:0 auto !important;
-  padding:34px 18px 44px !important;
-  overflow:hidden !important;
+  padding:56px 18px 64px !important;
 }
 
-/* すべての主要ブロックを幅100%に固定 */
-.search-panel,
-.selected-car-card,
-.category-area,
-.wash-menu-area,
-.coating-area,
-#optionArea,
-#priceResult,
-.result-section,
-.total-card,
-.estimate-card,
-.reservation-card,
-.reservation-calendar-head,
-.calendar-legend,
-.calendar-grid,
-.time-slot-area,
-.reservation-form{
+/* タイトル */
+.shop-name{
+  text-align:center !important;
+  font-size:16px !important;
+  font-weight:700 !important;
+  letter-spacing:.16em !important;
+  margin-bottom:12px !important;
+  color:#000 !important;
+}
+
+.section-en{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:16px !important;
+  margin:0 auto 14px !important;
+  text-align:center !important;
+  font-size:11px !important;
+  letter-spacing:.24em !important;
+  color:#777 !important;
+  font-weight:600 !important;
+}
+
+.section-en::before,
+.section-en::after{
+  content:"" !important;
+  width:48px !important;
+  height:1px !important;
+  background:#aaa !important;
+}
+
+h2{
+  margin:0 0 16px !important;
+  text-align:center !important;
+  font-size:36px !important;
+  line-height:1.35 !important;
+  letter-spacing:.08em !important;
+  color:#000 !important;
+}
+
+.subtitle{
+  margin:0 0 30px !important;
+  text-align:center !important;
+  font-size:15px !important;
+  line-height:1.9 !important;
+  color:#111 !important;
+  font-weight:600 !important;
+  white-space:normal !important;
+}
+
+/* 検索パネル */
+.search-panel{
   width:100% !important;
   max-width:100% !important;
-  min-width:0 !important;
-  margin-left:0 !important;
-  margin-right:0 !important;
-  transform:none !important;
-  position:relative !important;
-  left:auto !important;
-  right:auto !important;
-  overflow:hidden !important;
+  margin:0 auto 18px !important;
+  padding:28px !important;
+  background:#ffffff !important;
+  border:1px solid #111 !important;
+  box-shadow:0 18px 45px rgba(0,0,0,.08) !important;
 }
 
-/* PCの検索エリア */
 .search-layout{
   display:grid !important;
-  grid-template-columns:minmax(0,1.1fr) minmax(260px,.9fr) !important;
-  gap:22px !important;
+  grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr) !important;
+  gap:28px !important;
   align-items:start !important;
+  width:100% !important;
 }
 
 .search-left,
 .search-layout > div{
   min-width:0 !important;
+  width:100% !important;
+}
+
+.search-box label,
+.select-title,
+.quick-cars-title{
+  display:block !important;
+  margin:0 0 8px !important;
+  font-size:14px !important;
+  line-height:1.5 !important;
+  font-weight:700 !important;
+  letter-spacing:.06em !important;
+  color:#000 !important;
+}
+
+#carSearch,
+#makerSelect,
+#carSelect,
+.search-panel input,
+.search-panel select{
+  display:block !important;
+  width:100% !important;
+  min-height:46px !important;
+  margin:0 0 12px !important;
+  padding:11px 12px !important;
+  border:1px solid #111 !important;
+  border-radius:0 !important;
+  background:#fff !important;
+  color:#000 !important;
+  font-size:14px !important;
+  line-height:1.4 !important;
+  outline:none !important;
+  appearance:auto !important;
+}
+
+#carSearch:focus,
+#makerSelect:focus,
+#carSelect:focus{
+  border-color:#000 !important;
+  box-shadow:0 0 0 2px rgba(0,0,0,.12) !important;
+}
+
+.quick-cars{
+  margin-top:14px !important;
+}
+
+.quick-car-buttons{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:8px !important;
+  width:100% !important;
+}
+
+.quick-car-button{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:36px !important;
+  padding:8px 12px !important;
+  border:1px solid #111 !important;
+  border-radius:0 !important;
+  background:#fff !important;
+  color:#000 !important;
+  font-size:13px !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+  cursor:pointer !important;
+  box-shadow:none !important;
+}
+
+.quick-car-button:hover{
+  background:#000 !important;
+  color:#fff !important;
+}
+
+/* 検索結果 */
+.search-results{
+  width:100% !important;
+  margin-top:8px !important;
+}
+
+.search-result-item,
+.search-result{
+  display:block !important;
+  width:100% !important;
+  padding:12px !important;
+  border:1px solid #111 !important;
+  border-top:none !important;
+  background:#fff !important;
+  color:#000 !important;
+  cursor:pointer !important;
+}
+
+.search-result-item:hover,
+.search-result:hover{
+  background:#000 !important;
+  color:#fff !important;
+}
+
+/* サイズ目安 */
+.size-guide{
+  width:100% !important;
   max-width:100% !important;
+  margin:18px auto !important;
+  padding:0 !important;
+  border:1px solid #111 !important;
+  background:#fff !important;
+  color:#000 !important;
 }
 
-input,
-select,
-textarea,
-button{
+.size-guide summary{
+  padding:14px 18px !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+  cursor:pointer !important;
+  list-style:revert !important;
+}
+
+.size-guide-content{
+  padding:0 18px 18px !important;
+  font-size:13px !important;
+  line-height:1.8 !important;
+}
+
+.size-guide-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:10px !important;
+  margin-top:14px !important;
+}
+
+.size-guide-item{
+  padding:12px !important;
+  border:1px solid #ddd !important;
+  background:#fafafa !important;
+}
+
+.size-guide-size{
+  font-weight:700 !important;
+  margin-bottom:4px !important;
+}
+
+/* 選択済み車両 */
+.selected-car-card{
+  width:100% !important;
+  margin:24px 0 0 !important;
+  padding:24px !important;
+  border:1px solid #111 !important;
+  background:#000 !important;
+  color:#fff !important;
+}
+
+.selected-car-label{
+  font-size:12px !important;
+  letter-spacing:.14em !important;
+  color:#aaa !important;
+  margin-bottom:8px !important;
+}
+
+.car-name{
+  font-size:28px !important;
+  line-height:1.35 !important;
+  font-weight:700 !important;
+  color:#fff !important;
+}
+
+.car-size{
+  display:inline-block !important;
+  margin-top:12px !important;
+  padding:7px 13px !important;
+  border:1px solid #fff !important;
+  color:#fff !important;
+  font-size:13px !important;
+}
+
+/* カテゴリ・メニュー */
+.category-area,
+.wash-menu-area,
+.coating-area,
+#optionArea,
+#priceResult{
+  width:100% !important;
   max-width:100% !important;
-  box-sizing:border-box !important;
+  margin:18px 0 0 !important;
 }
 
-/* タイトル周り */
-.shop-name,
-.section-en,
-h2,
-.subtitle{
-  max-width:100% !important;
-  text-align:center !important;
-  overflow-wrap:anywhere !important;
+.category-label,
+#optionArea h3{
+  margin:0 0 10px !important;
+  font-size:15px !important;
+  font-weight:700 !important;
+  color:#000 !important;
 }
 
-.subtitle{
-  white-space:normal !important;
+.category-area select,
+.wash-menu-area select,
+#categorySelect,
+#menuSelect{
+  width:100% !important;
+  min-height:46px !important;
+  padding:11px 12px !important;
+  border:1px solid #111 !important;
+  border-radius:0 !important;
+  background:#fff !important;
+  color:#000 !important;
+  font-size:14px !important;
 }
 
-/* オプション崩れ防止 */
+/* コーティングカード */
+.coating-heading,
+.brand-panel,
+.plan-card{
+  width:100% !important;
+  border:1px solid #111 !important;
+  background:#fff !important;
+  color:#000 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+
+.coating-heading{
+  padding:20px !important;
+  margin-bottom:14px !important;
+}
+
+.brand-panel{
+  padding:20px !important;
+  margin-bottom:14px !important;
+}
+
+.plan-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:12px !important;
+}
+
+.plan-card{
+  padding:18px !important;
+}
+
+.select-plan-button,
+.copy-button,
+.line-button,
+.case-button{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  min-height:44px !important;
+  padding:12px 14px !important;
+  border:1px solid #111 !important;
+  border-radius:0 !important;
+  background:#000 !important;
+  color:#fff !important;
+  text-decoration:none !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+  cursor:pointer !important;
+}
+
+/* オプション */
+#optionArea{
+  padding:18px !important;
+  border:1px solid #111 !important;
+  background:#fff !important;
+}
+
 #optionArea label,
 .option-item{
-  width:100% !important;
-  display:flex !important;
-  align-items:flex-start !important;
+  display:grid !important;
+  grid-template-columns:20px minmax(0,1fr) !important;
   gap:10px !important;
-  min-width:0 !important;
-  overflow:hidden !important;
-}
-
-#optionArea input[type="checkbox"],
-.option-item input[type="checkbox"]{
-  flex:0 0 auto !important;
-}
-
-.option-text{
-  display:block !important;
-  flex:1 1 auto !important;
-  min-width:0 !important;
+  align-items:start !important;
+  width:100% !important;
+  padding:8px 0 !important;
+  margin:0 !important;
+  color:#000 !important;
+  font-size:14px !important;
   line-height:1.55 !important;
 }
 
+#optionArea input[type="checkbox"]{
+  width:16px !important;
+  min-width:16px !important;
+  height:16px !important;
+  margin:3px 0 0 !important;
+}
+
+.option-text{
+  min-width:0 !important;
+  display:block !important;
+}
+
 .option-name{
-  display:inline !important;
-  word-break:keep-all !important;
   overflow-wrap:anywhere !important;
 }
 
 .option-meta,
 .option-time,
 .option-time-inline{
-  display:inline !important;
   white-space:nowrap !important;
+  font-size:12px !important;
 }
 
-/* 金額中央 */
+/* 結果・見積り */
+.result-divider{
+  margin:22px 0 10px !important;
+  border-top:1px solid #111 !important;
+}
+
+.result-section,
+.estimate-row{
+  width:100% !important;
+  padding:13px 0 !important;
+  border-bottom:1px solid #ddd !important;
+}
+
+.result-label,
+.estimate-label{
+  font-size:12px !important;
+  font-weight:700 !important;
+  color:#666 !important;
+  letter-spacing:.08em !important;
+}
+
+.result-value,
+.estimate-value{
+  font-size:15px !important;
+  line-height:1.6 !important;
+  color:#000 !important;
+}
+
 .total-card,
-.total-card-center{
+.estimate-card{
+  width:100% !important;
+  margin:18px 0 0 !important;
+  padding:22px !important;
+  border:1px solid #111 !important;
+  border-radius:0 !important;
+  background:#fff !important;
+  color:#000 !important;
+}
+
+.total-card-center,
+.total-price-inline{
   text-align:center !important;
+  justify-content:center !important;
 }
 
 .total-price-inline{
   display:flex !important;
-  justify-content:center !important;
   align-items:baseline !important;
-  flex-wrap:wrap !important;
   gap:8px !important;
+  flex-wrap:wrap !important;
+}
+
+.result-price{
+  font-size:32px !important;
+  font-weight:700 !important;
+  color:#000 !important;
+}
+
+.estimate-title{
+  margin:0 0 12px !important;
+  font-size:21px !important;
+  font-weight:700 !important;
+  text-align:center !important;
+}
+
+.estimate-total{
+  font-size:18px !important;
+  font-weight:700 !important;
+}
+
+.estimate-actions{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:12px !important;
+  margin-top:18px !important;
+}
+
+.contact-note,
+.contact-subnote{
+  font-size:13px !important;
+  line-height:1.8 !important;
+  text-align:center !important;
 }
 
 /* 予約カード */
 .reservation-card{
-  background:#000000 !important;
-  color:#ffffff !important;
-  border:1px solid #ffffff !important;
-  border-radius:0 !important;
+  width:100% !important;
+  margin:28px 0 0 !important;
   padding:28px !important;
+  background:#000 !important;
+  color:#fff !important;
+  border:1px solid #fff !important;
+  border-radius:0 !important;
+  overflow:hidden !important;
   box-shadow:none !important;
 }
 
@@ -2749,96 +3094,90 @@ h2,
   display:none !important;
 }
 
-.reservation-card *,
-.reservation-calendar-head,
-.calendar-grid,
-.calendar-day,
-.time-slot-area,
-.time-slot-button,
-.reservation-form input,
-.reservation-form textarea{
-  border-radius:0 !important;
+.reservation-card .estimate-title,
+.reservation-card .contact-subnote,
+.reservation-selected-date,
+#reservationMessage,
+#reservationSaveMessage,
+.reservation-time-note{
+  color:#fff !important;
 }
 
-/* カレンダーヘッダー */
+/* カレンダー */
 .reservation-calendar-head{
   display:grid !important;
   grid-template-columns:72px minmax(0,1fr) 72px !important;
   gap:10px !important;
-  align-items:center !important;
+  width:100% !important;
   padding:12px !important;
-  background:#000000 !important;
-  color:#ffffff !important;
-  border:1px solid #ffffff !important;
+  margin:20px 0 12px !important;
+  border:1px solid #fff !important;
+  background:#000 !important;
+  color:#fff !important;
+  border-radius:0 !important;
 }
 
 .calendar-month-title{
-  min-width:0 !important;
+  text-align:center !important;
+  color:#fff !important;
+  font-size:16px !important;
+  letter-spacing:.08em !important;
+  white-space:nowrap !important;
   overflow:hidden !important;
   text-overflow:ellipsis !important;
-  white-space:nowrap !important;
-  text-align:center !important;
-  color:#ffffff !important;
-  font-size:16px !important;
-  letter-spacing:.06em !important;
 }
 
 .calendar-nav-button{
   width:100% !important;
   padding:9px 0 !important;
-  border:1px solid #ffffff !important;
-  background:#000000 !important;
-  color:#ffffff !important;
-  box-shadow:none !important;
+  border:1px solid #fff !important;
+  background:#000 !important;
+  color:#fff !important;
+  border-radius:0 !important;
+  cursor:pointer !important;
 }
 
-/* 凡例 */
 .calendar-legend{
   display:flex !important;
   flex-wrap:wrap !important;
   justify-content:center !important;
-  gap:8px 14px !important;
+  gap:8px 16px !important;
   margin:14px 0 !important;
-  color:#ffffff !important;
+  color:#fff !important;
 }
 
 .calendar-legend span{
+  color:#fff !important;
   font-size:12px !important;
-  letter-spacing:.02em !important;
-  color:#ffffff !important;
+  font-weight:700 !important;
 }
 
 .legend-dot{
   display:none !important;
 }
 
-/* カレンダー本体 */
 .calendar-grid{
   display:grid !important;
   grid-template-columns:repeat(7,minmax(0,1fr)) !important;
   gap:4px !important;
+  width:100% !important;
   padding:6px !important;
-  background:#000000 !important;
-  border:1px solid #ffffff !important;
-}
-
-.calendar-weekday,
-.calendar-day{
-  min-width:0 !important;
-  max-width:100% !important;
-  text-align:center !important;
+  border:1px solid #fff !important;
+  background:#000 !important;
+  overflow:hidden !important;
 }
 
 .calendar-weekday{
-  color:#ffffff !important;
+  text-align:center !important;
+  color:#fff !important;
   padding:6px 0 !important;
-  line-height:1.25 !important;
+  min-width:0 !important;
 }
 
 .calendar-weekday-ja,
 .calendar-weekday-en{
   display:block !important;
-  color:#ffffff !important;
+  color:#fff !important;
 }
 
 .calendar-weekday-ja{
@@ -2848,50 +3187,44 @@ h2,
 .calendar-weekday-en{
   font-size:8px !important;
   letter-spacing:.04em !important;
-  margin-top:1px !important;
 }
 
 .calendar-day{
-  width:100% !important;
-  min-height:54px !important;
-  padding:4px 0 !important;
   display:flex !important;
   flex-direction:column !important;
   align-items:center !important;
   justify-content:center !important;
   gap:3px !important;
-  background:#000000 !important;
-  color:#ffffff !important;
-  border:1px solid #ffffff !important;
+  width:100% !important;
+  min-width:0 !important;
+  min-height:54px !important;
+  padding:4px 0 !important;
+  border:1px solid #fff !important;
+  background:#000 !important;
+  color:#fff !important;
+  border-radius:0 !important;
   box-shadow:none !important;
   overflow:hidden !important;
+  cursor:pointer !important;
 }
 
 .calendar-day.empty{
   border:none !important;
   background:transparent !important;
+  cursor:default !important;
 }
 
 .calendar-day-number{
-  color:#ffffff !important;
+  color:#fff !important;
   font-size:15px !important;
   line-height:1 !important;
 }
 
 .calendar-day-status{
-  color:#ffffff !important;
+  color:#fff !important;
   font-size:10px !important;
   line-height:1 !important;
   white-space:nowrap !important;
-}
-
-.calendar-day.available,
-.calendar-day.few,
-.calendar-day.unavailable,
-.calendar-day.past,
-.calendar-day.closed{
-  background:#000000 !important;
-  border-color:#ffffff !important;
 }
 
 .calendar-day.closed .calendar-day-status{
@@ -2899,99 +3232,101 @@ h2,
 }
 
 .calendar-day.selected{
-  background:#ffffff !important;
-  color:#000000 !important;
-  border-color:#ffffff !important;
+  background:#fff !important;
+  color:#000 !important;
 }
 
 .calendar-day.selected .calendar-day-number,
 .calendar-day.selected .calendar-day-status{
-  color:#000000 !important;
+  color:#000 !important;
 }
 
-/* 時間選択 */
+/* 時間・フォーム */
 .time-slot-area{
+  width:100% !important;
   margin-top:16px !important;
   padding:14px !important;
-  background:#000000 !important;
-  color:#ffffff !important;
-  border:1px solid #ffffff !important;
+  border:1px solid #fff !important;
+  background:#000 !important;
+  color:#fff !important;
 }
 
 .time-slot-grid{
   display:flex !important;
   flex-wrap:wrap !important;
   gap:8px !important;
-  max-width:100% !important;
+  margin-top:10px !important;
 }
 
 .time-slot-button{
   min-width:64px !important;
   padding:9px 10px !important;
-  background:#111111 !important;
-  color:#ffffff !important;
-  border:1px solid #ffffff !important;
+  border:1px solid #fff !important;
+  border-radius:0 !important;
+  background:#111 !important;
+  color:#fff !important;
   box-shadow:none !important;
+  cursor:pointer !important;
   -webkit-tap-highlight-color:transparent !important;
   touch-action:manipulation !important;
 }
 
 .time-slot-button.active,
 .time-slot-button:active{
-  background:#ffffff !important;
-  color:#000000 !important;
-  border-color:#ffffff !important;
+  background:#fff !important;
+  color:#000 !important;
 }
 
-/* 予約フォーム */
+.reservation-form{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:12px !important;
+  margin-top:18px !important;
+}
+
 .reservation-form input,
 .reservation-form textarea{
   width:100% !important;
-  background:#000000 !important;
-  color:#ffffff !important;
-  border:1px solid #ffffff !important;
+  padding:13px !important;
+  border:1px solid #fff !important;
+  border-radius:0 !important;
+  background:#000 !important;
+  color:#fff !important;
+  font-size:14px !important;
 }
 
-/* スマホ完全固定 */
+.reservation-form textarea{
+  min-height:88px !important;
+  resize:vertical !important;
+}
+
+/* スマホ */
 @media (max-width:700px){
 
-  html,
-  body{
-    width:100% !important;
-    max-width:100vw !important;
-    min-width:0 !important;
-    overflow-x:hidden !important;
-  }
-
   .container{
-    width:100% !important;
     max-width:100% !important;
-    margin:0 !important;
-    padding:18px 10px 30px !important;
-    overflow:hidden !important;
+    padding:24px 10px 34px !important;
   }
 
-  .search-layout{
-    display:flex !important;
-    flex-direction:column !important;
-    gap:14px !important;
+  .shop-name{
+    font-size:13px !important;
+    letter-spacing:.18em !important;
   }
 
   .section-en{
+    gap:8px !important;
     font-size:8px !important;
-    letter-spacing:.09em !important;
-    gap:7px !important;
+    letter-spacing:.10em !important;
   }
 
   .section-en::before,
   .section-en::after{
-    width:18px !important;
+    width:20px !important;
   }
 
   h2{
-    font-size:22px !important;
+    font-size:23px !important;
     letter-spacing:.04em !important;
-    line-height:1.35 !important;
   }
 
   .subtitle{
@@ -3003,9 +3338,84 @@ h2,
     display:block !important;
   }
 
+  .search-panel{
+    padding:16px 12px !important;
+  }
+
+  .search-layout{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:14px !important;
+  }
+
+  #carSearch,
+  #makerSelect,
+  #carSelect,
+  .search-panel input,
+  .search-panel select{
+    min-height:42px !important;
+    font-size:13px !important;
+  }
+
+  .quick-car-buttons{
+    gap:6px !important;
+  }
+
+  .quick-car-button{
+    min-height:32px !important;
+    padding:7px 8px !important;
+    font-size:11px !important;
+  }
+
+  .size-guide-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  .selected-car-card{
+    padding:18px 14px !important;
+  }
+
+  .car-name{
+    font-size:21px !important;
+  }
+
+  .plan-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  #optionArea{
+    padding:14px 12px !important;
+  }
+
+  #optionArea label,
+  .option-item{
+    grid-template-columns:18px minmax(0,1fr) !important;
+    gap:8px !important;
+    font-size:12px !important;
+    padding:7px 0 !important;
+  }
+
+  .option-meta,
+  .option-time,
+  .option-time-inline{
+    font-size:11px !important;
+  }
+
+  .result-section,
+  .estimate-row{
+    padding:9px 0 !important;
+  }
+
+  .result-price{
+    font-size:26px !important;
+  }
+
+  .estimate-actions{
+    grid-template-columns:1fr !important;
+  }
+
   .reservation-card{
     padding:14px 6px !important;
-    margin-top:18px !important;
   }
 
   .reservation-calendar-head{
@@ -3022,7 +3432,6 @@ h2,
   .calendar-nav-button{
     font-size:9px !important;
     padding:7px 0 !important;
-    letter-spacing:0 !important;
   }
 
   .calendar-legend{
@@ -3032,13 +3441,11 @@ h2,
 
   .calendar-legend span{
     font-size:9px !important;
-    letter-spacing:0 !important;
   }
 
   .calendar-grid{
     gap:2px !important;
     padding:3px !important;
-    grid-template-columns:repeat(7,minmax(0,1fr)) !important;
   }
 
   .calendar-weekday{
@@ -3071,19 +3478,19 @@ h2,
   .calendar-day.available .calendar-day-status::after{
     content:"○";
     font-size:12px !important;
-    color:#ffffff !important;
+    color:#fff !important;
   }
 
   .calendar-day.few .calendar-day-status::after{
     content:"△";
     font-size:12px !important;
-    color:#ffffff !important;
+    color:#fff !important;
   }
 
   .calendar-day.unavailable .calendar-day-status::after{
     content:"✕";
     font-size:12px !important;
-    color:#ffffff !important;
+    color:#fff !important;
   }
 
   .calendar-day.closed .calendar-day-status::after{
@@ -3093,7 +3500,7 @@ h2,
   }
 
   .calendar-day.selected .calendar-day-status::after{
-    color:#000000 !important;
+    color:#000 !important;
   }
 
   .time-slot-area{
@@ -3114,7 +3521,6 @@ h2,
 }
 
 </style>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>  
 </head>
 
 <body>
