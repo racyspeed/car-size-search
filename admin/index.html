@@ -2117,17 +2117,17 @@ async function editReservationHistory(reservationId){
    return;
  }
 
- const startDate =
- prompt("施工開始日を編集してください\n例：2026-07-10", r.start_date || "");
+ const startDateInput =
+ prompt("施工開始日を編集してください\n例：2026-07-10\n空欄の場合は未設定になります", r.start_date || "");
 
- if(startDate === null){
+ if(startDateInput === null){
    return;
  }
 
- const endDate =
- prompt("施工終了日を編集してください\n例：2026-07-12", r.end_date || "");
+ const endDateInput =
+ prompt("施工終了日を編集してください\n例：2026-07-12\n空欄の場合は未設定になります", r.end_date || "");
 
- if(endDate === null){
+ if(endDateInput === null){
    return;
  }
 
@@ -2167,54 +2167,91 @@ async function editReservationHistory(reservationId){
  }
 
  const totalPriceText =
- prompt("施工金額を数字だけで編集してください\n例：198000", r.total_price || "");
+ prompt("施工金額を数字だけで編集してください\n例：198000\n空欄の場合は0円になります", r.total_price || "");
 
  if(totalPriceText === null){
    return;
  }
 
  const totalPrice =
- Number(String(totalPriceText).replaceAll(",","").trim() || 0);
+ Number(String(totalPriceText).replaceAll(",","").replaceAll("円","").trim() || 0);
 
  if(Number.isNaN(totalPrice)){
    alert("金額は数字で入力してください");
    return;
  }
 
- const startTime =
- prompt("開始時間を編集してください\n例：10:00", r.start_time || "");
+ const startTimeInput =
+ prompt("開始時間を編集してください\n例：10:00\n空欄の場合は未設定になります", r.start_time || "");
 
- if(startTime === null){
+ if(startTimeInput === null){
    return;
  }
+
+ const endTimeInput =
+ prompt("終了時間を編集してください\n例：18:00\n空欄の場合は未設定になります", r.end_time || "");
+
+ if(endTimeInput === null){
+   return;
+ }
+
+ const startDate =
+ normalizeDateInput(startDateInput);
+
+ const endDate =
+ normalizeDateInput(endDateInput);
+
+ const startTime =
+ normalizeTimeInput(startTimeInput);
 
  const endTime =
- prompt("終了時間を編集してください\n例：18:00", r.end_time || "");
+ normalizeTimeInput(endTimeInput);
 
- if(endTime === null){
+ if(startDateInput.trim() && !startDate){
+   alert("施工開始日は 2026-07-10 の形で入力してください");
    return;
  }
+
+ if(endDateInput.trim() && !endDate){
+   alert("施工終了日は 2026-07-12 の形で入力してください");
+   return;
+ }
+
+ if(startTimeInput.trim() && !startTime){
+   alert("開始時間は 10:00 の形で入力してください");
+   return;
+ }
+
+ if(endTimeInput.trim() && !endTime){
+   alert("終了時間は 18:00 の形で入力してください");
+   return;
+ }
+
+ const updatePayload = {
+   start_date:startDate,
+   end_date:endDate,
+   maker:maker.trim() || null,
+   model:model.trim() || null,
+   size:size.trim() || null,
+   menu_name:menuName.trim() || null,
+   options:options.trim() || null,
+   total_price:totalPrice,
+   start_time:startTime,
+   end_time:endTime
+ };
 
  const {error:updateError} =
  await supabaseClient
  .from("reservations")
- .update({
-   start_date:startDate.trim(),
-   end_date:endDate.trim(),
-   maker:maker.trim(),
-   model:model.trim(),
-   size:size.trim(),
-   menu_name:menuName.trim(),
-   options:options.trim(),
-   total_price:totalPrice,
-   start_time:startTime.trim(),
-   end_time:endTime.trim()
- })
+ .update(updatePayload)
  .eq("id",reservationId);
 
  if(updateError){
    console.error(updateError);
-   alert("施工履歴の更新に失敗しました");
+   alert(
+     "施工履歴の更新に失敗しました\n\n" +
+     "原因：" + (updateError.message || "不明なエラー")
+   );
    return;
  }
 
@@ -2222,16 +2259,66 @@ async function editReservationHistory(reservationId){
 
  alert("施工履歴を更新しました");
 
- const customer =
- customersCache.find(c => c.phone === r.phone);
+ const {data:customer,error:customerError} =
+ await supabaseClient
+ .from("customers")
+ .select("*")
+ .eq("phone",r.phone)
+ .single();
 
- if(customer && customer.id){
+ if(!customerError && customer && customer.id){
    loadCustomerDetail(customer.id);
- }else{
-   loadCustomers();
+   return;
  }
 
+ loadCustomers();
+
 }
+
+function normalizeDateInput(value){
+
+ const text =
+ String(value || "").trim();
+
+ if(!text){
+   return null;
+ }
+
+ if(/^\\d{4}-\\d{2}-\\d{2}$/.test(text)){
+   return text;
+ }
+
+ if(/^\\d{4}\\/\\d{1,2}\\/\\d{1,2}$/.test(text)){
+   const parts = text.split("/");
+   return (
+     parts[0] + "-" +
+     String(parts[1]).padStart(2,"0") + "-" +
+     String(parts[2]).padStart(2,"0")
+   );
+ }
+
+ return null;
+
+}
+
+function normalizeTimeInput(value){
+
+ const text =
+ String(value || "").trim();
+
+ if(!text){
+   return null;
+ }
+
+ if(/^\\d{1,2}:\\d{2}$/.test(text)){
+   const parts = text.split(":");
+   return String(parts[0]).padStart(2,"0") + ":" + parts[1];
+ }
+
+ return null;
+
+}
+
 
 async function refreshCustomerSummaryByPhone(phone){
 
