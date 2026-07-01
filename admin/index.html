@@ -1094,6 +1094,28 @@ textarea{
 }
 
 
+
+
+.edit-note{
+  color:#aaa;
+  font-size:13px;
+  line-height:1.8;
+  margin:10px 0 18px;
+}
+
+.small-action{
+  padding:8px 12px !important;
+  min-height:34px !important;
+  font-size:13px;
+}
+
+.inline-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
 </style>
 </head>
 
@@ -1705,9 +1727,20 @@ function renderCustomerDetail(customer,cars,history,followups){
  </div>
 
  <h2 class="section-title">車両情報</h2>
+ <div class="edit-note">
+   車両情報は管理者用です。ナンバー・色・メモなどを後から編集できます。
+ </div>
+ <div class="inline-actions">
+   <button class="action-btn" onclick="addCustomerCar('${customer.id}')">
+     車両を追加
+   </button>
+ </div>
  ${renderCustomerCars(cars)}
 
  <h2 class="section-title">施工履歴</h2>
+ <div class="edit-note">
+   施工履歴は予約確定データを表示しています。内容修正はLINE通知・Googleカレンダーには影響しません。
+ </div>
  ${renderCustomerHistory(history)}
 
  <h2 class="section-title">次回おすすめ</h2>
@@ -1911,6 +1944,348 @@ async function markFollowupSent(followupId){
 }
 
 
+
+async function addCustomerCar(customerId){
+
+ const maker =
+ prompt("メーカーを入力してください\n例：LEXUS");
+
+ if(maker === null){
+   return;
+ }
+
+ const model =
+ prompt("車種を入力してください\n例：RX500h");
+
+ if(model === null){
+   return;
+ }
+
+ const size =
+ prompt("サイズを入力してください\n例：L");
+
+ if(size === null){
+   return;
+ }
+
+ const plateNumber =
+ prompt("ナンバーを入力してください\n未入力でもOK");
+
+ if(plateNumber === null){
+   return;
+ }
+
+ const color =
+ prompt("カラーを入力してください\n未入力でもOK");
+
+ if(color === null){
+   return;
+ }
+
+ const memo =
+ prompt("車両メモを入力してください\n未入力でもOK");
+
+ if(memo === null){
+   return;
+ }
+
+ const {error} =
+ await supabaseClient
+ .from("customer_cars")
+ .insert({
+   customer_id:customerId,
+   maker:maker.trim(),
+   model:model.trim(),
+   size:size.trim(),
+   plate_number:plateNumber.trim(),
+   color:color.trim(),
+   memo:memo.trim(),
+   is_main:true
+ });
+
+ if(error){
+   console.error(error);
+   alert("車両追加に失敗しました");
+   return;
+ }
+
+ alert("車両情報を追加しました");
+ loadCustomerDetail(customerId);
+
+}
+
+async function editCustomerCar(carId){
+
+ const {data:car,error} =
+ await supabaseClient
+ .from("customer_cars")
+ .select("*")
+ .eq("id",carId)
+ .single();
+
+ if(error || !car){
+   console.error(error);
+   alert("車両情報の取得に失敗しました");
+   return;
+ }
+
+ const maker =
+ prompt("メーカーを編集してください", car.maker || "");
+
+ if(maker === null){
+   return;
+ }
+
+ const model =
+ prompt("車種を編集してください", car.model || "");
+
+ if(model === null){
+   return;
+ }
+
+ const size =
+ prompt("サイズを編集してください", car.size || "");
+
+ if(size === null){
+   return;
+ }
+
+ const plateNumber =
+ prompt("ナンバーを編集してください", car.plate_number || "");
+
+ if(plateNumber === null){
+   return;
+ }
+
+ const color =
+ prompt("カラーを編集してください", car.color || "");
+
+ if(color === null){
+   return;
+ }
+
+ const memo =
+ prompt("メモを編集してください", car.memo || "");
+
+ if(memo === null){
+   return;
+ }
+
+ const {error:updateError} =
+ await supabaseClient
+ .from("customer_cars")
+ .update({
+   maker:maker.trim(),
+   model:model.trim(),
+   size:size.trim(),
+   plate_number:plateNumber.trim(),
+   color:color.trim(),
+   memo:memo.trim()
+ })
+ .eq("id",carId);
+
+ if(updateError){
+   console.error(updateError);
+   alert("車両情報の更新に失敗しました");
+   return;
+ }
+
+ alert("車両情報を更新しました");
+ loadCustomerDetail(car.customer_id);
+
+}
+
+async function editReservationHistory(reservationId){
+
+ const {data:r,error} =
+ await supabaseClient
+ .from("reservations")
+ .select("*")
+ .eq("id",reservationId)
+ .single();
+
+ if(error || !r){
+   console.error(error);
+   alert("施工履歴の取得に失敗しました");
+   return;
+ }
+
+ const confirmMessage =
+ "施工履歴を編集します。\n\n※これは管理画面表示用の修正です。\n※LINE通知やGoogleカレンダーは変更されません。";
+
+ if(!confirm(confirmMessage)){
+   return;
+ }
+
+ const startDate =
+ prompt("施工開始日を編集してください\n例：2026-07-10", r.start_date || "");
+
+ if(startDate === null){
+   return;
+ }
+
+ const endDate =
+ prompt("施工終了日を編集してください\n例：2026-07-12", r.end_date || "");
+
+ if(endDate === null){
+   return;
+ }
+
+ const maker =
+ prompt("メーカーを編集してください", r.maker || "");
+
+ if(maker === null){
+   return;
+ }
+
+ const model =
+ prompt("車種を編集してください", r.model || "");
+
+ if(model === null){
+   return;
+ }
+
+ const size =
+ prompt("サイズを編集してください", r.size || "");
+
+ if(size === null){
+   return;
+ }
+
+ const menuName =
+ prompt("施工メニューを編集してください", r.menu_name || "");
+
+ if(menuName === null){
+   return;
+ }
+
+ const options =
+ prompt("オプションを編集してください", r.options || "");
+
+ if(options === null){
+   return;
+ }
+
+ const totalPriceText =
+ prompt("施工金額を数字だけで編集してください\n例：198000", r.total_price || "");
+
+ if(totalPriceText === null){
+   return;
+ }
+
+ const totalPrice =
+ Number(String(totalPriceText).replaceAll(",","").trim() || 0);
+
+ if(Number.isNaN(totalPrice)){
+   alert("金額は数字で入力してください");
+   return;
+ }
+
+ const startTime =
+ prompt("開始時間を編集してください\n例：10:00", r.start_time || "");
+
+ if(startTime === null){
+   return;
+ }
+
+ const endTime =
+ prompt("終了時間を編集してください\n例：18:00", r.end_time || "");
+
+ if(endTime === null){
+   return;
+ }
+
+ const {error:updateError} =
+ await supabaseClient
+ .from("reservations")
+ .update({
+   start_date:startDate.trim(),
+   end_date:endDate.trim(),
+   maker:maker.trim(),
+   model:model.trim(),
+   size:size.trim(),
+   menu_name:menuName.trim(),
+   options:options.trim(),
+   total_price:totalPrice,
+   start_time:startTime.trim(),
+   end_time:endTime.trim()
+ })
+ .eq("id",reservationId);
+
+ if(updateError){
+   console.error(updateError);
+   alert("施工履歴の更新に失敗しました");
+   return;
+ }
+
+ await refreshCustomerSummaryByPhone(r.phone);
+
+ alert("施工履歴を更新しました");
+
+ const customer =
+ customersCache.find(c => c.phone === r.phone);
+
+ if(customer && customer.id){
+   loadCustomerDetail(customer.id);
+ }else{
+   loadCustomers();
+ }
+
+}
+
+async function refreshCustomerSummaryByPhone(phone){
+
+ if(!phone){
+   return;
+ }
+
+ const {data:history,error} =
+ await supabaseClient
+ .from("reservations")
+ .select("*")
+ .eq("phone",phone)
+ .eq("status","予約確定");
+
+ if(error){
+   console.error(error);
+   return;
+ }
+
+ const rows = history || [];
+
+ const totalVisitCount =
+ rows.length;
+
+ const totalSpent =
+ rows.reduce((sum,r) => {
+   return sum + Number(r.total_price || 0);
+ },0);
+
+ const dates =
+ rows
+ .map(r => r.start_date)
+ .filter(Boolean)
+ .sort();
+
+ const firstVisitDate =
+ dates.length ? dates[0] : null;
+
+ const lastVisitDate =
+ dates.length ? dates[dates.length - 1] : null;
+
+ await supabaseClient
+ .from("customers")
+ .update({
+   total_visit_count:totalVisitCount,
+   total_spent:totalSpent,
+   first_visit_date:firstVisitDate,
+   last_visit_date:lastVisitDate
+ })
+ .eq("phone",phone);
+
+}
+
+
 function renderCustomerCars(cars){
 
  if(!cars || cars.length === 0){
@@ -1933,6 +2308,14 @@ function renderCustomerCars(cars){
        <div>ナンバー：${escapeHtml(car.plate_number || "-")}</div>
        <div>カラー：${escapeHtml(car.color || "-")}</div>
        <div>メモ：${escapeHtml(car.memo || "-")}</div>
+
+       <div class="inline-actions">
+         <button
+           class="action-btn small-action"
+           onclick="editCustomerCar('${car.id}')">
+           車両情報を編集
+         </button>
+       </div>
      </div>
    `).join("")}
  </div>
@@ -1992,6 +2375,14 @@ function renderCustomerHistory(history){
          終了時間：
          ${escapeHtml(r.end_time || "-")}
        </div>
+     </div>
+
+     <div class="inline-actions">
+       <button
+         class="action-btn small-action"
+         onclick="editReservationHistory(${r.id})">
+         施工履歴を編集
+       </button>
      </div>
 
    </div>
