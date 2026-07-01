@@ -1287,6 +1287,22 @@ textarea{
   }
 }
 
+
+
+.memo-box{
+  border:1px solid #333;
+  padding:16px;
+  margin-top:16px;
+  background:#000;
+  line-height:1.9;
+  white-space:pre-wrap;
+  color:#e8e8e8;
+}
+
+.memo-empty{
+  color:#aaa;
+}
+
 </style>
 </head>
 
@@ -1899,6 +1915,24 @@ function renderCustomerDetail(customer,cars,history,followups){
      初回来店：${escapeHtml(firstVisit)}
    </div>
 
+   <h2 class="section-title">顧客メモ</h2>
+
+   <div class="memo-box">
+     ${
+       customer.memo
+       ? escapeHtml(customer.memo)
+       : '<span class="memo-empty">メモはまだありません</span>'
+     }
+   </div>
+
+   <div class="inline-actions">
+     <button
+       class="action-btn"
+       onclick="editCustomerMemo('${customer.id}')">
+       顧客メモを編集
+     </button>
+   </div>
+
  </div>
 
  <h2 class="section-title">車両情報</h2>
@@ -2118,6 +2152,58 @@ async function markFollowupSent(followupId){
 
 }
 
+
+
+
+async function editCustomerMemo(customerId){
+
+ const {data:customer,error} =
+ await supabaseClient
+ .from("customers")
+ .select("*")
+ .eq("id",customerId)
+ .single();
+
+ if(error || !customer){
+   console.error(error);
+   alert("顧客情報の取得に失敗しました");
+   return;
+ }
+
+ const memo =
+ prompt(
+`顧客メモを入力してください
+
+例
+・屋外保管
+・土日希望
+・ホイールコーティング興味あり
+・洗車頻度高め`,
+ customer.memo || ""
+ );
+
+ if(memo === null){
+   return;
+ }
+
+ const {error:updateError} =
+ await supabaseClient
+ .from("customers")
+ .update({
+   memo:memo.trim() || null
+ })
+ .eq("id",customerId);
+
+ if(updateError){
+   console.error(updateError);
+   alert("顧客メモの保存に失敗しました");
+   return;
+ }
+
+ alert("顧客メモを保存しました");
+ loadCustomerDetail(customerId);
+
+}
 
 
 async function addCustomerCar(customerId){
