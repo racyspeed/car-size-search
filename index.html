@@ -2131,6 +2131,444 @@ body{
   }
 }
 
+
+
+/* =========================================================
+   RACY'SPEED layout repair final
+   オンライン見積り・予約 レイアウト崩れ修正版
+   目的：
+   - PCで中央揃え
+   - スマホで横にはみ出さない
+   - 見積りカード、予約カード、カレンダーを崩さない
+   - 既存デザインの黒・白・角丸なしを維持
+========================================================= */
+
+html,
+body{
+  margin:0 !important;
+  padding:0 !important;
+  width:100% !important;
+  max-width:100% !important;
+  overflow-x:hidden !important;
+  background:#f3f3f3 !important;
+}
+
+*,
+*::before,
+*::after{
+  box-sizing:border-box !important;
+}
+
+.container{
+  width:min(100%, 980px) !important;
+  max-width:980px !important;
+  margin:0 auto !important;
+  padding:34px 18px 44px !important;
+  box-sizing:border-box !important;
+}
+
+.shop-name,
+.section-en,
+h2,
+.subtitle{
+  width:100% !important;
+  max-width:100% !important;
+  text-align:center !important;
+  box-sizing:border-box !important;
+}
+
+.subtitle{
+  white-space:normal !important;
+}
+
+/* 上部検索まわり */
+.search-panel,
+.selected-car-card,
+.category-area,
+.wash-menu-area,
+.coating-area,
+#optionArea,
+#priceResult,
+.estimate-card,
+.total-card,
+.reservation-card{
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+
+.search-layout{
+  display:grid !important;
+  grid-template-columns:minmax(0, 1.15fr) minmax(260px, .85fr) !important;
+  gap:22px !important;
+  align-items:start !important;
+}
+
+.search-left{
+  min-width:0 !important;
+}
+
+input,
+select,
+textarea,
+button{
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+
+/* メニュー・オプションの崩れ防止 */
+.plan-grid,
+.quick-car-buttons,
+.size-guide-grid,
+.time-slot-grid{
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+
+.option-item{
+  width:100% !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  gap:10px !important;
+}
+
+.option-text{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+}
+
+.option-name{
+  word-break:keep-all !important;
+  overflow-wrap:anywhere !important;
+}
+
+.option-meta{
+  white-space:nowrap !important;
+}
+
+/* 見積りカード */
+.estimate-card,
+.total-card{
+  overflow:hidden !important;
+}
+
+.total-card-center,
+.total-price-inline{
+  text-align:center !important;
+  justify-content:center !important;
+}
+
+/* 予約カード */
+.reservation-card{
+  background:#000000 !important;
+  color:#ffffff !important;
+  border:1px solid #ffffff !important;
+  border-radius:0 !important;
+  overflow:hidden !important;
+  padding:28px !important;
+}
+
+.reservation-card::before{
+  display:none !important;
+}
+
+.reservation-card .estimate-title,
+.reservation-card .contact-subnote,
+.reservation-selected-date,
+#reservationMessage,
+#reservationSaveMessage,
+.reservation-time-note{
+  color:#ffffff !important;
+}
+
+/* カレンダー */
+.reservation-calendar-head{
+  width:100% !important;
+  display:grid !important;
+  grid-template-columns:72px minmax(0,1fr) 72px !important;
+  gap:10px !important;
+  align-items:center !important;
+  border:1px solid #ffffff !important;
+  background:#000000 !important;
+  color:#ffffff !important;
+  border-radius:0 !important;
+  padding:12px !important;
+  box-sizing:border-box !important;
+}
+
+.calendar-month-title{
+  color:#ffffff !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  font-size:16px !important;
+  letter-spacing:.08em !important;
+}
+
+.calendar-nav-button{
+  width:100% !important;
+  border:1px solid #ffffff !important;
+  background:#000000 !important;
+  color:#ffffff !important;
+  border-radius:0 !important;
+  padding:9px 0 !important;
+  box-shadow:none !important;
+}
+
+.calendar-legend{
+  width:100% !important;
+  max-width:100% !important;
+  display:flex !important;
+  flex-wrap:wrap !important;
+  justify-content:center !important;
+  gap:10px 18px !important;
+  color:#ffffff !important;
+}
+
+.calendar-grid{
+  width:100% !important;
+  max-width:100% !important;
+  display:grid !important;
+  grid-template-columns:repeat(7, minmax(0,1fr)) !important;
+  gap:6px !important;
+  border:1px solid #ffffff !important;
+  background:#000000 !important;
+  padding:10px !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+}
+
+.calendar-weekday,
+.calendar-day{
+  min-width:0 !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+
+.calendar-weekday{
+  color:#ffffff !important;
+  text-align:center !important;
+  padding:6px 0 !important;
+}
+
+.calendar-day{
+  width:100% !important;
+  min-height:58px !important;
+  border:1px solid #ffffff !important;
+  background:#000000 !important;
+  color:#ffffff !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  overflow:hidden !important;
+}
+
+.calendar-day.empty{
+  border:none !important;
+  background:transparent !important;
+}
+
+.calendar-day-number{
+  color:#ffffff !important;
+  line-height:1 !important;
+}
+
+.calendar-day-status{
+  color:#ffffff !important;
+  white-space:nowrap !important;
+}
+
+.calendar-day.closed .calendar-day-status{
+  color:#d32f2f !important;
+}
+
+.calendar-day.selected{
+  background:#ffffff !important;
+  color:#000000 !important;
+}
+
+.calendar-day.selected .calendar-day-number,
+.calendar-day.selected .calendar-day-status{
+  color:#000000 !important;
+}
+
+/* 時間選択 */
+.time-slot-area{
+  width:100% !important;
+  max-width:100% !important;
+  border:1px solid #ffffff !important;
+  background:#000000 !important;
+  color:#ffffff !important;
+  border-radius:0 !important;
+  overflow:hidden !important;
+}
+
+.time-slot-grid{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:10px !important;
+}
+
+.time-slot-button{
+  border:1px solid #ffffff !important;
+  background:#111111 !important;
+  color:#ffffff !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+
+.time-slot-button.active{
+  background:#ffffff !important;
+  color:#000000 !important;
+}
+
+.reservation-form input,
+.reservation-form textarea{
+  width:100% !important;
+  border:1px solid #ffffff !important;
+  background:#000000 !important;
+  color:#ffffff !important;
+  border-radius:0 !important;
+}
+
+/* スマホ */
+@media (max-width:700px){
+  .container{
+    width:100% !important;
+    max-width:100% !important;
+    padding:18px 10px 30px !important;
+  }
+
+  .search-layout{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:14px !important;
+  }
+
+  .section-en{
+    font-size:8px !important;
+    letter-spacing:.10em !important;
+    gap:8px !important;
+  }
+
+  .section-en::before,
+  .section-en::after{
+    width:18px !important;
+  }
+
+  h2{
+    font-size:22px !important;
+    letter-spacing:.04em !important;
+  }
+
+  .subtitle{
+    font-size:12px !important;
+    line-height:1.7 !important;
+  }
+
+  .reservation-card{
+    padding:14px 6px !important;
+    margin-top:18px !important;
+  }
+
+  .reservation-calendar-head{
+    grid-template-columns:48px minmax(0,1fr) 48px !important;
+    gap:4px !important;
+    padding:7px 4px !important;
+  }
+
+  .calendar-month-title{
+    font-size:12px !important;
+    letter-spacing:.02em !important;
+  }
+
+  .calendar-nav-button{
+    font-size:9px !important;
+    padding:7px 0 !important;
+  }
+
+  .calendar-legend{
+    gap:6px 8px !important;
+    margin:9px 0 !important;
+  }
+
+  .calendar-legend span{
+    font-size:9px !important;
+    letter-spacing:0 !important;
+  }
+
+  .calendar-grid{
+    gap:2px !important;
+    padding:3px !important;
+  }
+
+  .calendar-weekday{
+    padding:4px 0 !important;
+  }
+
+  .calendar-weekday-ja{
+    font-size:9px !important;
+  }
+
+  .calendar-weekday-en{
+    font-size:6px !important;
+    letter-spacing:0 !important;
+  }
+
+  .calendar-day{
+    min-height:42px !important;
+    padding:2px 0 !important;
+  }
+
+  .calendar-day-number{
+    font-size:13px !important;
+  }
+
+  .calendar-day-status{
+    font-size:0 !important;
+  }
+
+  .calendar-day.available .calendar-day-status::after{
+    content:"○";
+    font-size:12px !important;
+    color:#ffffff !important;
+  }
+
+  .calendar-day.few .calendar-day-status::after{
+    content:"△";
+    font-size:12px !important;
+    color:#ffffff !important;
+  }
+
+  .calendar-day.unavailable .calendar-day-status::after{
+    content:"✕";
+    font-size:12px !important;
+    color:#ffffff !important;
+  }
+
+  .calendar-day.closed .calendar-day-status::after{
+    content:"休";
+    font-size:10px !important;
+    color:#d32f2f !important;
+  }
+
+  .calendar-day.selected .calendar-day-status::after{
+    color:#000000 !important;
+  }
+
+  .time-slot-area{
+    padding:10px 6px !important;
+  }
+
+  .time-slot-button{
+    min-width:56px !important;
+    padding:8px 6px !important;
+    font-size:11px !important;
+  }
+}
+
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>  
 </head>
