@@ -2284,11 +2284,17 @@ function normalizeDateInput(value){
    return null;
  }
 
- if(/^\\d{4}-\\d{2}-\\d{2}$/.test(text)){
+ const hyphenDatePattern =
+ new RegExp("^\\d{4}-\\d{2}-\\d{2}$");
+
+ const slashDatePattern =
+ new RegExp("^\\d{4}/\\d{1,2}/\\d{1,2}$");
+
+ if(hyphenDatePattern.test(text)){
    return text;
  }
 
- if(/^\\d{4}\\/\\d{1,2}\\/\\d{1,2}$/.test(text)){
+ if(slashDatePattern.test(text)){
    const parts = text.split("/");
    return (
      parts[0] + "-" +
@@ -2310,7 +2316,10 @@ function normalizeTimeInput(value){
    return null;
  }
 
- if(/^\\d{1,2}:\\d{2}$/.test(text)){
+ const timePattern =
+ new RegExp("^\\d{1,2}:\\d{2}$");
+
+ if(timePattern.test(text)){
    const parts = text.split(":");
    return String(parts[0]).padStart(2,"0") + ":" + parts[1];
  }
